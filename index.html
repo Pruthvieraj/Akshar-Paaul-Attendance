@@ -167,6 +167,11 @@
   .banner button{margin-left:auto;}
 
   .roster-list{display:flex;flex-direction:column;gap:8px;}
+  .class-group-header{
+    font-family:var(--font-display);font-size:.82rem;font-weight:600;letter-spacing:.02em;
+    color:var(--ink-soft);margin:14px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--border);
+  }
+  .class-group-header:first-child{margin-top:0;}
   .stu-row{
     display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);
     border-radius:var(--radius-sm);background:var(--surface);
@@ -382,6 +387,16 @@
   }
   function centres(){ return uniqSorted(STATE.roster.map(function(s){return s.centre;})); }
   function teachers(){ return uniqSorted(STATE.roster.map(function(s){return s.teacher;})); }
+  function classSortKey(std){
+    if(!std) return 999;
+    var m = String(std).match(/\d+/);
+    return m ? parseInt(m[0],10) : 998;
+  }
+  function classesIn(list){
+    var seen = {};
+    list.forEach(function(s){ if(s.std) seen[s.std] = true; });
+    return Object.keys(seen).sort(function(a,b){ return classSortKey(a)-classSortKey(b); });
+  }
   function shortCentre(c){
     if(!c) return c;
     var s = c;
@@ -453,7 +468,7 @@
   }
 
   // ================= TAB: MARK ATTENDANCE =================
-  var markFilters = { centre: '', date: nearestSunday() };
+  var markFilters = { centre: '', date: nearestSunday(), std: '' };
 
   function resubscribeMark(){
     if(markUnsub){ markUnsub(); markUnsub = null; }
@@ -491,12 +506,23 @@
       });
       html += '</select></div>';
     }
+    var centreList = STATE.roster.filter(function(s){ return s.centre===markFilters.centre; });
+    var classList = classesIn(centreList);
+    if(markFilters.std && classList.indexOf(markFilters.std)===-1) markFilters.std = '';
+    html += '<div class="field"><label>Class</label><select id="mk-std"><option value="">All classes</option>';
+    classList.forEach(function(k){
+      html += '<option value="'+esc(k)+'"'+(k===markFilters.std?' selected':'')+'>'+esc(k)+'</option>';
+    });
+    html += '</select></div>';
     html += '<div class="field"><label>Date</label><input type="date" id="mk-date" value="'+markFilters.date+'"></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="mk-today">This week (Sun)</button></div>';
     html += '</div>';
 
-    var list = STATE.roster.filter(function(s){ return s.centre===markFilters.centre; });
-    list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    var list = centreList.filter(function(s){ return !markFilters.std || s.std===markFilters.std; });
+    list.sort(function(a,b){
+      var ck = classSortKey(a.std)-classSortKey(b.std);
+      return ck!==0 ? ck : a.name.localeCompare(b.name);
+    });
     var markedCount = list.filter(function(s){
       return attEntry(s.id, markFilters.date) !== undefined;
     }).length;
@@ -510,9 +536,15 @@
 
     html += '<div class="roster-list" id="mk-list">';
     if(list.length===0){
-      html += '<div class="empty-state">No students found for this centre.</div>';
+      html += '<div class="empty-state">No students found for this filter.</div>';
     }
+    var lastGroupStd = null;
+    var showGroups = !markFilters.std;
     list.forEach(function(s){
+      if(showGroups && s.std !== lastGroupStd){
+        lastGroupStd = s.std;
+        html += '<div class="class-group-header">'+esc(s.std || 'No class on file')+'</div>';
+      }
       var v = attVal(s.id, markFilters.date);
       var isP = v === 1, isA = v === 0;
       html += '<div class="stu-row" data-sid="'+s.id+'">';
@@ -529,9 +561,12 @@
 
     if(!locked){
       document.getElementById('mk-centre').addEventListener('change', function(e){
-        markFilters.centre = e.target.value; resubscribeMark();
+        markFilters.centre = e.target.value; markFilters.std = ''; resubscribeMark();
       });
     }
+    document.getElementById('mk-std').addEventListener('change', function(e){
+      markFilters.std = e.target.value; renderMark();
+    });
     document.getElementById('mk-date').addEventListener('change', function(e){
       markFilters.date = e.target.value || nearestSunday(); resubscribeMark();
     });
@@ -584,7 +619,7 @@
   }
 
   // ================= TAB: STUDENTS & RECORDS =================
-  var stuFilters = { q:'', centre:'', teacher:'', reviewOnly:false, expanded:null };
+  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null };
 
   var EDIT_FIELDS = [
     ['name','Name'], ['centre','Centre'], ['teacher','Teacher'], ['std','Std / Class'],
@@ -618,6 +653,11 @@
     html += '<div class="field"><label>Teacher</label><select id="st-teacher"><option value="">All teachers</option>';
     tList.forEach(function(t){ html += '<option value="'+esc(t)+'"'+(t===stuFilters.teacher?' selected':'')+'>'+esc(t)+'</option>'; });
     html += '</select></div>';
+    var stuScope = STATE.roster.filter(function(s){ return !stuFilters.centre || s.centre===stuFilters.centre; });
+    var stClassList = classesIn(stuScope);
+    html += '<div class="field"><label>Class</label><select id="st-std"><option value="">All classes</option>';
+    stClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===stuFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
+    html += '</select></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
     html += '</div>';
 
@@ -625,10 +665,14 @@
       if(stuFilters.q && s.name.toLowerCase().indexOf(stuFilters.q.toLowerCase())===-1) return false;
       if(stuFilters.centre && s.centre!==stuFilters.centre) return false;
       if(stuFilters.teacher && s.teacher!==stuFilters.teacher) return false;
+      if(stuFilters.std && s.std!==stuFilters.std) return false;
       if(stuFilters.reviewOnly && !s.needs_review) return false;
       return true;
     });
-    list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    list.sort(function(a,b){
+      var ck = classSortKey(a.std)-classSortKey(b.std);
+      return ck!==0 ? ck : a.name.localeCompare(b.name);
+    });
 
     html += '<div class="controls-row" style="justify-content:space-between;"><span class="stat-pill">'+list.length+' students</span></div>';
 
@@ -664,9 +708,10 @@
     document.getElementById('st-q').addEventListener('input', function(e){ stuFilters.q = e.target.value; renderStudents(); });
     var stCentreEl = document.getElementById('st-centre');
     if(stCentreEl){
-      stCentreEl.addEventListener('change', function(e){ stuFilters.centre = e.target.value; renderStudents(); });
+      stCentreEl.addEventListener('change', function(e){ stuFilters.centre = e.target.value; stuFilters.std = ''; renderStudents(); });
     }
     document.getElementById('st-teacher').addEventListener('change', function(e){ stuFilters.teacher = e.target.value; renderStudents(); });
+    document.getElementById('st-std').addEventListener('change', function(e){ stuFilters.std = e.target.value; renderStudents(); });
     document.getElementById('st-review-toggle').addEventListener('click', function(){ stuFilters.reviewOnly = !stuFilters.reviewOnly; renderStudents(); });
     el.querySelectorAll('[data-expand]').forEach(function(btn){
       btn.addEventListener('click', function(){
@@ -702,9 +747,12 @@
   }
 
   // ================= TAB: REPORTS =================
+  var rpFilters = { std: '' };
   function renderReports(){
     var el = document.getElementById('panel-reports');
     var cList = centres();
+    var rpClassList = classesIn(STATE.roster);
+    if(rpFilters.std && rpClassList.indexOf(rpFilters.std)===-1) rpFilters.std = '';
     var html = '<div class="card">';
     html += '<h2 class="section-title">Centre summary</h2>';
     html += '<div class="grid-cards">';
@@ -717,12 +765,26 @@
     });
     html += '</div>';
 
+    html += '<h2 class="section-title">Class summary</h2>';
+    html += '<div class="grid-cards">';
+    rpClassList.forEach(function(k){
+      var stus = STATE.roster.filter(function(s){return s.std===k;});
+      var pcts = stus.map(function(s){return studentStats(s.id).pct;}).filter(function(p){return p!==null;});
+      var avg = pcts.length ? Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length) : null;
+      html += '<div class="stat-card"><div class="num">'+(avg===null?'—':avg+'%')+'</div>';
+      html += '<div class="lbl">'+esc(k)+' · '+stus.length+' students</div></div>';
+    });
+    html += '</div>';
+
     html += '<div class="controls-row" style="justify-content:space-between;">';
     html += '<h2 class="section-title" style="margin:0;">Students by attendance</h2>';
     html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">Refresh</button><button class="btn small" id="rp-export">Export CSV</button></span>';
     html += '</div>';
+    html += '<div class="controls-row"><div class="field"><label>Class</label><select id="rp-std"><option value="">All classes</option>';
+    rpClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===rpFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
+    html += '</select></div></div>';
 
-    var rows = STATE.roster.map(function(s){
+    var rows = STATE.roster.filter(function(s){ return !rpFilters.std || s.std===rpFilters.std; }).map(function(s){
       var st = studentStats(s.id);
       return {s:s, st:st};
     });
@@ -732,7 +794,7 @@
       return pa-pb;
     });
 
-    html += '<div class="table-scroll"><table><thead><tr><th>Name</th><th>Centre</th><th>Present</th><th>Marked</th><th>Attendance</th><th>Recent</th></tr></thead><tbody>';
+    html += '<div class="table-scroll"><table><thead><tr><th>Name</th><th>Centre</th><th>Class</th><th>Present</th><th>Marked</th><th>Attendance</th><th>Recent</th></tr></thead><tbody>';
     rows.slice(0,400).forEach(function(r){
       var s=r.s, st=r.st;
       var pctTxt = st.pct===null ? 'No records yet' : st.pct+'%';
@@ -742,7 +804,7 @@
         var title = d+': '+(v===1?'present':'absent')+(by ? ' · marked by '+by : '');
         return '<span class="dot '+(v===1?'p':'a')+'" title="'+esc(title)+'"></span>';
       }).join('');
-      html += '<tr><td class="name-cell">'+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td>';
+      html += '<tr><td class="name-cell">'+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
       html += '<td>'+st.present+'</td><td>'+st.total+'</td>';
       html += '<td class="pct '+pctClass(st.pct)+'">'+pctTxt+'</td>';
       html += '<td><div class="dots">'+(recentDots||'<span style="color:var(--ink-faint);font-size:.78rem;">—</span>')+'</div></td></tr>';
@@ -759,6 +821,7 @@
 
     document.getElementById('rp-export').addEventListener('click', exportCSV);
     document.getElementById('rp-refresh').addEventListener('click', function(){ loadAttendanceHistory(true); });
+    document.getElementById('rp-std').addEventListener('change', function(e){ rpFilters.std = e.target.value; renderReports(); });
   }
 
   function exportCSV(){
