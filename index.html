@@ -303,6 +303,25 @@
   .sync-banner .btn{margin-left:auto;}
   .locked-value{border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;
     background:var(--surface-2);font-size:.9rem;min-height:38px;display:flex;align-items:center;}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,16,10,.5);display:flex;align-items:center;justify-content:center;
+    padding:20px;z-index:1000;
+  }
+  .modal-overlay[hidden]{display:none;}
+  .modal-card{
+    background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:22px;max-width:420px;width:100%;
+  }
+  .modal-card h3{font-family:var(--font-display);margin:0 0 8px;font-size:1.1rem;}
+  .modal-card p{margin:0 0 16px;color:var(--ink-soft);font-size:.88rem;line-height:1.5;}
+  .modal-card input[type=text]{margin-bottom:16px;}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+  th.sortable{cursor:pointer;user-select:none;white-space:nowrap;}
+  th.sortable:hover{color:var(--primary);}
+  th.sortable .arrow{display:inline-block;margin-left:3px;opacity:.5;font-size:.75em;}
+  th.sortable.active .arrow{opacity:1;}
 </style>
 <body>
   <div id="gate-screen" class="gate-wrap"></div>
@@ -336,6 +355,7 @@
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+  <div class="modal-overlay" id="modal-overlay" hidden role="dialog" aria-modal="true"></div>
 
   <script type="module">
   // ============================================================
@@ -486,6 +506,59 @@
     return !!(active && active.closest && active.closest('#panel-students .editable'));
   }
 
+  // ---------- in-app modals (replace window.confirm / window.prompt) ----------
+  var modalOverlay = document.getElementById('modal-overlay');
+  function closeModal(){
+    modalOverlay.setAttribute('hidden','');
+    modalOverlay.innerHTML = '';
+  }
+  // Returns a Promise<boolean> — true if the person confirmed, false if they cancelled.
+  function showConfirmModal(opts){
+    return new Promise(function(resolve){
+      var danger = !!opts.danger;
+      modalOverlay.innerHTML =
+        '<div class="modal-card" role="document">'
+        + '<h3>'+esc(opts.title||'Are you sure?')+'</h3>'
+        + '<p>'+esc(opts.message||'')+'</p>'
+        + '<div class="modal-actions">'
+        + '<button class="btn ghost" id="modal-cancel">'+esc(opts.cancelText||'Cancel')+'</button>'
+        + '<button class="btn '+(danger?'danger':'primary')+'" id="modal-confirm">'+esc(opts.confirmText||'Confirm')+'</button>'
+        + '</div></div>';
+      modalOverlay.removeAttribute('hidden');
+      function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
+      function onKey(e){ if(e.key==='Escape') finish(false); }
+      document.addEventListener('keydown', onKey);
+      document.getElementById('modal-cancel').addEventListener('click', function(){ finish(false); });
+      document.getElementById('modal-confirm').addEventListener('click', function(){ finish(true); });
+      document.getElementById('modal-confirm').focus();
+    });
+  }
+  // Returns a Promise<string|null> — the trimmed text entered, or null if cancelled/empty.
+  function showPromptModal(opts){
+    return new Promise(function(resolve){
+      modalOverlay.innerHTML =
+        '<div class="modal-card" role="document">'
+        + '<h3>'+esc(opts.title||'')+'</h3>'
+        + (opts.message ? '<p>'+esc(opts.message)+'</p>' : '')
+        + '<input type="text" id="modal-input" placeholder="'+esc(opts.placeholder||'')+'">'
+        + '<div class="modal-actions">'
+        + '<button class="btn ghost" id="modal-cancel">Cancel</button>'
+        + '<button class="btn primary" id="modal-confirm">'+esc(opts.confirmText||'Add')+'</button>'
+        + '</div></div>';
+      modalOverlay.removeAttribute('hidden');
+      var input = document.getElementById('modal-input');
+      function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
+      function onKey(e){
+        if(e.key==='Escape') finish(null);
+        if(e.key==='Enter'){ e.preventDefault(); finish(input.value.trim() || null); }
+      }
+      document.addEventListener('keydown', onKey);
+      document.getElementById('modal-cancel').addEventListener('click', function(){ finish(null); });
+      document.getElementById('modal-confirm').addEventListener('click', function(){ finish(input.value.trim() || null); });
+      input.focus();
+    });
+  }
+
   // ---------- header ----------
   function renderHeader(){
     var el = document.getElementById('header-stats');
@@ -634,10 +707,15 @@
       showToast(ok ? 'Marked all present.' : 'Marked all present — saved on this device, will sync when back online.');
     });
     document.getElementById('mk-clear').addEventListener('click', async function(){
+      var btn = this;
       var label = fmtDateLabel(markFilters.date)+(markFilters.std ? ' · '+markFilters.std : '');
-      var confirmed = window.confirm('Clear every attendance mark for '+shortCentre(markFilters.centre)+' — '+label+'? This removes marks for '+list.length+' student'+(list.length===1?'':'s')+' and can\'t be undone.');
+      var confirmed = await showConfirmModal({
+        title: 'Clear this date?',
+        message: 'Clear every attendance mark for '+shortCentre(markFilters.centre)+' — '+label+'? This removes marks for '+list.length+' student'+(list.length===1?'':'s')+' and can\'t be undone.',
+        confirmText: 'Clear marks', danger: true
+      });
       if(!confirmed) return;
-      var btn = this; btn.disabled = true;
+      btn.disabled = true;
       var items = list.map(function(s){
         return {type:'delete', col:'attendance', docId:s.id+'_'+markFilters.date, sid:s.id, date:markFilters.date};
       });
@@ -681,7 +759,25 @@
   }
 
   // ================= TAB: STUDENTS & RECORDS =================
-  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null, adding:false };
+  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null, adding:false, sortKey:'std', sortDir:'asc' };
+  var STU_COLUMNS = [['name','Name'],['centre','Centre'],['teacher','Teacher'],['std','Std'],['attendance','Attendance']];
+  function compareStudents(a, b, key){
+    if(key==='std'){
+      var ck = classSortKey(a.std)-classSortKey(b.std);
+      return ck!==0 ? ck : a.name.localeCompare(b.name);
+    }
+    if(key==='attendance'){
+      var pa = studentStats(a.id).pct, pb = studentStats(b.id).pct;
+      if(pa===null && pb===null) return a.name.localeCompare(b.name);
+      if(pa===null) return 1;
+      if(pb===null) return -1;
+      return pa - pb;
+    }
+    var va = (key==='centre' ? shortCentre(a.centre||'') : (a[key]||''));
+    var vb = (key==='centre' ? shortCentre(b.centre||'') : (b[key]||''));
+    var cmp = String(va).localeCompare(String(vb));
+    return cmp!==0 ? cmp : a.name.localeCompare(b.name);
+  }
 
   var EDIT_FIELDS = [
     ['name','Name'], ['centre','Centre'], ['teacher','Teacher'], ['std','Std / Class'],
@@ -727,7 +823,11 @@
     return !basicsOk || !ageOk || !contactOk;
   }
   function genStudentId(){
-    return 's_' + Math.random().toString(16).slice(2,10);
+    if(window.crypto && typeof window.crypto.randomUUID === 'function'){
+      return 's_' + window.crypto.randomUUID();
+    }
+    // Fallback for the rare browser without crypto.randomUUID (older Safari/WebViews).
+    return 's_' + Date.now().toString(16) + '_' + Math.random().toString(16).slice(2,10);
   }
 
   function renderStudents(){
@@ -795,14 +895,21 @@
       return true;
     });
     list.sort(function(a,b){
-      var ck = classSortKey(a.std)-classSortKey(b.std);
-      return ck!==0 ? ck : a.name.localeCompare(b.name);
+      var cmp = compareStudents(a, b, stuFilters.sortKey);
+      return stuFilters.sortDir==='desc' ? -cmp : cmp;
     });
 
     html += '<div class="controls-row" style="justify-content:space-between;"><span class="stat-pill">'+list.length+' students</span></div>';
 
     html += '<div class="table-scroll"><table><thead><tr>';
-    ['Name','Centre','Teacher','Std','Attendance',''].forEach(function(h){ html += '<th>'+h+'</th>'; });
+    STU_COLUMNS.forEach(function(col){
+      var key=col[0], label=col[1];
+      var active = stuFilters.sortKey===key;
+      var arrow = active ? (stuFilters.sortDir==='asc' ? '▲' : '▼') : '';
+      var ariaSort = active ? (stuFilters.sortDir==='asc' ? 'ascending' : 'descending') : 'none';
+      html += '<th class="sortable'+(active?' active':'')+'" data-sort="'+key+'" aria-sort="'+ariaSort+'" tabindex="0" role="button">'+esc(label)+(arrow?' <span class="arrow">'+arrow+'</span>':'')+'</th>';
+    });
+    html += '<th></th>';
     html += '</tr></thead><tbody id="st-tbody">';
     list.forEach(function(s){
       var stats = studentStats(s.id);
@@ -851,6 +958,16 @@
     document.getElementById('st-teacher').addEventListener('change', function(e){ stuFilters.teacher = e.target.value; renderStudents(); });
     document.getElementById('st-std').addEventListener('change', function(e){ stuFilters.std = e.target.value; renderStudents(); });
     document.getElementById('st-review-toggle').addEventListener('click', function(){ stuFilters.reviewOnly = !stuFilters.reviewOnly; renderStudents(); });
+    el.querySelectorAll('th.sortable').forEach(function(th){
+      function toggleSort(){
+        var key = th.getAttribute('data-sort');
+        if(stuFilters.sortKey===key){ stuFilters.sortDir = stuFilters.sortDir==='asc' ? 'desc' : 'asc'; }
+        else { stuFilters.sortKey = key; stuFilters.sortDir = 'asc'; }
+        renderStudents();
+      }
+      th.addEventListener('click', toggleSort);
+      th.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggleSort(); } });
+    });
     var reviewDismissBtn = document.getElementById('st-review-dismiss');
     if(reviewDismissBtn) reviewDismissBtn.addEventListener('click', function(){ stuFilters.reviewOnly = false; renderStudents(); });
     document.getElementById('st-add-toggle').addEventListener('click', function(){ stuFilters.adding = !stuFilters.adding; renderStudents(); });
@@ -874,8 +991,7 @@
           var centreEl = document.getElementById('add-f-centre');
           var centreVal = centreEl ? centreEl.value : '';
           if(centreVal==='__new__'){
-            centreVal = window.prompt('New centre name:');
-            if(centreVal) centreVal = centreVal.trim();
+            centreVal = await showPromptModal({title:'New centre', placeholder:'e.g. Mogra', confirmText:'Add centre'});
           }
           data.centre = centreVal || '';
         }
@@ -909,7 +1025,11 @@
         var id = btn.getAttribute('data-delete');
         var stu = studentsById()[id];
         if(!stu) return;
-        var confirmed = window.confirm('Delete '+stu.name+'? This removes their record from the roster and can\'t be undone. Their past attendance history is kept for reporting.');
+        var confirmed = await showConfirmModal({
+          title: 'Delete this student?',
+          message: 'Delete '+stu.name+'? This removes their record from the roster and can\'t be undone. Their past attendance history is kept for reporting.',
+          confirmText: 'Delete student', danger: true
+        });
         if(!confirmed) return;
         STATE.roster = STATE.roster.filter(function(s){ return s.id!==id; });
         stuFilters.expanded = null;
@@ -945,7 +1065,21 @@
   }
 
   // ================= TAB: REPORTS =================
-  var rpFilters = { std: '' };
+  var rpFilters = { std: '', sortKey:'attendance', sortDir:'asc' };
+  var RP_COLUMNS = [['name','Name'],['centre','Centre'],['std','Class'],['present','Present'],['marked','Marked'],['attendance','Attendance']];
+  function compareReportRows(a, b, key){
+    if(key==='name') return a.s.name.localeCompare(b.s.name);
+    if(key==='centre') return shortCentre(a.s.centre||'').localeCompare(shortCentre(b.s.centre||''));
+    if(key==='std'){
+      var ck = classSortKey(a.s.std)-classSortKey(b.s.std);
+      return ck!==0 ? ck : a.s.name.localeCompare(b.s.name);
+    }
+    if(key==='present') return a.st.present - b.st.present;
+    if(key==='marked') return a.st.total - b.st.total;
+    var pa = a.st.pct===null ? 999 : a.st.pct;
+    var pb = b.st.pct===null ? 999 : b.st.pct;
+    return pa-pb;
+  }
   function renderReports(){
     var el = document.getElementById('panel-reports');
     var cList = centres();
@@ -976,7 +1110,7 @@
 
     html += '<div class="controls-row" style="justify-content:space-between;">';
     html += '<h2 class="section-title" style="margin:0;">Students by attendance</h2>';
-    html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">Refresh</button><button class="btn small" id="rp-export">Export CSV</button></span>';
+    html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">Refresh</button><button class="btn ghost small" id="rp-export-detailed">Export CSV (per-date)</button><button class="btn small" id="rp-export">Export CSV</button></span>';
     html += '</div>';
     html += '<div class="controls-row"><div class="field"><label>Class</label><select id="rp-std"><option value="">All classes</option>';
     rpClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===rpFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
@@ -987,12 +1121,20 @@
       return {s:s, st:st};
     });
     rows.sort(function(a,b){
-      var pa = a.st.pct===null ? 999 : a.st.pct;
-      var pb = b.st.pct===null ? 999 : b.st.pct;
-      return pa-pb;
+      var cmp = compareReportRows(a, b, rpFilters.sortKey);
+      return rpFilters.sortDir==='desc' ? -cmp : cmp;
     });
 
-    html += '<div class="table-scroll"><table><thead><tr><th>Name</th><th>Centre</th><th>Class</th><th>Present</th><th>Marked</th><th>Attendance</th><th>Recent</th></tr></thead><tbody>';
+    html += '<div class="table-scroll"><table><thead><tr>';
+    RP_COLUMNS.forEach(function(col){
+      var key=col[0], label=col[1];
+      var active = rpFilters.sortKey===key;
+      var arrow = active ? (rpFilters.sortDir==='asc' ? '▲' : '▼') : '';
+      var ariaSort = active ? (rpFilters.sortDir==='asc' ? 'ascending' : 'descending') : 'none';
+      html += '<th class="sortable'+(active?' active':'')+'" data-sort="'+key+'" aria-sort="'+ariaSort+'" tabindex="0" role="button">'+esc(label)+(arrow?' <span class="arrow">'+arrow+'</span>':'')+'</th>';
+    });
+    html += '<th>Recent</th>';
+    html += '</tr></thead><tbody>';
     rows.slice(0,400).forEach(function(r){
       var s=r.s, st=r.st;
       var pctTxt = st.pct===null ? 'No records yet' : st.pct+'%';
@@ -1009,7 +1151,7 @@
     });
     html += '</tbody></table></div>';
     if(rows.length>400){
-      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Showing 400 of '+rows.length+' students, sorted by lowest attendance first. Use the Students tab to search for a specific student, or export CSV for the full list.</p>';
+      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Showing 400 of '+rows.length+' students. Use the Students tab to search for a specific student, or export CSV for the full list.</p>';
     }
     if(!ATTENDANCE_HISTORY_LOADED){
       html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Loading attendance history…</p>';
@@ -1018,10 +1160,36 @@
     el.innerHTML = html;
 
     document.getElementById('rp-export').addEventListener('click', exportCSV);
+    document.getElementById('rp-export-detailed').addEventListener('click', function(){ exportDetailedCSV(rows.map(function(r){return r.s;})); });
     document.getElementById('rp-refresh').addEventListener('click', function(){ loadAttendanceHistory(true); });
     document.getElementById('rp-std').addEventListener('change', function(e){ rpFilters.std = e.target.value; renderReports(); });
+    el.querySelectorAll('th.sortable').forEach(function(th){
+      function toggleSort(){
+        var key = th.getAttribute('data-sort');
+        if(rpFilters.sortKey===key){ rpFilters.sortDir = rpFilters.sortDir==='asc' ? 'desc' : 'asc'; }
+        else { rpFilters.sortKey = key; rpFilters.sortDir = 'asc'; }
+        renderReports();
+      }
+      th.addEventListener('click', toggleSort);
+      th.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); toggleSort(); } });
+    });
   }
 
+  function csvCell(v){
+    var str = String(v===null||v===undefined?'':v);
+    if(str.indexOf(',')>-1 || str.indexOf('"')>-1 || str.indexOf('\n')>-1){ str = '"'+str.replace(/"/g,'""')+'"'; }
+    return str;
+  }
+  function downloadCSV(lines, filename){
+    var csv = lines.join('\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    showToast('CSV downloaded.');
+  }
   function exportCSV(){
     var header = ['Name','Centre','Teacher','Std','Gender','Age','Medium','Contact','Funding Partner','Sessions Marked','Sessions Present','Attendance %','Needs Review'];
     var lines = [header.join(',')];
@@ -1029,20 +1197,34 @@
       var st = studentStats(s.id);
       var row = [s.name, s.centre, s.teacher||'', s.std||'', s.gender||'', s.age||'', s.medium||'', s.contact||'', s.funding_partner||'',
         st.total, st.present, st.pct===null?'':st.pct, s.needs_review?'Yes':'No'];
-      lines.push(row.map(function(v){
-        var str = String(v===null||v===undefined?'':v);
-        if(str.indexOf(',')>-1 || str.indexOf('"')>-1){ str = '"'+str.replace(/"/g,'""')+'"'; }
-        return str;
-      }).join(','));
+      lines.push(row.map(csvCell).join(','));
     });
-    var csv = lines.join('\n');
-    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = 'akshar-paaul-attendance.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-    showToast('CSV downloaded.');
+    downloadCSV(lines, 'akshar-paaul-attendance.csv');
+  }
+  // Per-date grid: one column per session date, P/A/blank for each student —
+  // for anyone who needs the raw day-by-day record rather than just the totals.
+  function exportDetailedCSV(students){
+    var list = students && students.length ? students : STATE.roster;
+    var dateSet = {};
+    list.forEach(function(s){
+      Object.keys(studentAttendance(s.id)).forEach(function(d){ dateSet[d] = true; });
+    });
+    var dates = Object.keys(dateSet).sort();
+    if(!dates.length){
+      showToast('No attendance marked yet for this list — nothing to export.');
+      return;
+    }
+    var header = ['Name','Centre','Teacher','Std'].concat(dates);
+    var lines = [header.join(',')];
+    list.forEach(function(s){
+      var row = [s.name, s.centre, s.teacher||'', s.std||''];
+      dates.forEach(function(d){
+        var v = attVal(s.id, d);
+        row.push(v===1 ? 'P' : (v===0 ? 'A' : ''));
+      });
+      lines.push(row.map(csvCell).join(','));
+    });
+    downloadCSV(lines, 'akshar-paaul-attendance-detailed.csv');
   }
 
   // ================= TABS =================
