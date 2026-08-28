@@ -92,6 +92,8 @@
   html,body{margin:0;padding:0;}
   body{
     background:var(--bg);
+    background-image:radial-gradient(ellipse 1000px 480px at 50% -12%, var(--surface-2) 0%, var(--bg) 55%);
+    background-repeat:no-repeat;
     color:var(--ink);
     font-family:var(--font-body);
     -webkit-font-smoothing:antialiased;
@@ -102,6 +104,17 @@
   input,select{font-family:inherit;}
   ::selection{background:var(--primary-soft);}
 
+  .icon{width:1em;height:1em;display:inline-block;vertical-align:-0.15em;flex-shrink:0;
+    stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  .icon-lg{width:1.5em;height:1.5em;}
+
+  .avatar{
+    width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-weight:700;font-size:.76rem;flex-shrink:0;color:#fff;
+    letter-spacing:.2px;vertical-align:middle;
+  }
+  .avatar.sm{width:24px;height:24px;font-size:.62rem;margin-right:8px;}
+
   .wrap{max-width:1040px;margin:0 auto;padding:0 16px;}
 
   header.top{
@@ -109,8 +122,11 @@
     border-bottom:3px solid transparent;
     border-image:linear-gradient(90deg, var(--primary), var(--accent)) 1;
     position:sticky;top:0;z-index:20;
+    overflow:hidden;
   }
-  .top-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 14px;flex-wrap:wrap;}
+  .brand-watermark{position:absolute;inset:0;opacity:.09;pointer-events:none;z-index:0;}
+  .brand-watermark svg{width:100%;height:100%;display:block;}
+  .top-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 14px;flex-wrap:wrap;}
   .brand{display:flex;align-items:center;gap:10px;}
   .brand-emblem{height:34px;width:auto;flex-shrink:0;}
   .brand h1{
@@ -130,7 +146,7 @@
   }
   .stat-row{display:flex;gap:8px;flex-wrap:wrap;}
 
-  nav.tabs{display:flex;gap:4px;padding:0 16px;max-width:1040px;margin:0 auto;overflow-x:auto;}
+  nav.tabs{position:relative;z-index:1;display:flex;gap:4px;padding:0 16px;max-width:1040px;margin:0 auto;overflow-x:auto;}
   nav.tabs button{
     appearance:none;border:none;background:none;cursor:pointer;
     padding:11px 14px;font-size:.92rem;font-weight:600;color:var(--ink-soft);
@@ -152,7 +168,8 @@
   }
   .controls-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
   .field{display:flex;flex-direction:column;gap:4px;min-width:0;max-width:100%;flex:1 1 150px;}
-  .field label{font-size:.72rem;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .field label{display:flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .field label .icon{width:.95em;height:.95em;}
   select,input[type=text],input[type=date],input[type=search],input[type=tel],input[type=number],input[type=password]{
     border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;
     background:var(--surface);color:var(--ink);font-size:.9rem;min-height:38px;
@@ -188,22 +205,55 @@
     color:var(--ink-soft);margin:14px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--border);
   }
   .class-group-header:first-child{margin-top:0;}
-  .stu-row{
-    display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);
-    border-radius:var(--radius-sm);background:var(--surface);
+  .stu-row{position:relative;border-radius:var(--radius-sm);}
+  .stu-row-inner{
+    position:relative;z-index:1;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);
+    border-radius:var(--radius-sm);background:var(--surface);touch-action:pan-y;
   }
-  .stu-main{flex:1;min-width:0;}
+  .swipe-reveal{
+    position:absolute;inset:0;border-radius:var(--radius-sm);opacity:0;pointer-events:none;
+  }
+  .swipe-reveal .icon-wrap{
+    position:absolute;inset:0;display:flex;align-items:center;opacity:0;color:#fff;
+  }
+  .swipe-reveal .icon-wrap.check{justify-content:flex-start;padding-left:22px;}
+  .swipe-reveal .icon-wrap.cross{justify-content:flex-end;padding-right:22px;}
+  .stu-row.swiping-present .swipe-reveal{opacity:1;background:var(--present);}
+  .stu-row.swiping-present .swipe-reveal .icon-wrap.check{opacity:1;}
+  .stu-row.swiping-absent .swipe-reveal{opacity:1;background:var(--absent);}
+  .stu-row.swiping-absent .swipe-reveal .icon-wrap.cross{opacity:1;}
+  .stu-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;}
+  .stu-text{min-width:0;}
   .stu-name{font-weight:600;font-size:.94rem;}
   .stu-sub{font-size:.78rem;color:var(--ink-soft);margin-top:1px;}
   .chip{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;}
   .chip.review{background:var(--accent-soft);color:var(--accent-soft-ink);}
-  .mark-toggle{display:flex;gap:6px;flex-shrink:0;}
-  .mark-btn{
-    border:1.5px solid var(--border);background:var(--surface);border-radius:var(--radius-btn);
-    padding:8px 14px;font-size:.8rem;font-weight:700;cursor:pointer;min-width:76px;text-align:center;
+
+  .mark-toggle{display:flex;flex-shrink:0;border:1.5px solid var(--border);border-radius:999px;overflow:hidden;}
+  .mark-seg{
+    border:none;background:var(--surface);color:var(--ink-faint);cursor:pointer;
+    width:42px;height:38px;display:flex;align-items:center;justify-content:center;font-size:1.05rem;
   }
-  .mark-btn.present.on{background:var(--present-soft);border-color:var(--present);color:var(--present);}
-  .mark-btn.absent.on{background:var(--absent-soft);border-color:var(--absent);color:var(--absent);}
+  .mark-seg+.mark-seg{border-left:1.5px solid var(--border);}
+  .mark-seg.present.on{background:var(--present-soft);color:var(--present);}
+  .mark-seg.absent.on{background:var(--absent-soft);color:var(--absent);}
+  .mark-seg.just-set{animation:markPop .32s ease;}
+  .mark-seg.present.just-set .icon{stroke-dasharray:22;stroke-dashoffset:22;animation:drawCheck .32s ease .02s forwards;}
+  @keyframes markPop{ 0%{transform:scale(1);} 40%{transform:scale(1.22);} 100%{transform:scale(1);} }
+  @keyframes drawCheck{ to{stroke-dashoffset:0;} }
+  @media (prefers-reduced-motion: reduce){
+    .mark-seg.just-set{animation:none;}
+    .mark-seg.present.just-set .icon{animation:none;stroke-dashoffset:0;}
+  }
+
+  .mark-progress{display:flex;align-items:center;gap:12px;}
+  .progress-ring{flex-shrink:0;}
+  .progress-ring .ring-bg{fill:none;stroke:var(--surface-2);stroke-width:5;}
+  .progress-ring .ring-fg{fill:none;stroke:var(--present);stroke-width:5;stroke-linecap:round;
+    transition:stroke-dashoffset .45s ease;}
+  .mark-progress-text{display:flex;flex-direction:column;line-height:1.25;}
+  .mark-progress-text .n{font-family:var(--font-display);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums;}
+  .mark-progress-text .lbl{font-size:.76rem;color:var(--ink-soft);}
 
   .save-bar{
     position:fixed;left:0;right:0;bottom:0;z-index:30;
@@ -231,10 +281,8 @@
   .pct.low{color:var(--absent);}
   .pct.mid{color:var(--accent);}
   .pct.high{color:var(--present);}
-  .dots{display:flex;gap:3px;}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--unmarked);flex-shrink:0;}
-  .dot.p{background:var(--present);}
-  .dot.a{background:var(--absent);}
+  .sparkline{display:block;flex-shrink:0;}
+  .sparkline rect{transition:height .2s ease, y .2s ease;}
 
   .grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:16px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
@@ -245,6 +293,9 @@
   .detail-item label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:3px;}
 
   .empty-state{text-align:center;padding:40px 16px;color:var(--ink-soft);}
+  .empty-state .icon{width:2.2rem;height:2.2rem;color:var(--ink-faint);margin-bottom:10px;stroke-width:1.5;}
+  .empty-state .title{font-family:var(--font-display);font-weight:600;color:var(--ink);font-size:1rem;margin-bottom:3px;}
+  .empty-state .sub{font-size:.84rem;max-width:320px;margin:0 auto;line-height:1.5;}
   .toast{
     position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-12px);
     background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:.85rem;
@@ -324,12 +375,32 @@
   th.sortable.active .arrow{opacity:1;}
 </style>
 <body>
+  <svg style="display:none" aria-hidden="true">
+    <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 21s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+    <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.7C4 4.76 4.76 4 5.7 4H12v16H5.7A1.7 1.7 0 0 1 4 18.3V5.7z"/><path d="M20 5.7c0-.94-.76-1.7-1.7-1.7H12v16h6.3c.94 0 1.7-.76 1.7-1.7V5.7z"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></symbol>
+    <symbol id="icon-cross" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="icon-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3.3-6.95"/><path d="M21 3.5V9h-5.5"/></symbol>
+    <symbol id="icon-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4.5h11.5L14 9l2.5 4.5H5"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.85-4.85"/></symbol>
+    <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M15.7 14.3c2.6.3 4.6 2.5 4.6 5.2"/></symbol>
+    <symbol id="icon-swipe" viewBox="0 0 24 24"><path d="M3 12h14"/><path d="M13 7l4.5 5-4.5 5"/></symbol>
+  </svg>
+
   <div id="gate-screen" class="gate-wrap"></div>
 
   <div id="app-shell" hidden>
     <div class="signedin-bar" id="signedin-bar"></div>
     <div class="sync-banner" id="sync-banner" hidden role="status" aria-live="polite"></div>
     <header class="top">
+      <div class="brand-watermark" aria-hidden="true">
+        <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+          <defs><linearGradient id="wmGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="var(--primary)"/><stop offset="1" stop-color="var(--accent)"/>
+          </linearGradient></defs>
+          <path d="M-20 85 Q 90 15 180 60 T 420 25" stroke="url(#wmGrad)" stroke-width="14" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="wrap top-inner">
         <div class="brand">
           <img class="brand-emblem" id="brand-emblem" alt="Akshar Paaul emblem">
@@ -425,6 +496,50 @@
   function uniqSorted(arr){
     return Array.from(new Set(arr.filter(Boolean))).sort(function(a,b){return a.localeCompare(b);});
   }
+  function icon(name, cls){
+    return '<svg class="icon'+(cls?' '+cls:'')+'" aria-hidden="true"><use href="#icon-'+name+'"></use></svg>';
+  }
+  function fieldLabel(iconName, text){
+    return '<label>'+icon(iconName)+' '+esc(text)+'</label>';
+  }
+  // ---------- avatars: a soft, brand-adjacent palette, colour picked by centre so a
+  // classroom reads as one visual group at a glance rather than a wall of plain rows ----------
+  var AVATAR_PALETTE = ['#1f7a9c','#c1266b','#8a5a2b','#3f8a4f','#6a53a8','#b3811f','#1f8f86','#a13f7a'];
+  function hashStr(s){
+    var h = 0;
+    for(var i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+  function initials(name){
+    var parts = String(name||'').trim().split(/\s+/).filter(Boolean);
+    if(!parts.length) return '?';
+    var a = parts[0][0];
+    var b = parts.length>1 ? parts[parts.length-1][0] : '';
+    return (a+b).toUpperCase();
+  }
+  function avatarHtml(name, seed, sizeCls){
+    var color = AVATAR_PALETTE[hashStr(seed||name||'?') % AVATAR_PALETTE.length];
+    return '<div class="avatar'+(sizeCls?' '+sizeCls:'')+'" style="background:'+color+';" aria-hidden="true">'+esc(initials(name))+'</div>';
+  }
+  // A per-date bar strip standing in for the old row of flat dots — present days
+  // read as tall green bars, absent as short red ones, so a trailing-off student
+  // is visible as a pattern rather than something you'd have to hover to notice.
+  function sparklineHtml(sid, dates){
+    if(!dates.length) return '<span style="color:var(--ink-faint);font-size:.78rem;">—</span>';
+    var w=10, gap=3, h=22;
+    var totalW = dates.length*w + (dates.length-1)*gap;
+    var bars = dates.map(function(d, i){
+      var v = attVal(sid, d);
+      var by = attBy(sid, d);
+      var frac = v===1 ? 1 : (v===0 ? 0.4 : 0.12);
+      var barH = Math.round(h*frac);
+      var color = v===1 ? 'var(--present)' : (v===0 ? 'var(--absent)' : 'var(--unmarked)');
+      var title = d+': '+(v===1?'present':v===0?'absent':'unmarked')+(by ? ' · marked by '+by : '');
+      var x = i*(w+gap);
+      return '<rect x="'+x+'" y="'+(h-barH)+'" width="'+w+'" height="'+barH+'" rx="2.5" fill="'+color+'"><title>'+esc(title)+'</title></rect>';
+    }).join('');
+    return '<svg class="sparkline" width="'+totalW+'" height="'+h+'" viewBox="0 0 '+totalW+' '+h+'">'+bars+'</svg>';
+  }
   function centres(){ return uniqSorted(STATE.roster.map(function(s){return s.centre;})); }
   function teachers(){ return uniqSorted(STATE.roster.map(function(s){return s.teacher;})); }
   function classSortKey(std){
@@ -508,13 +623,35 @@
 
   // ---------- in-app modals (replace window.confirm / window.prompt) ----------
   var modalOverlay = document.getElementById('modal-overlay');
+  var modalPreviousFocus = null;
   function closeModal(){
     modalOverlay.setAttribute('hidden','');
     modalOverlay.innerHTML = '';
+    var toRestore = modalPreviousFocus;
+    modalPreviousFocus = null;
+    // Give focus back to whatever triggered the modal, so keyboard/screen-reader
+    // users land back where they were instead of at the top of the page.
+    if(toRestore && typeof toRestore.focus === 'function'){
+      try{ toRestore.focus(); }catch(e){}
+    }
+  }
+  // Keeps Tab/Shift+Tab cycling only through the modal's own controls, so
+  // keyboard focus can't slip out to the page underneath while it's open.
+  function trapModalTab(e){
+    if(e.key !== 'Tab') return;
+    var focusables = modalOverlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if(!focusables.length) return;
+    var first = focusables[0], last = focusables[focusables.length-1];
+    if(e.shiftKey && document.activeElement === first){
+      e.preventDefault(); last.focus();
+    } else if(!e.shiftKey && document.activeElement === last){
+      e.preventDefault(); first.focus();
+    }
   }
   // Returns a Promise<boolean> — true if the person confirmed, false if they cancelled.
   function showConfirmModal(opts){
     return new Promise(function(resolve){
+      modalPreviousFocus = document.activeElement;
       var danger = !!opts.danger;
       modalOverlay.innerHTML =
         '<div class="modal-card" role="document">'
@@ -526,7 +663,10 @@
         + '</div></div>';
       modalOverlay.removeAttribute('hidden');
       function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
-      function onKey(e){ if(e.key==='Escape') finish(false); }
+      function onKey(e){
+        if(e.key==='Escape'){ finish(false); return; }
+        trapModalTab(e);
+      }
       document.addEventListener('keydown', onKey);
       document.getElementById('modal-cancel').addEventListener('click', function(){ finish(false); });
       document.getElementById('modal-confirm').addEventListener('click', function(){ finish(true); });
@@ -536,6 +676,7 @@
   // Returns a Promise<string|null> — the trimmed text entered, or null if cancelled/empty.
   function showPromptModal(opts){
     return new Promise(function(resolve){
+      modalPreviousFocus = document.activeElement;
       modalOverlay.innerHTML =
         '<div class="modal-card" role="document">'
         + '<h3>'+esc(opts.title||'')+'</h3>'
@@ -549,8 +690,9 @@
       var input = document.getElementById('modal-input');
       function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
       function onKey(e){
-        if(e.key==='Escape') finish(null);
-        if(e.key==='Enter'){ e.preventDefault(); finish(input.value.trim() || null); }
+        if(e.key==='Escape'){ finish(null); return; }
+        if(e.key==='Enter'){ e.preventDefault(); finish(input.value.trim() || null); return; }
+        trapModalTab(e);
       }
       document.addEventListener('keydown', onKey);
       document.getElementById('modal-cancel').addEventListener('click', function(){ finish(null); });
@@ -564,10 +706,10 @@
     var el = document.getElementById('header-stats');
     var needsReview = STATE.roster.filter(function(s){return s.needs_review;}).length;
     var parts = [];
-    parts.push('<span class="stat-pill">'+STATE.roster.length+' students</span>');
-    parts.push('<span class="stat-pill">'+centres().length+' centres</span>');
+    parts.push('<span class="stat-pill">'+icon('users')+' '+STATE.roster.length+' students</span>');
+    parts.push('<span class="stat-pill">'+icon('pin')+' '+centres().length+' centres</span>');
     if(needsReview>0){
-      parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+needsReview+' need review</button>');
+      parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+icon('flag')+' '+needsReview+' need review</button>');
     }
     el.innerHTML = parts.join('');
     var jumpBtn = document.getElementById('review-jump');
@@ -595,6 +737,85 @@
     });
   }
 
+  // Shared by the tap toggle and the swipe gesture below, so both paths write
+  // through the same offline-safe persistWrite() call.
+  var lastMarkAction = null;
+  async function setMark(sid, act){
+    var student = studentsById()[sid];
+    if(!student) return;
+    var cur = attVal(sid, markFilters.date);
+    var newVal = act==='present' ? 1 : 0;
+    var docId = sid+'_'+markFilters.date;
+    var item, resultVal;
+    if(cur === newVal){
+      clearAttendanceEntry(sid, markFilters.date);
+      item = {type:'delete', col:'attendance', docId:docId};
+      resultVal = null;
+    } else {
+      var data = {studentId:sid, centre:student.centre, date:markFilters.date, v:newVal, by:IDENTITY.name, at:new Date().toISOString()};
+      mergeAttendanceDoc(data);
+      item = {type:'set', col:'attendance', docId:docId, data:data};
+      resultVal = newVal;
+    }
+    lastMarkAction = {sid:sid, val:resultVal};
+    renderMark();
+    var ok = await persistWrite(item);
+    if(!ok) showToast('Saved on this device — will sync when back online.');
+  }
+  // A quick swipe left/right on a roster row marks absent/present without having
+  // to land a tap on the small toggle — meant for the common case of working
+  // down a long list one student at a time on a phone.
+  function attachSwipe(rowEl, sid){
+    var inner = rowEl.querySelector('.stu-row-inner');
+    var THRESHOLD = 64;
+    var dragging=false, decided=false, horizontal=false, startX=0, startY=0;
+    function reset(){
+      inner.style.transition = 'transform .2s ease';
+      inner.style.transform = 'translateX(0)';
+      rowEl.classList.remove('swiping-present','swiping-absent');
+    }
+    // Pointer capture is grabbed only once a horizontal drag is confirmed
+    // (not on every pointerdown) so a plain tap on the toggle buttons keeps
+    // dispatching a normal click instead of being swallowed by the row.
+    var pointerId = null;
+    rowEl.addEventListener('pointerdown', function(e){
+      if(e.pointerType==='mouse' && e.button!==0) return;
+      dragging=true; decided=false; horizontal=false;
+      startX=e.clientX; startY=e.clientY;
+      pointerId = e.pointerId;
+      inner.style.transition='none';
+    });
+    rowEl.addEventListener('pointermove', function(e){
+      if(!dragging) return;
+      var dx=e.clientX-startX, dy=e.clientY-startY;
+      if(!decided){
+        if(Math.abs(dx)<8 && Math.abs(dy)<8) return;
+        decided=true; horizontal = Math.abs(dx)>Math.abs(dy);
+        if(!horizontal){ dragging=false; return; }
+        try{ rowEl.setPointerCapture(pointerId); }catch(err){}
+      }
+      if(!horizontal) return;
+      e.preventDefault();
+      var clamped = Math.max(-110, Math.min(110, dx));
+      inner.style.transform = 'translateX('+clamped+'px)';
+      rowEl.classList.toggle('swiping-present', clamped>28);
+      rowEl.classList.toggle('swiping-absent', clamped<-28);
+    });
+    function finish(e){
+      if(!dragging) return;
+      dragging=false;
+      var dx = e.clientX-startX;
+      var committed = null;
+      if(horizontal){
+        if(dx>THRESHOLD) committed='present';
+        else if(dx<-THRESHOLD) committed='absent';
+      }
+      reset();
+      if(committed) setMark(sid, committed);
+    }
+    rowEl.addEventListener('pointerup', finish);
+    rowEl.addEventListener('pointercancel', reset);
+  }
   function renderMark(){
     var el = document.getElementById('panel-mark');
     var cList = centres();
@@ -610,9 +831,9 @@
     html += '<h2 class="section-title">Mark attendance</h2>';
     html += '<div class="controls-row">';
     if(locked){
-      html += '<div class="field"><label>Centre</label><div class="locked-value">'+esc(shortCentre(markFilters.centre))+'</div></div>';
+      html += '<div class="field">'+fieldLabel('pin','Centre')+'<div class="locked-value">'+esc(shortCentre(markFilters.centre))+'</div></div>';
     } else {
-      html += '<div class="field"><label>Centre</label><select id="mk-centre">';
+      html += '<div class="field">'+fieldLabel('pin','Centre')+'<select id="mk-centre">';
       cList.forEach(function(c){
         html += '<option value="'+esc(c)+'"'+(c===markFilters.centre?' selected':'')+'>'+esc(shortCentre(c))+'</option>';
       });
@@ -621,7 +842,7 @@
     var centreList = STATE.roster.filter(function(s){ return s.centre===markFilters.centre; });
     var classList = classesIn(centreList);
     if(markFilters.std && classList.indexOf(markFilters.std)===-1) markFilters.std = '';
-    html += '<div class="field"><label>Class</label><select id="mk-std"><option value="">All classes</option>';
+    html += '<div class="field">'+fieldLabel('book','Class')+'<select id="mk-std"><option value="">All classes</option>';
     classList.forEach(function(k){
       html += '<option value="'+esc(k)+'"'+(k===markFilters.std?' selected':'')+'>'+esc(k)+'</option>';
     });
@@ -639,8 +860,17 @@
       return attEntry(s.id, markFilters.date) !== undefined;
     }).length;
 
+    var progFrac = list.length ? markedCount/list.length : 0;
+    var ringR = 18, ringC = 2*Math.PI*ringR;
+    var ringOffset = ringC*(1-progFrac);
     html += '<div class="controls-row" style="justify-content:space-between;">';
-    html += '<span class="stat-pill">'+markedCount+' / '+list.length+' marked for '+esc(fmtDateLabel(markFilters.date))+'</span>';
+    html += '<div class="mark-progress">';
+    html += '<svg class="progress-ring" width="44" height="44" viewBox="0 0 44 44" role="img" aria-label="'+markedCount+' of '+list.length+' marked">';
+    html += '<circle class="ring-bg" cx="22" cy="22" r="'+ringR+'"></circle>';
+    html += '<circle class="ring-fg" cx="22" cy="22" r="'+ringR+'" stroke-dasharray="'+ringC.toFixed(2)+'" stroke-dashoffset="'+ringOffset.toFixed(2)+'" transform="rotate(-90 22 22)"></circle>';
+    html += '</svg>';
+    html += '<div class="mark-progress-text"><span class="n">'+markedCount+' of '+list.length+'</span><span class="lbl">marked for '+esc(fmtDateLabel(markFilters.date))+'</span></div>';
+    html += '</div>';
     html += '<span style="display:flex;gap:8px;">';
     html += '<button class="btn small" id="mk-allpresent">Mark all present</button>';
     html += '<button class="btn ghost small" id="mk-clear">Clear this date</button>';
@@ -648,7 +878,7 @@
 
     html += '<div class="roster-list" id="mk-list">';
     if(list.length===0){
-      html += '<div class="empty-state">No students found for this filter.</div>';
+      html += '<div class="empty-state">'+icon('search')+'<div class="title">No students match this filter</div><div class="sub">Try a different class or centre, or double-check the date above.</div></div>';
     }
     var lastGroupStd = null;
     var showGroups = !markFilters.std;
@@ -660,11 +890,14 @@
       var v = attVal(s.id, markFilters.date);
       var isP = v === 1, isA = v === 0;
       html += '<div class="stu-row" data-sid="'+s.id+'">';
-      html += '<div class="stu-main"><div class="stu-name">'+esc(s.name)+'</div>';
-      html += '<div class="stu-sub">'+esc(s.std||'—')+(s.teacher?' · '+esc(s.teacher):'')+'</div></div>';
+      html += '<div class="swipe-reveal"><span class="icon-wrap check">'+icon('check','icon-lg')+'</span><span class="icon-wrap cross">'+icon('cross','icon-lg')+'</span></div>';
+      html += '<div class="stu-row-inner">';
+      html += '<div class="stu-main">'+avatarHtml(s.name, s.centre)+'<div class="stu-text"><div class="stu-name">'+esc(s.name)+'</div>';
+      html += '<div class="stu-sub">'+esc(s.std||'—')+(s.teacher?' · '+esc(s.teacher):'')+'</div></div></div>';
       html += '<div class="mark-toggle">';
-      html += '<button class="mark-btn present'+(isP?' on':'')+'" data-act="present">Present</button>';
-      html += '<button class="mark-btn absent'+(isA?' on':'')+'" data-act="absent">Absent</button>';
+      html += '<button class="mark-seg absent'+(isA?' on':'')+'" data-act="absent" aria-pressed="'+isA+'" aria-label="Mark '+esc(s.name)+' absent">'+icon('cross')+'</button>';
+      html += '<button class="mark-seg present'+(isP?' on':'')+'" data-act="present" aria-pressed="'+isP+'" aria-label="Mark '+esc(s.name)+' present">'+icon('check')+'</button>';
+      html += '</div>';
       html += '</div></div>';
     });
     html += '</div></div>';
@@ -733,29 +966,28 @@
       }
       showToast(ok ? 'Cleared.' : 'Cleared on this device — will sync when back online.');
     });
-    el.querySelectorAll('.mark-btn').forEach(function(btn){
-      btn.addEventListener('click', async function(){
+    el.querySelectorAll('.mark-seg').forEach(function(btn){
+      btn.addEventListener('click', function(){
         var row = btn.closest('.stu-row');
         var sid = row.getAttribute('data-sid');
-        var student = studentsById()[sid];
         var act = btn.getAttribute('data-act');
-        var cur = attVal(sid, markFilters.date);
-        var newVal = act==='present' ? 1 : 0;
-        var docId = sid+'_'+markFilters.date;
-        var item;
-        if(cur === newVal){
-          clearAttendanceEntry(sid, markFilters.date);
-          item = {type:'delete', col:'attendance', docId:docId};
-        } else {
-          var data = {studentId:sid, centre:student.centre, date:markFilters.date, v:newVal, by:IDENTITY.name, at:new Date().toISOString()};
-          mergeAttendanceDoc(data);
-          item = {type:'set', col:'attendance', docId:docId, data:data};
-        }
-        renderMark();
-        var ok = await persistWrite(item);
-        if(!ok) showToast('Saved on this device — will sync when back online.');
+        setMark(sid, act);
       });
     });
+    el.querySelectorAll('.stu-row').forEach(function(row){
+      attachSwipe(row, row.getAttribute('data-sid'));
+    });
+    // Give the just-tapped/swiped segment a quick pop (and, for "present", a
+    // self-drawing checkmark) so a repeated, high-frequency action feels like
+    // a satisfying little event rather than a flat colour swap.
+    if(lastMarkAction){
+      var la = lastMarkAction; lastMarkAction = null;
+      if(la.val===1 || la.val===0){
+        var segCls = la.val===1 ? 'present' : 'absent';
+        var seg = el.querySelector('.stu-row[data-sid="'+la.sid+'"] .mark-seg.'+segCls+'.on');
+        if(seg) seg.classList.add('just-set');
+      }
+    }
   }
 
   // ================= TAB: STUDENTS & RECORDS =================
@@ -841,18 +1073,18 @@
     var html = '<div class="card">';
     html += '<h2 class="section-title">Students &amp; records</h2>';
     html += '<div class="controls-row">';
-    html += '<div class="field"><label>Search</label><input type="search" id="st-q" placeholder="Student name…" value="'+esc(stuFilters.q)+'"></div>';
+    html += '<div class="field">'+fieldLabel('search','Search')+'<input type="search" id="st-q" placeholder="Student name…" value="'+esc(stuFilters.q)+'"></div>';
     if(IDENTITY && IDENTITY.role==='coordinator'){
-      html += '<div class="field"><label>Centre</label><select id="st-centre"><option value="">All centres</option>';
+      html += '<div class="field">'+fieldLabel('pin','Centre')+'<select id="st-centre"><option value="">All centres</option>';
       cList.forEach(function(c){ html += '<option value="'+esc(c)+'"'+(c===stuFilters.centre?' selected':'')+'>'+esc(shortCentre(c))+'</option>'; });
       html += '</select></div>';
     }
-    html += '<div class="field"><label>Teacher</label><select id="st-teacher"><option value="">All teachers</option>';
+    html += '<div class="field">'+fieldLabel('users','Teacher')+'<select id="st-teacher"><option value="">All teachers</option>';
     tList.forEach(function(t){ html += '<option value="'+esc(t)+'"'+(t===stuFilters.teacher?' selected':'')+'>'+esc(t)+'</option>'; });
     html += '</select></div>';
     var stuScope = STATE.roster.filter(function(s){ return !stuFilters.centre || s.centre===stuFilters.centre; });
     var stClassList = classesIn(stuScope);
-    html += '<div class="field"><label>Class</label><select id="st-std"><option value="">All classes</option>';
+    html += '<div class="field">'+fieldLabel('book','Class')+'<select id="st-std"><option value="">All classes</option>';
     stClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===stuFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
@@ -901,6 +1133,10 @@
 
     html += '<div class="controls-row" style="justify-content:space-between;"><span class="stat-pill">'+list.length+' students</span></div>';
 
+    if(list.length===0){
+      html += '<div class="empty-state">'+icon('search')+'<div class="title">No students match this filter</div><div class="sub">Try clearing the search, or switching centre / class / teacher above.</div></div>';
+    }
+    if(list.length>0){
     html += '<div class="table-scroll"><table><thead><tr>';
     STU_COLUMNS.forEach(function(col){
       var key=col[0], label=col[1];
@@ -911,11 +1147,12 @@
     });
     html += '<th></th>';
     html += '</tr></thead><tbody id="st-tbody">';
-    list.forEach(function(s){
+    var visibleList = list.slice(0, 400);
+    visibleList.forEach(function(s){
       var stats = studentStats(s.id);
       var pctTxt = stats.pct===null ? '—' : stats.pct+'%';
       html += '<tr data-sid="'+s.id+'">';
-      html += '<td class="name-cell">'+esc(s.name)+(s.needs_review?' <span class="chip review">Review</span>':'')+'</td>';
+      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm')+esc(s.name)+(s.needs_review?' <span class="chip review">'+icon('flag')+' Review</span>':'')+'</td>';
       html += '<td>'+esc(shortCentre(s.centre))+'</td>';
       html += '<td>'+(s.teacher?esc(s.teacher):'<em style="color:var(--accent-soft-ink);">unassigned</em>')+'</td>';
       html += '<td>'+esc(s.std||'—')+'</td>';
@@ -937,7 +1174,12 @@
         html += '</div></td></tr>';
       }
     });
-    html += '</tbody></table></div></div>';
+    html += '</tbody></table></div>';
+    if(list.length>400){
+      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Showing 400 of '+list.length+' students. Narrow the search, centre, teacher, or class filter above to see the rest.</p>';
+    }
+    }
+    html += '</div>';
 
     el.innerHTML = html;
 
@@ -1112,7 +1354,7 @@
     html += '<h2 class="section-title" style="margin:0;">Students by attendance</h2>';
     html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">Refresh</button><button class="btn ghost small" id="rp-export-detailed">Export CSV (per-date)</button><button class="btn small" id="rp-export">Export CSV</button></span>';
     html += '</div>';
-    html += '<div class="controls-row"><div class="field"><label>Class</label><select id="rp-std"><option value="">All classes</option>';
+    html += '<div class="controls-row"><div class="field">'+fieldLabel('book','Class')+'<select id="rp-std"><option value="">All classes</option>';
     rpClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===rpFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div></div>';
 
@@ -1138,16 +1380,10 @@
     rows.slice(0,400).forEach(function(r){
       var s=r.s, st=r.st;
       var pctTxt = st.pct===null ? 'No records yet' : st.pct+'%';
-      var recentDots = st.dates.slice(-10).map(function(d){
-        var v = attVal(s.id, d);
-        var by = attBy(s.id, d);
-        var title = d+': '+(v===1?'present':'absent')+(by ? ' · marked by '+by : '');
-        return '<span class="dot '+(v===1?'p':'a')+'" title="'+esc(title)+'"></span>';
-      }).join('');
-      html += '<tr><td class="name-cell">'+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
+      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm')+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
       html += '<td>'+st.present+'</td><td>'+st.total+'</td>';
       html += '<td class="pct '+pctClass(st.pct)+'">'+pctTxt+'</td>';
-      html += '<td><div class="dots">'+(recentDots||'<span style="color:var(--ink-faint);font-size:.78rem;">—</span>')+'</div></td></tr>';
+      html += '<td>'+sparklineHtml(s.id, st.dates.slice(-10))+'</td></tr>';
     });
     html += '</tbody></table></div>';
     if(rows.length>400){
@@ -1386,9 +1622,9 @@
     }
     el.removeAttribute('hidden');
     if(!navigator.onLine){
-      el.innerHTML = '<span>You\'re offline. '+(PENDING_QUEUE.length ? PENDING_QUEUE.length+' change'+(PENDING_QUEUE.length>1?'s':'')+' will sync automatically once you\'re back online.' : 'Changes will be saved and synced once you\'re back online.')+'</span>';
+      el.innerHTML = '<span>'+icon('sync')+' You\'re offline. '+(PENDING_QUEUE.length ? PENDING_QUEUE.length+' change'+(PENDING_QUEUE.length>1?'s':'')+' will sync automatically once you\'re back online.' : 'Changes will be saved and synced once you\'re back online.')+'</span>';
     } else {
-      el.innerHTML = '<span>'+PENDING_QUEUE.length+' change'+(PENDING_QUEUE.length>1?'s':'')+' not yet synced.</span><button class="btn ghost small" id="sync-retry-btn">Retry now</button>';
+      el.innerHTML = '<span>'+icon('sync')+' '+PENDING_QUEUE.length+' change'+(PENDING_QUEUE.length>1?'s':'')+' not yet synced.</span><button class="btn ghost small" id="sync-retry-btn">Retry now</button>';
       var retryBtn = document.getElementById('sync-retry-btn');
       if(retryBtn) retryBtn.addEventListener('click', flushPendingQueue);
     }
@@ -1445,7 +1681,7 @@
       var snap = await getDocs(q);
       snap.forEach(function(docSnap){ mergeAttendanceDoc(docSnap.data()); });
       ATTENDANCE_HISTORY_LOADED = true;
-      renderStudents(); renderReports();
+      renderMark(); renderStudents(); renderReports();
     }catch(e){ showToast('Could not load attendance history — check your connection.'); }
   }
 
