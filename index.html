@@ -7,6 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  // Applied before first paint so a saved preference doesn't flash the wrong
+  // theme for a moment. When nothing is saved, the CSS media query handles it
+  // based on the device's own light/dark setting.
+  (function(){
+    try{
+      var saved = localStorage.getItem('ap_theme');
+      if(saved==='light' || saved==='dark'){ document.documentElement.setAttribute('data-theme', saved); }
+    }catch(e){}
+  })();
+</script>
 <style>
   /* Palette sampled directly from the Akshar Paaul logo (dancing children in
      brand blue + magenta, the bilingual अ/A open book, its sage-cream pages
@@ -53,7 +64,7 @@
       --primary-ink:#0b2634;
       --primary-soft:#1c333d;
       --primary-soft-ink:#93d3f0;
-      --accent:#f562a0;
+      --accent:#f56aa5;
       --accent-soft:#3d1f2c;
       --accent-soft-ink:#f8a3c6;
       --brand-brown:#c99461;
@@ -77,7 +88,7 @@
     --primary-ink:#0b2634;
     --primary-soft:#1c333d;
     --primary-soft-ink:#93d3f0;
-    --accent:#f562a0;
+    --accent:#f56aa5;
     --accent-soft:#3d1f2c;
     --accent-soft-ink:#f8a3c6;
     --brand-brown:#c99461;
@@ -277,6 +288,8 @@
   .editable{border-bottom:1.5px dashed var(--ink-faint);cursor:text;padding:1px 2px;border-radius:3px;}
   .editable:hover{background:var(--surface-2);}
   .editable.missing{color:var(--accent-soft-ink);font-style:italic;}
+  .locked-field{display:inline-flex;align-items:center;gap:5px;color:var(--ink-faint);font-style:italic;}
+  .locked-field .icon{width:.85em;height:.85em;}
   .pct{font-variant-numeric:tabular-nums;font-weight:700;}
   .pct.low{color:var(--absent);}
   .pct.mid{color:var(--accent);}
@@ -355,6 +368,23 @@
   .locked-value{border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;
     background:var(--surface-2);font-size:.9rem;min-height:38px;display:flex;align-items:center;}
 
+  .theme-toggle{
+    position:fixed;top:14px;right:14px;z-index:40;width:38px;height:38px;border-radius:50%;
+    border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
+    padding:0;transition:transform .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .theme-toggle:hover{color:var(--primary);border-color:var(--primary);}
+  .theme-toggle:active{transform:scale(.92);}
+  .theme-toggle .icon{width:1.15em;height:1.15em;}
+  .theme-toggle .icon-moon{display:none;}
+  :root[data-theme="dark"] .theme-toggle .icon-sun{display:none;}
+  :root[data-theme="dark"] .theme-toggle .icon-moon{display:block;}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun{display:none;}
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon{display:block;}
+  }
+
   .modal-overlay{
     position:fixed;inset:0;background:rgba(20,16,10,.5);display:flex;align-items:center;justify-content:center;
     padding:20px;z-index:1000;
@@ -385,7 +415,15 @@
     <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.85-4.85"/></symbol>
     <symbol id="icon-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M15.7 14.3c2.6.3 4.6 2.5 4.6 5.2"/></symbol>
     <symbol id="icon-swipe" viewBox="0 0 24 24"><path d="M3 12h14"/><path d="M13 7l4.5 5-4.5 5"/></symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M2.5 12h3M18.5 12h3M4.4 19.6l2.1-2.1M17.5 6.5l2.1-2.1"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 14.3A8.3 8.3 0 1 1 9.7 4a6.7 6.7 0 0 0 10.3 10.3z"/></symbol>
   </svg>
+
+  <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+    <svg class="icon icon-sun" aria-hidden="true"><use href="#icon-sun"></use></svg>
+    <svg class="icon icon-moon" aria-hidden="true"><use href="#icon-moon"></use></svg>
+  </button>
 
   <div id="gate-screen" class="gate-wrap"></div>
 
@@ -1022,6 +1060,12 @@
   // (mother's education, reading level, etc.) can be filled in afterwards
   // through the same "Details" edit panel used for review.
   var ADD_FIELDS = EDIT_FIELDS.slice(0, 9);
+  // A centre teacher only needs to identify a student and mark their attendance —
+  // a parent's phone number and education background aren't needed for that, so
+  // these stay coordinator-only in the Details panel. Centre also gets special
+  // handling: teachers see the short centre name (matches everywhere else in the
+  // app), not the full stored value, which typically carries the street address.
+  var COORDINATOR_ONLY_FIELDS = ['contact', 'mother_edu', 'father_edu'];
 
   function pctClass(pct){
     if(pct===null) return '';
@@ -1160,12 +1204,21 @@
       html += '<td><button class="btn ghost small" data-expand="'+s.id+'">'+(stuFilters.expanded===s.id?'Close':'Details')+'</button></td>';
       html += '</tr>';
       if(stuFilters.expanded===s.id){
+        var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
         html += '<tr><td colspan="6"><div class="detail-panel" data-detail="'+s.id+'">';
         EDIT_FIELDS.forEach(function(pair){
           var key=pair[0], label=pair[1];
           var val = s[key];
           var lblId = 'lbl-'+s.id+'-'+key;
           html += '<div class="detail-item"><label id="'+lblId+'">'+label+'</label>';
+          if(isTeacherViewer && COORDINATOR_ONLY_FIELDS.indexOf(key)>-1){
+            html += '<span class="locked-field">'+icon('lock')+' Coordinator only</span></div>';
+            return;
+          }
+          if(isTeacherViewer && key==='centre'){
+            html += '<span>'+esc(shortCentre(val))+'</span></div>';
+            return;
+          }
           html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(val || 'tap to add')+'</span></div>';
         });
         if(IDENTITY && IDENTITY.role==='coordinator'){
@@ -1427,12 +1480,18 @@
     showToast('CSV downloaded.');
   }
   function exportCSV(){
-    var header = ['Name','Centre','Teacher','Std','Gender','Age','Medium','Contact','Funding Partner','Sessions Marked','Sessions Present','Attendance %','Needs Review'];
+    // Mirrors the Details-panel redaction: a centre teacher's export shouldn't
+    // hand over in bulk what the panel already hides one student at a time.
+    var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
+    var header = ['Name','Centre','Teacher','Std','Gender','Age','Medium'];
+    if(!isTeacherViewer) header.push('Contact');
+    header = header.concat(['Funding Partner','Sessions Marked','Sessions Present','Attendance %','Needs Review']);
     var lines = [header.join(',')];
     STATE.roster.forEach(function(s){
       var st = studentStats(s.id);
-      var row = [s.name, s.centre, s.teacher||'', s.std||'', s.gender||'', s.age||'', s.medium||'', s.contact||'', s.funding_partner||'',
-        st.total, st.present, st.pct===null?'':st.pct, s.needs_review?'Yes':'No'];
+      var row = [s.name, isTeacherViewer ? shortCentre(s.centre) : s.centre, s.teacher||'', s.std||'', s.gender||'', s.age||'', s.medium||''];
+      if(!isTeacherViewer) row.push(s.contact||'');
+      row = row.concat([s.funding_partner||'', st.total, st.present, st.pct===null?'':st.pct, s.needs_review?'Yes':'No']);
       lines.push(row.map(csvCell).join(','));
     });
     downloadCSV(lines, 'akshar-paaul-attendance.csv');
@@ -1450,10 +1509,11 @@
       showToast('No attendance marked yet for this list — nothing to export.');
       return;
     }
+    var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
     var header = ['Name','Centre','Teacher','Std'].concat(dates);
     var lines = [header.join(',')];
     list.forEach(function(s){
-      var row = [s.name, s.centre, s.teacher||'', s.std||''];
+      var row = [s.name, isTeacherViewer ? shortCentre(s.centre) : s.centre, s.teacher||'', s.std||''];
       dates.forEach(function(d){
         var v = attVal(s.id, d);
         row.push(v===1 ? 'P' : (v===0 ? 'A' : ''));
@@ -1562,6 +1622,31 @@
     document.getElementById('gate-screen').removeAttribute('hidden');
     renderGate();
   }
+
+  // ================= THEME TOGGLE =================
+  function isDarkActive(){
+    var attr = document.documentElement.getAttribute('data-theme');
+    if(attr==='dark') return true;
+    if(attr==='light') return false;
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  function initThemeToggle(){
+    var btn = document.getElementById('theme-toggle');
+    if(!btn) return;
+    function refreshLabel(){
+      var label = isDarkActive() ? 'Switch to light mode' : 'Switch to dark mode';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    }
+    refreshLabel();
+    btn.addEventListener('click', function(){
+      var next = isDarkActive() ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try{ localStorage.setItem('ap_theme', next); }catch(e){}
+      refreshLabel();
+    });
+  }
+  initThemeToggle();
 
   // ================= OFFLINE QUEUE =================
   // Every write in this app goes through persistWrite(). It tries the real
