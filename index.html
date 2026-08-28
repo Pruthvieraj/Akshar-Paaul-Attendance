@@ -168,6 +168,10 @@
   .btn.primary{background:var(--primary);border-color:var(--primary);color:var(--primary-ink);}
   .btn.primary:hover{filter:brightness(1.05);}
   .btn.ghost{border-color:transparent;background:transparent;}
+  .btn.danger{border-color:var(--absent);color:var(--absent);}
+  .btn.danger:hover{background:var(--absent-soft);}
+  .stat-pill.link{border:none;cursor:pointer;font-family:inherit;}
+  .stat-pill.link:hover{filter:brightness(.96);}
   .btn.small{padding:5px 11px;font-size:.78rem;}
   .btn:disabled{opacity:.45;cursor:default;}
 
@@ -490,9 +494,16 @@
     parts.push('<span class="stat-pill">'+STATE.roster.length+' students</span>');
     parts.push('<span class="stat-pill">'+centres().length+' centres</span>');
     if(needsReview>0){
-      parts.push('<span class="stat-pill" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+needsReview+' need review</span>');
+      parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+needsReview+' need review</button>');
     }
     el.innerHTML = parts.join('');
+    var jumpBtn = document.getElementById('review-jump');
+    if(jumpBtn){
+      jumpBtn.addEventListener('click', function(){
+        stuFilters.reviewOnly = true;
+        switchTab('students');
+      });
+    }
   }
 
   // ================= TAB: MARK ATTENDANCE =================
@@ -670,7 +681,7 @@
   }
 
   // ================= TAB: STUDENTS & RECORDS =================
-  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null };
+  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null, adding:false };
 
   var EDIT_FIELDS = [
     ['name','Name'], ['centre','Centre'], ['teacher','Teacher'], ['std','Std / Class'],
@@ -679,6 +690,10 @@
     ['start_level','Starting level'], ['end_level','Ending level'], ['reading_level','Reading level'],
     ['school_time','School time'], ['funding_partner','Funding partner']
   ];
+  // Shorter set asked for up front when adding a new student — the rest
+  // (mother's education, reading level, etc.) can be filled in afterwards
+  // through the same "Details" edit panel used for review.
+  var ADD_FIELDS = EDIT_FIELDS.slice(0, 9);
 
   function pctClass(pct){
     if(pct===null) return '';
@@ -701,6 +716,18 @@
       }
     }
     return {ok:true};
+  }
+  // A record needs review when any of the four core fields are missing, or
+  // when age/contact fail the light sanity check — used both when editing an
+  // existing student and right when a new one is added.
+  function computeNeedsReview(stu){
+    var basicsOk = !!(stu.gender && stu.age && stu.medium && stu.teacher);
+    var ageOk = validateField('age', stu.age||'').ok;
+    var contactOk = validateField('contact', stu.contact||'').ok;
+    return !basicsOk || !ageOk || !contactOk;
+  }
+  function genStudentId(){
+    return 's_' + Math.random().toString(16).slice(2,10);
   }
 
   function renderStudents(){
@@ -729,7 +756,35 @@
     stClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===stuFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn primary small" id="st-add-toggle">'+(stuFilters.adding ? 'Cancel' : '+ Add student')+'</button></div>';
     html += '</div>';
+
+    if(stuFilters.reviewOnly){
+      html += '<div class="banner"><span>These records are missing a required detail (gender, age, medium or teacher) or have an age/phone number that looks off. Tap <strong>Details</strong> on a student below, then tap any field to fix it — it saves as soon as you tap away.</span>'
+        + '<button class="btn ghost small" id="st-review-dismiss">Show all instead</button></div>';
+    }
+
+    if(stuFilters.adding){
+      html += '<div class="card" id="st-add-card" style="background:var(--surface-2);margin-bottom:16px;">';
+      html += '<h2 class="section-title" style="margin-top:0;">Add a new student</h2>';
+      ADD_FIELDS.forEach(function(pair){
+        var key = pair[0], label = pair[1];
+        if(key==='centre'){
+          if(IDENTITY && IDENTITY.role!=='coordinator'){
+            html += '<div class="detail-item"><label>Centre</label><span>'+esc(IDENTITY.centre)+'</span></div>';
+          } else {
+            html += '<div class="detail-item"><label for="add-f-centre">Centre</label><select id="add-f-centre">';
+            cList.forEach(function(c){ html += '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; });
+            html += '<option value="__new__">+ New centre…</option></select></div>';
+          }
+          return;
+        }
+        html += '<div class="detail-item"><label for="add-f-'+key+'">'+label+'</label><input type="text" id="add-f-'+key+'" data-field="'+key+'"></div>';
+      });
+      html += '<div class="controls-row" style="margin-top:10px;"><button class="btn primary" id="st-add-submit">Save student</button><button class="btn ghost" id="st-add-cancel">Cancel</button></div>';
+      html += '<p id="st-add-error" style="color:var(--absent);font-size:.82rem;margin:8px 0 0;"></p>';
+      html += '</div>';
+    }
 
     var list = STATE.roster.filter(function(s){
       if(stuFilters.q && s.name.toLowerCase().indexOf(stuFilters.q.toLowerCase())===-1) return false;
@@ -769,6 +824,9 @@
           html += '<div class="detail-item"><label id="'+lblId+'">'+label+'</label>';
           html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(val || 'tap to add')+'</span></div>';
         });
+        if(IDENTITY && IDENTITY.role==='coordinator'){
+          html += '<div class="controls-row" style="margin-top:6px;"><button class="btn danger small" data-delete="'+s.id+'">Delete student</button></div>';
+        }
         html += '</div></td></tr>';
       }
     });
@@ -793,10 +851,70 @@
     document.getElementById('st-teacher').addEventListener('change', function(e){ stuFilters.teacher = e.target.value; renderStudents(); });
     document.getElementById('st-std').addEventListener('change', function(e){ stuFilters.std = e.target.value; renderStudents(); });
     document.getElementById('st-review-toggle').addEventListener('click', function(){ stuFilters.reviewOnly = !stuFilters.reviewOnly; renderStudents(); });
+    var reviewDismissBtn = document.getElementById('st-review-dismiss');
+    if(reviewDismissBtn) reviewDismissBtn.addEventListener('click', function(){ stuFilters.reviewOnly = false; renderStudents(); });
+    document.getElementById('st-add-toggle').addEventListener('click', function(){ stuFilters.adding = !stuFilters.adding; renderStudents(); });
+    var addCancelBtn = document.getElementById('st-add-cancel');
+    if(addCancelBtn) addCancelBtn.addEventListener('click', function(){ stuFilters.adding = false; renderStudents(); });
+    var addSubmitBtn = document.getElementById('st-add-submit');
+    if(addSubmitBtn){
+      addSubmitBtn.addEventListener('click', async function(){
+        var errEl = document.getElementById('st-add-error');
+        errEl.textContent = '';
+        var data = {};
+        ADD_FIELDS.forEach(function(pair){
+          var key = pair[0];
+          if(key==='centre') return;
+          var fEl = document.getElementById('add-f-'+key);
+          data[key] = fEl ? fEl.value.trim() : '';
+        });
+        if(IDENTITY && IDENTITY.role!=='coordinator'){
+          data.centre = IDENTITY.centre;
+        } else {
+          var centreEl = document.getElementById('add-f-centre');
+          var centreVal = centreEl ? centreEl.value : '';
+          if(centreVal==='__new__'){
+            centreVal = window.prompt('New centre name:');
+            if(centreVal) centreVal = centreVal.trim();
+          }
+          data.centre = centreVal || '';
+        }
+        if(!data.name){ errEl.textContent = 'Name is required.'; return; }
+        if(!data.centre){ errEl.textContent = 'Centre is required.'; return; }
+        var ageCheck = validateField('age', data.age||'');
+        var contactCheck = validateField('contact', data.contact||'');
+        data.needs_review = computeNeedsReview(data);
+        var id = genStudentId();
+        addSubmitBtn.disabled = true;
+        STATE.roster.push(Object.assign({id:id}, data));
+        var ok = await persistWrite({type:'set', col:'students', docId:id, data:data});
+        stuFilters.adding = false;
+        if(!ageCheck.ok || !contactCheck.ok){
+          showToast('Student added, but flagged for review — ' + (!ageCheck.ok ? ageCheck.msg : contactCheck.msg));
+        } else {
+          showToast(ok ? 'Student added.' : 'Added on this device — will sync when back online.');
+        }
+        renderStudents();
+      });
+    }
     el.querySelectorAll('[data-expand]').forEach(function(btn){
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-expand');
         stuFilters.expanded = (stuFilters.expanded===id) ? null : id;
+        renderStudents();
+      });
+    });
+    el.querySelectorAll('[data-delete]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var id = btn.getAttribute('data-delete');
+        var stu = studentsById()[id];
+        if(!stu) return;
+        var confirmed = window.confirm('Delete '+stu.name+'? This removes their record from the roster and can\'t be undone. Their past attendance history is kept for reporting.');
+        if(!confirmed) return;
+        STATE.roster = STATE.roster.filter(function(s){ return s.id!==id; });
+        stuFilters.expanded = null;
+        var ok = await persistWrite({type:'delete', col:'students', docId:id});
+        showToast(ok ? 'Student deleted.' : 'Deleted on this device — will sync when back online.');
         renderStudents();
       });
     });
@@ -811,12 +929,8 @@
         if(stu[field] !== val){
           var patch = {}; patch[field] = val || null;
           var check = validateField(field, val);
-          if(field==='gender' || field==='age' || field==='medium' || field==='teacher'){
-            var merged = Object.assign({}, stu, patch);
-            patch.needs_review = !check.ok || !(merged.gender && merged.age && merged.medium && merged.teacher);
-          } else if(!check.ok){
-            patch.needs_review = true;
-          }
+          var merged = Object.assign({}, stu, patch);
+          patch.needs_review = computeNeedsReview(merged);
           Object.assign(stu, patch);
           var ok = await persistWrite({type:'update', col:'students', docId:sid, data:patch});
           if(!check.ok){ showToast(check.msg); }
