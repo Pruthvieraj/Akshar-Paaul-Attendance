@@ -444,6 +444,53 @@
   th.sortable:hover{color:var(--primary);}
   th.sortable .arrow{display:inline-block;margin-left:3px;opacity:.5;font-size:.75em;}
   th.sortable.active .arrow{opacity:1;}
+
+  /* ---- quick search ---- */
+  #qs-input{margin-bottom:10px;}
+  .qs-results{display:flex;flex-direction:column;gap:2px;max-height:46vh;overflow-y:auto;}
+  .qs-result{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    border:none;background:none;border-radius:var(--radius-sm);padding:8px;cursor:pointer;font-family:inherit;
+  }
+  .qs-result:hover, .qs-result:focus-visible{background:var(--surface-2);}
+  .qs-name{display:block;font-weight:600;font-size:.9rem;}
+  .qs-sub{display:block;font-size:.76rem;color:var(--ink-soft);}
+
+  /* ---- bulk selection (Students tab) ---- */
+  .bulk-toolbar{
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--primary-soft);color:var(--primary-soft-ink);
+    border-radius:var(--radius-sm);padding:9px 12px;margin-bottom:12px;font-size:.85rem;
+  }
+  .bulk-toolbar b{font-variant-numeric:tabular-nums;}
+  .bulk-toolbar .btn{margin-left:0;}
+  td.select-cell, th.select-cell{width:34px;text-align:center;}
+
+  /* ---- weekly digest ---- */
+  .digest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:6px;}
+  .digest-item{border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--surface);}
+  .digest-item .digest-num{font-family:var(--font-display);font-weight:700;font-size:1.15rem;}
+  .digest-item .digest-lbl{font-size:.78rem;color:var(--ink-soft);}
+  .reason-tally{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+  .reason-tally .chip{background:var(--surface-2);color:var(--ink-soft);text-transform:none;letter-spacing:0;}
+
+  /* ---- monthly / term trend chart ---- */
+  .trend-scroll{overflow-x:auto;padding-bottom:4px;margin-bottom:16px;}
+  .trend-chart{display:flex;align-items:flex-end;gap:10px;height:120px;min-width:min-content;padding:4px 2px 0;}
+  .trend-bar{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;flex-shrink:0;width:34px;gap:4px;}
+  .trend-bar-track{width:16px;height:88px;display:flex;align-items:flex-end;background:var(--surface-2);border-radius:6px;overflow:hidden;}
+  .trend-bar-fill{width:100%;border-radius:6px 6px 0 0;background:var(--present);min-height:2px;}
+  .trend-bar-fill.mid{background:var(--accent);}
+  .trend-bar-fill.low{background:var(--absent);}
+  .trend-bar-pct{font-size:.68rem;font-weight:700;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .trend-bar-lbl{font-size:.68rem;color:var(--ink-faint);white-space:nowrap;}
+
+  /* ---- teacher personal stats ---- */
+  .month-compare{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+  .month-compare .stat-card{flex:1 1 180px;}
+  .month-delta{font-size:.8rem;font-weight:700;margin-top:2px;}
+  .month-delta.up{color:var(--present);}
+  .month-delta.down{color:var(--absent);}
+  .month-delta.flat{color:var(--ink-faint);}
 </style>
 <body>
   <svg style="display:none" aria-hidden="true">
@@ -465,9 +512,14 @@
     <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5a13 13 0 0 1 0 17M12 3.5a13 13 0 0 0 0 17"/></symbol>
     <symbol id="icon-activity" viewBox="0 0 24 24"><path d="M3 12h4l2.2-7 4 14 2.2-7H21"/></symbol>
     <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="1.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></symbol>
+    <symbol id="icon-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1"/><path d="M4.5 9v9a1.5 1.5 0 0 0 1.5 1.5h12A1.5 1.5 0 0 0 19.5 18V9"/><path d="M10 13h4"/></symbol>
   </svg>
 
   <div id="corner-toolbar">
+    <button type="button" id="quick-search-btn" class="theme-toggle" aria-label="Quick search students" title="Quick search students (press /)" hidden>
+      <svg class="icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+    </button>
     <button type="button" id="lang-toggle" class="theme-toggle lang-toggle" aria-label="Change language" title="Change language">EN</button>
     <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
       <svg class="icon icon-sun" aria-hidden="true"><use href="#icon-sun"></use></svg>
@@ -584,6 +636,11 @@
   function uniqSorted(arr){
     return Array.from(new Set(arr.filter(Boolean))).sort(function(a,b){return a.localeCompare(b);});
   }
+  // A student with no `active` field at all (every record that existed before
+  // this feature shipped) counts as active — only an explicit `active:false`
+  // marks someone archived. This is what lets archiving ship with zero data
+  // migration: nothing already in Firestore needs to be touched.
+  function isActive(s){ return s && s.active !== false; }
 
   // ---------- language ----------
   // Covers the UI a teacher actually navigates day to day — nav, primary
@@ -649,7 +706,16 @@
     reason_travel: {en:'Travelling', mr:'प्रवासात', hi:'यात्रा पर'},
     reason_moved: {en:'Moved away', mr:'स्थलांतरित', hi:'स्थानांतरित'},
     reason_dropped: {en:'Dropped out', mr:'शाळा सोडली', hi:'पढ़ाई छोड़ दी'},
-    reason_other: {en:'Other', mr:'इतर', hi:'अन्य'}
+    reason_other: {en:'Other', mr:'इतर', hi:'अन्य'},
+    archive_student: {en:'Archive student', mr:'विद्यार्थी संग्रहित करा', hi:'विद्यार्थी संग्रहीत करें'},
+    restore_student: {en:'Restore student', mr:'विद्यार्थी पूर्ववत करा', hi:'विद्यार्थी पुनर्स्थापित करें'},
+    quick_search: {en:'Quick search', mr:'जलद शोध', hi:'त्वरित खोज'},
+    change_centre: {en:'Change centre', mr:'केंद्र बदला', hi:'केंद्र बदलें'},
+    clear_selection: {en:'Clear selection', mr:'निवड रद्द करा', hi:'चयन हटाएं'},
+    weekly_digest_title: {en:'This week at a glance', mr:'या आठवड्याचा आढावा', hi:'इस सप्ताह की झलक'},
+    monthly_trend_title: {en:'Attendance trend', mr:'हजेरी कल', hi:'उपस्थिति रुझान'},
+    copy_summary: {en:'Copy this month’s summary', mr:'या महिन्याचा सारांश कॉपी करा', hi:'इस महीने का सारांश कॉपी करें'},
+    month_csv: {en:'This month’s CSV', mr:'या महिन्याचा CSV', hi:'इस महीने की CSV'}
   };
   function t(key){
     var row = STRINGS[key];
@@ -889,7 +955,7 @@
     });
   }
   function auditActionLabel(action){
-    return ({create:'Added', edit:'Edited', delete:'Deleted', photo:'Photo changed for'})[action] || action;
+    return ({create:'Added', edit:'Edited', delete:'Deleted', photo:'Photo changed for', archive:'Archived', restore:'Restored'})[action] || action;
   }
   // Coordinator-only view of the audit_log collection — who changed which
   // student record and when. Read-only, most recent 50 entries.
@@ -958,6 +1024,129 @@
       });
     });
   }
+  // Bulk "change centre" picker for the Students tab's multi-select toolbar —
+  // same select-or-add-new-centre pattern as adding a student. Returns the
+  // chosen centre name, or null if cancelled.
+  function showChangeCentreModal(centreList){
+    return new Promise(function(resolve){
+      modalPreviousFocus = document.activeElement;
+      modalOverlay.innerHTML =
+        '<div class="modal-card" role="document">'
+        + '<h3>'+icon('pin')+' '+esc(t('change_centre'))+'</h3>'
+        + '<p>Move the selected students to a different centre.</p>'
+        + '<div class="field">'+fieldLabel('pin','Centre')+'<select id="cc-centre">'
+        + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; }).join('')
+        + '<option value="__new__">+ New centre…</option></select></div>'
+        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">'+esc(t('cancel'))+'</button><button class="btn primary" id="modal-confirm">'+esc(t('change_centre'))+'</button></div>'
+        + '</div>';
+      modalOverlay.removeAttribute('hidden');
+      function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
+      function onKey(e){ if(e.key==='Escape'){ finish(null); return; } trapModalTab(e); }
+      document.addEventListener('keydown', onKey);
+      document.getElementById('modal-cancel').addEventListener('click', function(){ finish(null); });
+      document.getElementById('modal-confirm').addEventListener('click', async function(){
+        var val = document.getElementById('cc-centre').value;
+        if(val==='__new__'){
+          val = await showPromptModal({title:'New centre', placeholder:'e.g. Mogra', confirmText:'Add centre'});
+          if(!val){ return; }
+          finish(val);
+          return;
+        }
+        finish(val || null);
+      });
+    });
+  }
+
+  // ---------- quick search: jump to any student from anywhere ----------
+  // A persistent search icon in the corner toolbar, plus a "/" or Ctrl/Cmd+K
+  // keyboard shortcut, both open the same small modal — meant for finding one
+  // student fast rather than digging through the Students tab's filters.
+  function isTypingTarget(el){
+    if(!el) return false;
+    var tag = el.tagName;
+    return tag==='INPUT' || tag==='TEXTAREA' || tag==='SELECT' || !!el.isContentEditable;
+  }
+  function jumpToStudent(sid){
+    var stu = studentsById()[sid];
+    if(!stu) return;
+    stuFilters.q = ''; stuFilters.teacher = ''; stuFilters.std = '';
+    stuFilters.reviewOnly = false; stuFilters.atRiskOnly = false;
+    stuFilters.archivedOnly = !isActive(stu);
+    stuFilters.centre = (IDENTITY && IDENTITY.role==='coordinator') ? '' : stuFilters.centre;
+    stuFilters.expanded = sid;
+    switchTab('students');
+  }
+  function renderQuickSearchResults(qval){
+    var box = document.getElementById('qs-results');
+    if(!box) return;
+    var query = qval.trim().toLowerCase();
+    if(!query){
+      box.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;margin:4px 2px;">Start typing a student\'s name…</p>';
+      return;
+    }
+    var matches = STATE.roster.filter(function(s){ return s.name && s.name.toLowerCase().indexOf(query)>-1; }).slice(0,8);
+    if(!matches.length){
+      box.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;margin:4px 2px;">No students match "'+esc(qval)+'".</p>';
+      return;
+    }
+    box.innerHTML = matches.map(function(s){
+      return '<button type="button" class="qs-result" data-sid="'+s.id+'">'
+        + avatarHtml(s.name, s.centre, 'sm', s.photo)
+        + '<span><span class="qs-name">'+esc(s.name)+(isActive(s)?'':' · archived')+'</span><span class="qs-sub">'+esc(shortCentre(s.centre))+(s.std?' · '+esc(s.std):'')+'</span></span>'
+        + '</button>';
+    }).join('');
+    box.querySelectorAll('.qs-result').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var sid = btn.getAttribute('data-sid');
+        closeModal();
+        document.removeEventListener('keydown', qsKeyHandler);
+        jumpToStudent(sid);
+      });
+    });
+  }
+  function qsKeyHandler(e){
+    if(e.key==='Escape'){ closeModal(); document.removeEventListener('keydown', qsKeyHandler); return; }
+    trapModalTab(e);
+  }
+  function openQuickSearch(){
+    if(!IDENTITY) return;
+    modalPreviousFocus = document.activeElement;
+    modalOverlay.innerHTML =
+      '<div class="modal-card" role="document">'
+      + '<h3>'+icon('search')+' '+esc(t('quick_search'))+'</h3>'
+      + '<input type="text" id="qs-input" placeholder="Student name…">'
+      + '<div id="qs-results" class="qs-results"></div>'
+      + '</div>';
+    modalOverlay.removeAttribute('hidden');
+    document.addEventListener('keydown', qsKeyHandler);
+    renderQuickSearchResults('');
+    var input = document.getElementById('qs-input');
+    input.addEventListener('input', function(){ renderQuickSearchResults(input.value); });
+    input.addEventListener('keydown', function(e){
+      if(e.key==='Enter'){
+        e.preventDefault();
+        var first = document.querySelector('#qs-results .qs-result');
+        if(first) first.click();
+      }
+    });
+    input.focus();
+  }
+  function initQuickSearch(){
+    var btn = document.getElementById('quick-search-btn');
+    if(btn) btn.addEventListener('click', openQuickSearch);
+    document.addEventListener('keydown', function(e){
+      if(!IDENTITY) return;
+      if(isTypingTarget(e.target)) return;
+      var isSlash = e.key==='/';
+      var isCtrlK = (e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k';
+      if(isSlash || isCtrlK){
+        e.preventDefault();
+        openQuickSearch();
+      }
+    });
+  }
+  initQuickSearch();
+
   async function openPrintRegister(){
     var centre, month;
     if(IDENTITY && IDENTITY.role==='coordinator'){
@@ -972,7 +1161,7 @@
     renderPrintRegisterWindow(centre, month);
   }
   function renderPrintRegisterWindow(centre, month){
-    var stus = STATE.roster.filter(function(s){ return s.centre===centre; })
+    var stus = STATE.roster.filter(function(s){ return s.centre===centre && isActive(s); })
       .sort(function(a,b){ var ck=classSortKey(a.std)-classSortKey(b.std); return ck!==0?ck:a.name.localeCompare(b.name); });
     var dateSet = {};
     stus.forEach(function(s){
@@ -1014,18 +1203,30 @@
   // ---------- header ----------
   function renderHeader(){
     var el = document.getElementById('header-stats');
-    var needsReview = STATE.roster.filter(function(s){return s.needs_review;}).length;
+    var activeRoster = STATE.roster.filter(isActive);
+    var needsReview = activeRoster.filter(function(s){return s.needs_review;}).length;
+    var atRisk = activeRoster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; }).length;
     var parts = [];
-    parts.push('<span class="stat-pill">'+icon('users')+' '+STATE.roster.length+' students</span>');
+    parts.push('<span class="stat-pill">'+icon('users')+' '+activeRoster.length+' students</span>');
     parts.push('<span class="stat-pill">'+icon('pin')+' '+centres().length+' centres</span>');
     if(needsReview>0){
       parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+icon('flag')+' '+needsReview+' need review</button>');
+    }
+    if(atRisk>0){
+      parts.push('<button class="stat-pill link" id="atrisk-jump" style="border-color:var(--absent);color:var(--absent);background:var(--absent-soft);">'+icon('alert')+' '+atRisk+' at risk</button>');
     }
     el.innerHTML = parts.join('');
     var jumpBtn = document.getElementById('review-jump');
     if(jumpBtn){
       jumpBtn.addEventListener('click', function(){
-        stuFilters.reviewOnly = true;
+        stuFilters.reviewOnly = true; stuFilters.atRiskOnly = false;
+        switchTab('students');
+      });
+    }
+    var riskBtn = document.getElementById('atrisk-jump');
+    if(riskBtn){
+      riskBtn.addEventListener('click', function(){
+        stuFilters.atRiskOnly = true; stuFilters.reviewOnly = false;
         switchTab('students');
       });
     }
@@ -1171,7 +1372,7 @@
       });
       html += '</select></div>';
     }
-    var centreList = STATE.roster.filter(function(s){ return s.centre===markFilters.centre; });
+    var centreList = STATE.roster.filter(function(s){ return s.centre===markFilters.centre && isActive(s); });
     var classList = classesIn(centreList);
     if(markFilters.std && classList.indexOf(markFilters.std)===-1) markFilters.std = '';
     html += '<div class="field">'+fieldLabel('book','Class')+'<select id="mk-std"><option value="">All classes</option>';
@@ -1360,7 +1561,10 @@
   }
 
   // ================= TAB: STUDENTS & RECORDS =================
-  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null, adding:false, sortKey:'std', sortDir:'asc' };
+  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, atRiskOnly:false, archivedOnly:false, expanded:null, adding:false, sortKey:'std', sortDir:'asc' };
+  // Bulk-select state for the Students tab's multi-select toolbar — a plain
+  // id->true map so it survives a re-render without needing to live in the DOM.
+  var stuSelected = {};
   var STU_COLUMNS = [['name','field_name'],['centre','field_centre'],['teacher','field_teacher'],['std','field_std'],['attendance','col_attendance']];
   function compareStudents(a, b, key){
     if(key==='std'){
@@ -1511,12 +1715,22 @@
     stClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===stuFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-risk-toggle">'+(stuFilters.atRiskOnly ? 'Showing: at risk' : 'Show at-risk')+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-archived-toggle">'+(stuFilters.archivedOnly ? 'Showing: archived' : 'Show archived')+'</button></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn primary small" id="st-add-toggle">'+(stuFilters.adding ? t('cancel') : t('add_student'))+'</button></div>';
     html += '</div>';
 
     if(stuFilters.reviewOnly){
       html += '<div class="banner"><span>These records are missing a required detail (gender, age, medium or teacher) or have an age/phone number that looks off. Tap <strong>Details</strong> on a student below, then tap any field to fix it — it saves as soon as you tap away.</span>'
         + '<button class="btn ghost small" id="st-review-dismiss">Show all instead</button></div>';
+    }
+    if(stuFilters.atRiskOnly){
+      html += '<div class="banner"><span>These students have '+STREAK_RISK_THRESHOLD+' or more absences in a row (counting the most recent marked sessions) — worth a check-in.</span>'
+        + '<button class="btn ghost small" id="st-risk-dismiss">Show all instead</button></div>';
+    }
+    if(stuFilters.archivedOnly){
+      html += '<div class="banner"><span>Archived students are hidden from Mark attendance and everyday reports, but their attendance history is kept. Tap <strong>Details</strong> to restore one.</span>'
+        + '<button class="btn ghost small" id="st-archived-dismiss">Show active instead</button></div>';
     }
 
     if(stuFilters.adding){
@@ -1542,11 +1756,14 @@
     }
 
     var list = STATE.roster.filter(function(s){
+      if(stuFilters.archivedOnly){ if(isActive(s)) return false; }
+      else { if(!isActive(s)) return false; }
       if(stuFilters.q && s.name.toLowerCase().indexOf(stuFilters.q.toLowerCase())===-1) return false;
       if(stuFilters.centre && s.centre!==stuFilters.centre) return false;
       if(stuFilters.teacher && s.teacher!==stuFilters.teacher) return false;
       if(stuFilters.std && s.std!==stuFilters.std) return false;
       if(stuFilters.reviewOnly && !s.needs_review) return false;
+      if(stuFilters.atRiskOnly && studentStats(s.id).streak < STREAK_RISK_THRESHOLD) return false;
       return true;
     });
     list.sort(function(a,b){
@@ -1554,13 +1771,39 @@
       return stuFilters.sortDir==='desc' ? -cmp : cmp;
     });
 
+    // Bulk multi-select is coordinator-only — it can reassign centre or archive
+    // students across the whole roster, which mirrors the other coordinator-only
+    // actions (delete, centre-wide rules) already in this tab.
+    var canBulk = !!(IDENTITY && IDENTITY.role==='coordinator');
+    if(canBulk){
+      // Drop any selected id that's no longer in view (filtered out, deleted) so
+      // the toolbar's count always matches something the person can actually see acted on.
+      var visibleIds = {}; list.forEach(function(s){ visibleIds[s.id] = true; });
+      Object.keys(stuSelected).forEach(function(id){ if(!visibleIds[id]) delete stuSelected[id]; });
+    }
+    var selectedCount = canBulk ? Object.keys(stuSelected).length : 0;
+
     html += '<div class="controls-row" style="justify-content:space-between;"><span class="stat-pill">'+list.length+' students</span></div>';
+
+    if(canBulk && selectedCount>0){
+      html += '<div class="bulk-toolbar"><b>'+selectedCount+'</b> selected'
+        + '<button class="btn small" id="bulk-change-centre">'+icon('pin')+' '+esc(t('change_centre'))+'</button>'
+        + '<button class="btn small" id="bulk-archive">'+icon('archive')+' '+esc(t('archive_student')).replace(' student','')+'</button>'
+        + '<button class="btn small" id="bulk-export">'+icon('copy')+' '+esc(t('export_csv'))+'</button>'
+        + '<button class="btn ghost small" id="bulk-clear" style="margin-left:auto;">'+esc(t('clear_selection'))+'</button>'
+        + '</div>';
+    }
 
     if(list.length===0){
       html += '<div class="empty-state">'+icon('search')+'<div class="title">No students match this filter</div><div class="sub">Try clearing the search, or switching centre / class / teacher above.</div></div>';
     }
     if(list.length>0){
+    var colCount = STU_COLUMNS.length + 1 + (canBulk?1:0);
     html += '<div class="table-scroll"><table><thead><tr>';
+    if(canBulk){
+      var allSelected = list.length>0 && list.every(function(s){ return !!stuSelected[s.id]; });
+      html += '<th class="select-cell"><input type="checkbox" id="st-select-all" aria-label="Select all"'+(allSelected?' checked':'')+'></th>';
+    }
     STU_COLUMNS.forEach(function(col){
       var key=col[0], label=t(col[1]);
       var active = stuFilters.sortKey===key;
@@ -1575,7 +1818,10 @@
       var stats = studentStats(s.id);
       var pctTxt = stats.pct===null ? '—' : stats.pct+'%';
       html += '<tr data-sid="'+s.id+'">';
-      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(s.name)+(s.needs_review?' <span class="chip review">'+icon('flag')+' Review</span>':'')+(stats.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+stats.streak+' absences in a row">'+icon('alert')+' '+stats.streak+'</span>':'')+'</td>';
+      if(canBulk){
+        html += '<td class="select-cell"><input type="checkbox" class="stu-select" data-sid="'+s.id+'" aria-label="Select '+esc(s.name)+'"'+(stuSelected[s.id]?' checked':'')+'></td>';
+      }
+      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(s.name)+(s.needs_review?' <span class="chip review">'+icon('flag')+' Review</span>':'')+(stats.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+stats.streak+' absences in a row">'+icon('alert')+' '+stats.streak+'</span>':'')+(isActive(s)?'':' <span class="chip" style="background:var(--surface-2);color:var(--ink-soft);">'+icon('archive')+' Archived</span>')+'</td>';
       html += '<td>'+esc(shortCentre(s.centre))+'</td>';
       html += '<td>'+(s.teacher?esc(s.teacher):'<em style="color:var(--accent-soft-ink);">unassigned</em>')+'</td>';
       html += '<td>'+esc(s.std||'—')+'</td>';
@@ -1584,7 +1830,7 @@
       html += '</tr>';
       if(stuFilters.expanded===s.id){
         var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
-        html += '<tr><td colspan="6"><div class="detail-panel" data-detail="'+s.id+'">';
+        html += '<tr><td colspan="'+colCount+'"><div class="detail-panel" data-detail="'+s.id+'">';
         html += '<div class="photo-picker" style="grid-column:1/-1;">'+avatarHtml(s.name, s.centre, null, s.photo)
           + '<span><input type="file" accept="image/*" id="photo-input-'+s.id+'" data-photo-for="'+s.id+'">'
           + '<button type="button" class="btn ghost small" data-photo-pick="'+s.id+'">'+icon('camera')+' '+(s.photo?t('change_photo'):t('add_photo'))+'</button>'
@@ -1606,7 +1852,13 @@
           html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(val || 'tap to add')+'</span></div>';
         });
         if(IDENTITY && IDENTITY.role==='coordinator'){
-          html += '<div class="controls-row" style="margin-top:6px;"><button class="btn danger small" data-delete="'+s.id+'">'+t('delete_student')+'</button></div>';
+          html += '<div class="controls-row" style="margin-top:6px;">';
+          if(isActive(s)){
+            html += '<button class="btn ghost small" data-archive="'+s.id+'">'+icon('archive')+' '+t('archive_student')+'</button>';
+          } else {
+            html += '<button class="btn primary small" data-restore="'+s.id+'">'+icon('archive')+' '+t('restore_student')+'</button>';
+          }
+          html += '<button class="btn danger small" data-delete="'+s.id+'">'+t('delete_student')+'</button></div>';
         }
         html += '</div></td></tr>';
       }
@@ -1636,7 +1888,13 @@
     }
     document.getElementById('st-teacher').addEventListener('change', function(e){ stuFilters.teacher = e.target.value; renderStudents(); });
     document.getElementById('st-std').addEventListener('change', function(e){ stuFilters.std = e.target.value; renderStudents(); });
-    document.getElementById('st-review-toggle').addEventListener('click', function(){ stuFilters.reviewOnly = !stuFilters.reviewOnly; renderStudents(); });
+    document.getElementById('st-review-toggle').addEventListener('click', function(){ stuFilters.reviewOnly = !stuFilters.reviewOnly; if(stuFilters.reviewOnly){ stuFilters.atRiskOnly=false; stuFilters.archivedOnly=false; } renderStudents(); });
+    document.getElementById('st-risk-toggle').addEventListener('click', function(){ stuFilters.atRiskOnly = !stuFilters.atRiskOnly; if(stuFilters.atRiskOnly){ stuFilters.reviewOnly=false; stuFilters.archivedOnly=false; } renderStudents(); });
+    document.getElementById('st-archived-toggle').addEventListener('click', function(){ stuFilters.archivedOnly = !stuFilters.archivedOnly; if(stuFilters.archivedOnly){ stuFilters.reviewOnly=false; stuFilters.atRiskOnly=false; } renderStudents(); });
+    var riskDismissBtn = document.getElementById('st-risk-dismiss');
+    if(riskDismissBtn) riskDismissBtn.addEventListener('click', function(){ stuFilters.atRiskOnly = false; renderStudents(); });
+    var archivedDismissBtn = document.getElementById('st-archived-dismiss');
+    if(archivedDismissBtn) archivedDismissBtn.addEventListener('click', function(){ stuFilters.archivedOnly = false; renderStudents(); });
     el.querySelectorAll('th.sortable').forEach(function(th){
       function toggleSort(){
         var key = th.getAttribute('data-sort');
@@ -1697,6 +1955,102 @@
       btn.addEventListener('click', function(){
         var id = btn.getAttribute('data-expand');
         stuFilters.expanded = (stuFilters.expanded===id) ? null : id;
+        renderStudents();
+      });
+    });
+    if(canBulk){
+      var selectAllEl = document.getElementById('st-select-all');
+      if(selectAllEl){
+        selectAllEl.addEventListener('change', function(){
+          if(selectAllEl.checked){ list.forEach(function(s){ stuSelected[s.id] = true; }); }
+          else { list.forEach(function(s){ delete stuSelected[s.id]; }); }
+          renderStudents();
+        });
+      }
+      el.querySelectorAll('.stu-select').forEach(function(cb){
+        cb.addEventListener('change', function(){
+          var id = cb.getAttribute('data-sid');
+          if(cb.checked) stuSelected[id] = true; else delete stuSelected[id];
+          renderStudents();
+        });
+      });
+      var bulkClearBtn = document.getElementById('bulk-clear');
+      if(bulkClearBtn) bulkClearBtn.addEventListener('click', function(){ stuSelected = {}; renderStudents(); });
+      var bulkExportBtn = document.getElementById('bulk-export');
+      if(bulkExportBtn) bulkExportBtn.addEventListener('click', function(){
+        var chosen = Object.keys(stuSelected).map(function(id){ return studentsById()[id]; }).filter(Boolean);
+        exportCSV(chosen);
+      });
+      var bulkArchiveBtn = document.getElementById('bulk-archive');
+      if(bulkArchiveBtn) bulkArchiveBtn.addEventListener('click', async function(){
+        var chosen = Object.keys(stuSelected).map(function(id){ return studentsById()[id]; }).filter(Boolean);
+        var toArchive = chosen.filter(isActive);
+        if(!toArchive.length){ showToast('Nothing to archive in the current selection.'); return; }
+        var confirmed = await showConfirmModal({
+          title: 'Archive '+toArchive.length+' student'+(toArchive.length===1?'':'s')+'?',
+          message: 'Archived students drop out of Mark attendance and everyday reports, but keep their attendance history. You can restore them anytime from Show archived.',
+          confirmText: 'Archive', danger: false
+        });
+        if(!confirmed) return;
+        bulkArchiveBtn.disabled = true;
+        for(var i=0;i<toArchive.length;i++){
+          var stu = toArchive[i];
+          Object.assign(stu, {active:false});
+          await persistWrite({type:'update', col:'students', docId:stu.id, data:{active:false}});
+          logAudit('archive', stu.id, stu.name, 'Bulk archive');
+        }
+        stuSelected = {};
+        showToast(toArchive.length+' student'+(toArchive.length===1?'':'s')+' archived.');
+        renderStudents();
+      });
+      var bulkCentreBtn = document.getElementById('bulk-change-centre');
+      if(bulkCentreBtn) bulkCentreBtn.addEventListener('click', async function(){
+        var chosen = Object.keys(stuSelected).map(function(id){ return studentsById()[id]; }).filter(Boolean);
+        if(!chosen.length) return;
+        var newCentre = await showChangeCentreModal(centres());
+        if(!newCentre) return;
+        bulkCentreBtn.disabled = true;
+        for(var i=0;i<chosen.length;i++){
+          var stu = chosen[i];
+          var oldCentre = stu.centre;
+          if(oldCentre===newCentre) continue;
+          Object.assign(stu, {centre:newCentre});
+          await persistWrite({type:'update', col:'students', docId:stu.id, data:{centre:newCentre}});
+          logAudit('edit', stu.id, stu.name, 'Centre: '+(oldCentre||'—')+' → '+newCentre);
+        }
+        stuSelected = {};
+        showToast('Moved '+chosen.length+' student'+(chosen.length===1?'':'s')+' to '+shortCentre(newCentre)+'.');
+        renderStudents();
+      });
+    }
+    el.querySelectorAll('[data-archive]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var id = btn.getAttribute('data-archive');
+        var stu = studentsById()[id];
+        if(!stu) return;
+        var confirmed = await showConfirmModal({
+          title: 'Archive this student?',
+          message: 'Archive '+stu.name+'? They\'ll drop out of Mark attendance and everyday reports, but their attendance history is kept and you can restore them anytime from Show archived.',
+          confirmText: 'Archive', danger: false
+        });
+        if(!confirmed) return;
+        Object.assign(stu, {active:false});
+        var ok = await persistWrite({type:'update', col:'students', docId:id, data:{active:false}});
+        logAudit('archive', id, stu.name, 'Archived student');
+        showToast(ok ? 'Student archived.' : 'Archived on this device — will sync when back online.');
+        renderStudents();
+      });
+    });
+    el.querySelectorAll('[data-restore]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var id = btn.getAttribute('data-restore');
+        var stu = studentsById()[id];
+        if(!stu) return;
+        Object.assign(stu, {active:true});
+        var ok = await persistWrite({type:'update', col:'students', docId:id, data:{active:true}});
+        logAudit('restore', id, stu.name, 'Restored student');
+        showToast(ok ? 'Student restored.' : 'Restored on this device — will sync when back online.');
+        stuFilters.archivedOnly = false;
         renderStudents();
       });
     });
@@ -1799,13 +2153,157 @@
     var pb = b.st.pct===null ? 999 : b.st.pct;
     return pa-pb;
   }
+  // 'YYYY-MM' shifted back by `delta` whole months — used to line up "this
+  // month" against "last month" for the teacher's personal stats card.
+  function monthKeyOffset(monthKey, delta){
+    var parts = monthKey.split('-');
+    var d = new Date(Number(parts[0]), Number(parts[1])-1 + delta, 1);
+    return d.getFullYear()+'-'+pad2(d.getMonth()+1);
+  }
+  // Aggregate present/marked across every date in `monthPrefix` (e.g. "2026-08")
+  // for the given roster — an aggregate rate rather than an average-of-averages,
+  // so a centre with more students marked doesn't get drowned out by one with few.
+  function computeMonthPct(roster, monthPrefix){
+    var present = 0, total = 0;
+    roster.forEach(function(s){
+      Object.keys(studentAttendance(s.id)).forEach(function(d){
+        if(d.indexOf(monthPrefix)!==0) return;
+        total++;
+        if(attVal(s.id, d)===1) present++;
+      });
+    });
+    return { pct: total ? Math.round((present/total)*100) : null, total: total };
+  }
+  // One entry per calendar month that has any marked attendance at all, oldest
+  // first — the raw material for the month-by-month / term-over-term trend chart.
+  function computeMonthlyTrend(roster){
+    var byMonth = {};
+    roster.forEach(function(s){
+      Object.keys(studentAttendance(s.id)).forEach(function(d){
+        var m = d.slice(0,7);
+        if(!byMonth[m]) byMonth[m] = {present:0, total:0};
+        byMonth[m].total++;
+        if(attVal(s.id, d)===1) byMonth[m].present++;
+      });
+    });
+    return Object.keys(byMonth).sort().map(function(m){
+      var b = byMonth[m];
+      return { month: m, pct: b.total ? Math.round((b.present/b.total)*100) : null, total: b.total };
+    });
+  }
+  function monthShortLabel(monthKey){
+    var d = new Date(monthKey+'-01T00:00:00');
+    return d.toLocaleDateString(undefined, {month:'short', year:'2-digit'});
+  }
+  // What "this week" looks like right now, for the digest card: how many of
+  // each centre's students are still unmarked for the current session, plus a
+  // tally of the absence reasons chosen so far — a quick "what needs a look"
+  // view rather than something that requires digging through Mark attendance
+  // centre by centre.
+  function computeWeeklyDigest(roster){
+    var weekDate = nearestSunday();
+    var byCentre = {};
+    roster.forEach(function(s){
+      if(!byCentre[s.centre]) byCentre[s.centre] = {centre:s.centre, total:0, marked:0};
+      byCentre[s.centre].total++;
+      if(attEntry(s.id, weekDate) !== undefined) byCentre[s.centre].marked++;
+    });
+    var centreList = Object.keys(byCentre).map(function(c){ return byCentre[c]; })
+      .sort(function(a,b){ return (b.total-b.marked) - (a.total-a.marked); });
+    var reasonTally = {};
+    roster.forEach(function(s){
+      if(attVal(s.id, weekDate)===0){
+        var r = attReason(s.id, weekDate) || 'unspecified';
+        reasonTally[r] = (reasonTally[r]||0) + 1;
+      }
+    });
+    return { weekDate: weekDate, centres: centreList, reasonTally: reasonTally };
+  }
+  function reasonTallyLabel(key){
+    if(key==='unspecified') return 'No reason given';
+    return absenceReasonLabel(key);
+  }
+  // Plain-text version of the centre summary for the current month, meant to be
+  // pasted straight into WhatsApp/email/SMS — the no-backend stand-in for an
+  // automated "email me this month's numbers" job.
+  function buildMonthlySummaryText(centreRows, monthLabel, atRiskCount){
+    var lines = ['Akshar Paaul Attendance — '+monthLabel+' summary'];
+    centreRows.forEach(function(r){
+      lines.push(shortCentre(r.c)+': '+(r.pct===null?'no records yet':r.pct+'%')+' ('+r.total+' students)');
+    });
+    if(atRiskCount>0){
+      lines.push(atRiskCount+' student'+(atRiskCount>1?'s':'')+' with '+STREAK_RISK_THRESHOLD+'+ absences in a row — worth a check-in.');
+    }
+    return lines.join('\n');
+  }
+  function copyTextToClipboard(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function(resolve, reject){
+      try{
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? resolve() : reject(new Error('copy failed'));
+      }catch(e){ reject(e); }
+    });
+  }
   function renderReports(){
     var el = document.getElementById('panel-reports');
+    var activeRoster = STATE.roster.filter(isActive);
     var cList = centres();
-    var rpClassList = classesIn(STATE.roster);
+    var rpClassList = classesIn(activeRoster);
     if(rpFilters.std && rpClassList.indexOf(rpFilters.std)===-1) rpFilters.std = '';
-    var atRiskCount = STATE.roster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; }).length;
+    var atRiskCount = activeRoster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; }).length;
     var html = '<div class="card">';
+
+    // ---- weekly digest: what needs a look this week, at a glance ----
+    var digest = computeWeeklyDigest(activeRoster);
+    var unmarkedCentres = digest.centres.filter(function(c){ return c.total - c.marked > 0; });
+    html += '<div class="controls-row" style="justify-content:space-between;"><h2 class="section-title" style="margin:0;">'+esc(t('weekly_digest_title'))+'</h2></div>';
+    html += '<div class="digest-grid">';
+    if(unmarkedCentres.length===0){
+      html += '<div class="digest-item"><div class="digest-num" style="color:var(--present);">'+icon('check')+' All caught up</div><div class="digest-lbl">Everyone\'s marked for '+esc(fmtDateLabel(digest.weekDate))+'.</div></div>';
+    } else {
+      unmarkedCentres.forEach(function(c){
+        html += '<div class="digest-item"><div class="digest-num">'+(c.total-c.marked)+' unmarked</div><div class="digest-lbl">'+esc(shortCentre(c.centre))+' · '+c.marked+' of '+c.total+' done for '+esc(fmtDateLabel(digest.weekDate))+'</div></div>';
+      });
+    }
+    if(atRiskCount>0){
+      html += '<div class="digest-item" style="border-color:var(--absent);"><div class="digest-num" style="color:var(--absent);">'+icon('alert')+' '+atRiskCount+'</div><div class="digest-lbl">student'+(atRiskCount>1?'s':'')+' with '+STREAK_RISK_THRESHOLD+'+ absences in a row</div></div>';
+    }
+    html += '</div>';
+    var reasonKeys = Object.keys(digest.reasonTally);
+    if(reasonKeys.length){
+      html += '<div class="reason-tally">';
+      reasonKeys.forEach(function(k){
+        html += '<span class="chip">'+esc(reasonTallyLabel(k))+': '+digest.reasonTally[k]+'</span>';
+      });
+      html += '</div>';
+    }
+
+    // ---- teacher's own centre: this month vs last month ----
+    if(IDENTITY && IDENTITY.role==='teacher'){
+      var thisMonthKey = todayIso().slice(0,7);
+      var lastMonthKey = monthKeyOffset(thisMonthKey, -1);
+      var thisMonthStat = computeMonthPct(activeRoster, thisMonthKey);
+      var lastMonthStat = computeMonthPct(activeRoster, lastMonthKey);
+      html += '<h2 class="section-title">Your centre, month to month</h2>';
+      html += '<div class="month-compare">';
+      html += '<div class="stat-card"><div class="num">'+(thisMonthStat.pct===null?'—':thisMonthStat.pct+'%')+'</div><div class="lbl">This month ('+esc(monthShortLabel(thisMonthKey))+')</div>';
+      if(thisMonthStat.pct!==null && lastMonthStat.pct!==null){
+        var delta = thisMonthStat.pct - lastMonthStat.pct;
+        var deltaCls = delta>0 ? 'up' : (delta<0 ? 'down' : 'flat');
+        html += '<div class="month-delta '+deltaCls+'">'+(delta>0?'▲ +':delta<0?'▼ ':'— ')+(delta===0?'no change':Math.abs(delta)+'%')+' vs last month</div>';
+      }
+      html += '</div>';
+      html += '<div class="stat-card"><div class="num">'+(lastMonthStat.pct===null?'—':lastMonthStat.pct+'%')+'</div><div class="lbl">Last month ('+esc(monthShortLabel(lastMonthKey))+')</div></div>';
+      html += '</div>';
+    }
+
     html += '<div class="controls-row" style="justify-content:space-between;">';
     html += '<h2 class="section-title" style="margin:0;">'+t('centre_summary')+'</h2>';
     if(IDENTITY && IDENTITY.role==='coordinator'){
@@ -1817,7 +2315,7 @@
     // Sorted lowest-attendance-first so the centre that most needs a look sits
     // at the top of the comparison rather than wherever it falls alphabetically.
     var centreRows = cList.map(function(c){
-      var stus = STATE.roster.filter(function(s){return s.centre===c;});
+      var stus = activeRoster.filter(function(s){return s.centre===c;});
       var pcts = stus.map(function(s){return studentStats(s.id).pct;}).filter(function(p){return p!==null;});
       var avg = pcts.length ? Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length) : null;
       return {c:c, stus:stus, avg:avg};
@@ -1851,7 +2349,7 @@
     html += '<h2 class="section-title">'+t('class_summary')+'</h2>';
     html += '<div class="grid-cards">';
     rpClassList.forEach(function(k){
-      var stus = STATE.roster.filter(function(s){return s.std===k;});
+      var stus = activeRoster.filter(function(s){return s.std===k;});
       var pcts = stus.map(function(s){return studentStats(s.id).pct;}).filter(function(p){return p!==null;});
       var avg = pcts.length ? Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length) : null;
       html += '<div class="stat-card"><div class="num">'+(avg===null?'—':avg+'%')+'</div>';
@@ -1859,15 +2357,31 @@
     });
     html += '</div>';
 
+    // ---- month-by-month / term-over-term trend ----
+    var trend = computeMonthlyTrend(activeRoster);
+    if(trend.length>1){
+      html += '<h2 class="section-title">'+esc(t('monthly_trend_title'))+'</h2>';
+      html += '<div class="trend-scroll"><div class="trend-chart">';
+      trend.forEach(function(m){
+        var frac = m.pct===null ? 0 : m.pct/100;
+        html += '<div class="trend-bar" title="'+esc(monthShortLabel(m.month))+': '+(m.pct===null?'no records':m.pct+'%')+'">'
+          + '<span class="trend-bar-pct">'+(m.pct===null?'—':m.pct+'%')+'</span>'
+          + '<span class="trend-bar-track"><span class="trend-bar-fill '+pctClass(m.pct)+'" style="height:'+(frac*100).toFixed(0)+'%;"></span></span>'
+          + '<span class="trend-bar-lbl">'+esc(monthShortLabel(m.month))+'</span>'
+          + '</div>';
+      });
+      html += '</div></div>';
+    }
+
     html += '<div class="controls-row" style="justify-content:space-between;">';
     html += '<h2 class="section-title" style="margin:0;">'+t('students_by_attendance')+'</h2>';
-    html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">'+t('refresh')+'</button><button class="btn ghost small" id="rp-export-detailed">'+t('export_csv_detailed')+'</button><button class="btn small" id="rp-export">'+t('export_csv')+'</button></span>';
+    html += '<span style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn ghost small" id="rp-copy-summary">'+icon('copy')+' '+esc(t('copy_summary'))+'</button><button class="btn ghost small" id="rp-month-csv">'+icon('print')+' '+esc(t('month_csv'))+'</button><button class="btn ghost small" id="rp-refresh">'+t('refresh')+'</button><button class="btn ghost small" id="rp-export-detailed">'+t('export_csv_detailed')+'</button><button class="btn small" id="rp-export">'+t('export_csv')+'</button></span>';
     html += '</div>';
     html += '<div class="controls-row"><div class="field">'+fieldLabel('book','Class')+'<select id="rp-std"><option value="">All classes</option>';
     rpClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===rpFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div></div>';
 
-    var rows = STATE.roster.filter(function(s){ return !rpFilters.std || s.std===rpFilters.std; }).map(function(s){
+    var rows = activeRoster.filter(function(s){ return !rpFilters.std || s.std===rpFilters.std; }).map(function(s){
       var st = studentStats(s.id);
       return {s:s, st:st};
     });
@@ -1904,8 +2418,24 @@
     html += '</div>';
     el.innerHTML = html;
 
-    document.getElementById('rp-export').addEventListener('click', exportCSV);
+    document.getElementById('rp-export').addEventListener('click', function(){ exportCSV(); });
     document.getElementById('rp-export-detailed').addEventListener('click', function(){ exportDetailedCSV(rows.map(function(r){return r.s;})); });
+    document.getElementById('rp-month-csv').addEventListener('click', function(){ exportDetailedCSV(rows.map(function(r){return r.s;}), todayIso().slice(0,7)); });
+    document.getElementById('rp-copy-summary').addEventListener('click', function(){
+      var monthPrefix = todayIso().slice(0,7);
+      var monthLabel = new Date(monthPrefix+'-01T00:00:00').toLocaleDateString(undefined, {month:'long', year:'numeric'});
+      var monthCentreRows = cList.map(function(c){
+        var stus = activeRoster.filter(function(s){ return s.centre===c; });
+        var stat = computeMonthPct(stus, monthPrefix);
+        return {c:c, pct:stat.pct, total:stus.length};
+      });
+      var text = buildMonthlySummaryText(monthCentreRows, monthLabel, atRiskCount);
+      copyTextToClipboard(text).then(function(){
+        showToast('Summary copied — paste it into WhatsApp, email, anywhere.');
+      }).catch(function(){
+        showToast('Could not copy automatically — select and copy the text yourself.');
+      });
+    });
     document.getElementById('rp-refresh').addEventListener('click', function(){ loadAttendanceHistory(true); });
     document.getElementById('rp-std').addEventListener('change', function(e){ rpFilters.std = e.target.value; renderReports(); });
     document.getElementById('rp-print').addEventListener('click', openPrintRegister);
@@ -1938,34 +2468,43 @@
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
     showToast('CSV downloaded.');
   }
-  function exportCSV(){
+  // `rosterList` is optional — pass a subset (e.g. a Students-tab bulk
+  // selection) to export just those students; omit it for the full active roster.
+  function exportCSV(rosterList){
     // Mirrors the Details-panel redaction: a centre teacher's export shouldn't
     // hand over in bulk what the panel already hides one student at a time.
     var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
+    var list = (rosterList && rosterList.length) ? rosterList : STATE.roster.filter(isActive);
     var header = ['Name','Centre','Teacher','Std','Gender','Age','Medium'];
     if(!isTeacherViewer) header.push('Contact');
-    header = header.concat(['Funding Partner','Sessions Marked','Sessions Present','Attendance %','Needs Review']);
+    header = header.concat(['Funding Partner','Sessions Marked','Sessions Present','Attendance %','Needs Review','Status']);
     var lines = [header.join(',')];
-    STATE.roster.forEach(function(s){
+    list.forEach(function(s){
       var st = studentStats(s.id);
       var row = [s.name, isTeacherViewer ? shortCentre(s.centre) : s.centre, s.teacher||'', s.std||'', s.gender||'', s.age||'', s.medium||''];
       if(!isTeacherViewer) row.push(s.contact||'');
-      row = row.concat([s.funding_partner||'', st.total, st.present, st.pct===null?'':st.pct, s.needs_review?'Yes':'No']);
+      row = row.concat([s.funding_partner||'', st.total, st.present, st.pct===null?'':st.pct, s.needs_review?'Yes':'No', isActive(s)?'Active':'Archived']);
       lines.push(row.map(csvCell).join(','));
     });
     downloadCSV(lines, 'akshar-paaul-attendance.csv');
   }
   // Per-date grid: one column per session date, P/A/blank for each student —
   // for anyone who needs the raw day-by-day record rather than just the totals.
-  function exportDetailedCSV(students){
-    var list = students && students.length ? students : STATE.roster;
+  // `monthPrefix` (e.g. "2026-08"), when given, limits the date columns to that
+  // month instead of the student's whole history — used by the Reports tab's
+  // one-tap "This month's CSV" shortcut.
+  function exportDetailedCSV(students, monthPrefix){
+    var list = students && students.length ? students : STATE.roster.filter(isActive);
     var dateSet = {};
     list.forEach(function(s){
-      Object.keys(studentAttendance(s.id)).forEach(function(d){ dateSet[d] = true; });
+      Object.keys(studentAttendance(s.id)).forEach(function(d){
+        if(monthPrefix && d.indexOf(monthPrefix)!==0) return;
+        dateSet[d] = true;
+      });
     });
     var dates = Object.keys(dateSet).sort();
     if(!dates.length){
-      showToast('No attendance marked yet for this list — nothing to export.');
+      showToast(monthPrefix ? 'No attendance marked yet this month — nothing to export.' : 'No attendance marked yet for this list — nothing to export.');
       return;
     }
     var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
@@ -1980,7 +2519,7 @@
       });
       lines.push(row.map(csvCell).join(','));
     });
-    downloadCSV(lines, 'akshar-paaul-attendance-detailed.csv');
+    downloadCSV(lines, monthPrefix ? 'akshar-paaul-attendance-'+monthPrefix+'.csv' : 'akshar-paaul-attendance-detailed.csv');
   }
 
   // ================= TABS =================
@@ -2074,6 +2613,8 @@
   function showApp(){
     document.getElementById('gate-screen').setAttribute('hidden','');
     document.getElementById('app-shell').removeAttribute('hidden');
+    var qsBtn = document.getElementById('quick-search-btn');
+    if(qsBtn) qsBtn.removeAttribute('hidden');
     renderSignedInBar();
     updateSyncBanner();
     renderHeader(); renderMark(); renderStudents(); renderReports();
@@ -2082,6 +2623,8 @@
   function showGate(){
     document.getElementById('app-shell').setAttribute('hidden','');
     document.getElementById('gate-screen').removeAttribute('hidden');
+    var qsBtn = document.getElementById('quick-search-btn');
+    if(qsBtn) qsBtn.setAttribute('hidden','');
     renderGate();
     positionThemeToggle();
   }
@@ -2301,7 +2844,10 @@
       var snap = await getDocs(q);
       snap.forEach(function(docSnap){ mergeAttendanceDoc(docSnap.data()); });
       ATTENDANCE_HISTORY_LOADED = true;
-      renderMark(); renderStudents(); renderReports();
+      // The header's "at risk" pill depends on streaks computed from full
+      // attendance history, which usually isn't in yet at the initial
+      // showApp() render — refresh it here too, once the real numbers exist.
+      renderHeader(); renderMark(); renderStudents(); renderReports();
     }catch(e){ showToast('Could not load attendance history — check your connection.'); }
   }
 
