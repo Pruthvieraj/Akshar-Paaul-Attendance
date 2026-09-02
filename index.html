@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Akshar Paaul Attendance</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#fbf7ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14181a" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Akshar Paaul">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -125,6 +132,10 @@
     letter-spacing:.2px;vertical-align:middle;
   }
   .avatar.sm{width:24px;height:24px;font-size:.62rem;margin-right:8px;}
+  img.avatar.photo{object-fit:cover;background:var(--surface-2);}
+  .photo-picker{display:flex;align-items:center;gap:10px;}
+  .photo-picker .avatar, .photo-picker .avatar.photo{width:52px;height:52px;font-size:1rem;}
+  .photo-picker input[type=file]{display:none;}
 
   .wrap{max-width:1040px;margin:0 auto;padding:0 16px;}
 
@@ -137,7 +148,12 @@
   }
   .brand-watermark{position:absolute;inset:0;opacity:.09;pointer-events:none;z-index:0;}
   .brand-watermark svg{width:100%;height:100%;display:block;}
-  .top-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 16px 14px;flex-wrap:wrap;}
+  /* padding-right reserves room for the fixed theme/language toolbar docked in
+     the corner — the toolbar sits at a fixed distance from the viewport's own
+     right edge (not the centered .wrap's edge), so without this the header's
+     title or stat pills run underneath it at almost any viewport width up to
+     roughly 1250px, not just on a narrow phone. */
+  .top-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 106px 14px 16px;flex-wrap:wrap;}
   .brand{display:flex;align-items:center;gap:10px;}
   .brand-emblem{height:34px;width:auto;flex-shrink:0;}
   .brand h1{
@@ -239,6 +255,17 @@
   .stu-sub{font-size:.78rem;color:var(--ink-soft);margin-top:1px;}
   .chip{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em;}
   .chip.review{background:var(--accent-soft);color:var(--accent-soft-ink);}
+  .chip.streak{background:var(--absent-soft);color:var(--absent);}
+  .chip.streak .icon{width:.85em;height:.85em;}
+
+  .reason-row{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px 56px;}
+  .reason-chip{
+    appearance:none;border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);
+    border-radius:999px;padding:3px 10px;font-size:.72rem;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .reason-chip:hover{border-color:var(--accent);}
+  .reason-chip.on{background:var(--accent-soft);color:var(--accent-soft-ink);border-color:var(--accent-soft-ink);}
+  @media (min-width: 720px){ .reason-row{padding-left:60px;} }
 
   .mark-toggle{display:flex;flex-shrink:0;border:1.5px solid var(--border);border-radius:999px;overflow:hidden;}
   .mark-seg{
@@ -297,6 +324,14 @@
   .sparkline{display:block;flex-shrink:0;}
   .sparkline rect{transition:height .2s ease, y .2s ease;}
 
+  .centre-compare{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .compare-row{display:grid;grid-template-columns:minmax(90px,150px) 1fr 44px;align-items:center;gap:10px;font-size:.82rem;}
+  .compare-label{color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .compare-bar{background:var(--surface-2);border-radius:999px;height:9px;overflow:hidden;}
+  .compare-fill{display:block;height:100%;border-radius:999px;background:var(--present);}
+  .compare-fill.mid{background:var(--accent);}
+  .compare-fill.low{background:var(--absent);}
+  .compare-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;}
   .grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:16px;}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
   .stat-card .num{font-family:var(--font-display);font-size:1.7rem;font-weight:600;font-variant-numeric:tabular-nums;}
@@ -368,16 +403,21 @@
   .locked-value{border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;
     background:var(--surface-2);font-size:.9rem;min-height:38px;display:flex;align-items:center;}
 
+  #corner-toolbar{
+    position:fixed;top:14px;right:14px;z-index:40;display:flex;gap:8px;
+  }
   .theme-toggle{
-    position:fixed;top:14px;right:14px;z-index:40;width:38px;height:38px;border-radius:50%;
+    width:38px;height:38px;border-radius:50%;
     border:1px solid var(--border);background:var(--surface);color:var(--ink-soft);cursor:pointer;
     display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);
     padding:0;transition:transform .15s ease, color .15s ease, border-color .15s ease;
+    font-family:inherit;
   }
   .theme-toggle:hover{color:var(--primary);border-color:var(--primary);}
   .theme-toggle:active{transform:scale(.92);}
   .theme-toggle .icon{width:1.15em;height:1.15em;}
   .theme-toggle .icon-moon{display:none;}
+  .lang-toggle{font-size:.7rem;font-weight:700;letter-spacing:.02em;}
   :root[data-theme="dark"] .theme-toggle .icon-sun{display:none;}
   :root[data-theme="dark"] .theme-toggle .icon-moon{display:block;}
   @media (prefers-color-scheme: dark){
@@ -394,6 +434,7 @@
     background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);
     padding:22px;max-width:420px;width:100%;
   }
+  .modal-card.modal-wide{max-width:640px;}
   .modal-card h3{font-family:var(--font-display);margin:0 0 8px;font-size:1.1rem;}
   .modal-card p{margin:0 0 16px;color:var(--ink-soft);font-size:.88rem;line-height:1.5;}
   .modal-card input[type=text]{margin-bottom:16px;}
@@ -418,12 +459,21 @@
     <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
     <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M2.5 12h3M18.5 12h3M4.4 19.6l2.1-2.1M17.5 6.5l2.1-2.1"/></symbol>
     <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 14.3A8.3 8.3 0 1 1 9.7 4a6.7 6.7 0 0 0 10.3 10.3z"/></symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19L12 4z"/><path d="M12 10.5v4"/><circle cx="12" cy="17.3" r="0.4" fill="currentColor"/></symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2.5h7L17 8h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 8z"/><circle cx="12" cy="13.5" r="3.6"/></symbol>
+    <symbol id="icon-print" viewBox="0 0 24 24"><path d="M6 8.5V4h12v4.5"/><rect x="4" y="8.5" width="16" height="8" rx="1.5"/><path d="M6 15.5h12V20H6z"/></symbol>
+    <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5a13 13 0 0 1 0 17M12 3.5a13 13 0 0 0 0 17"/></symbol>
+    <symbol id="icon-activity" viewBox="0 0 24 24"><path d="M3 12h4l2.2-7 4 14 2.2-7H21"/></symbol>
+    <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></symbol>
   </svg>
 
-  <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
-    <svg class="icon icon-sun" aria-hidden="true"><use href="#icon-sun"></use></svg>
-    <svg class="icon icon-moon" aria-hidden="true"><use href="#icon-moon"></use></svg>
-  </button>
+  <div id="corner-toolbar">
+    <button type="button" id="lang-toggle" class="theme-toggle lang-toggle" aria-label="Change language" title="Change language">EN</button>
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+      <svg class="icon icon-sun" aria-hidden="true"><use href="#icon-sun"></use></svg>
+      <svg class="icon icon-moon" aria-hidden="true"><use href="#icon-moon"></use></svg>
+    </button>
+  </div>
 
   <div id="gate-screen" class="gate-wrap"></div>
 
@@ -510,7 +560,7 @@
   let initializeApp, getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
       signInWithEmailAndPassword, signOut;
   let getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
-      collection, getDocs, onSnapshot, writeBatch, query, where, limit;
+      collection, getDocs, onSnapshot, writeBatch, query, where, limit, orderBy;
 
   // ---------- state ----------
   var STATE = { roster: [], attendance: {} };
@@ -534,6 +584,78 @@
   function uniqSorted(arr){
     return Array.from(new Set(arr.filter(Boolean))).sort(function(a,b){return a.localeCompare(b);});
   }
+
+  // ---------- language ----------
+  // Covers the UI a teacher actually navigates day to day — nav, primary
+  // buttons, field labels, table headers, the login screen. Deliberately does
+  // NOT cover toasts, validation messages, or empty-state body copy — that's a
+  // lot more literal text to translate accurately, and this covers what's
+  // needed to actually use the app in Marathi or Hindi.
+  var LANG = 'en';
+  try{ var savedLang = localStorage.getItem('ap_lang'); if(savedLang) LANG = savedLang; }catch(e){}
+  var LANGS = [['en','EN'],['mr','मर'],['hi','हिं']];
+  var STRINGS = {
+    nav_mark: {en:'Mark attendance', mr:'हजेरी नोंदवा', hi:'उपस्थिति दर्ज करें'},
+    nav_students: {en:'Students & records', mr:'विद्यार्थी व नोंदी', hi:'विद्यार्थी और रिकॉर्ड'},
+    nav_reports: {en:'Reports', mr:'अहवाल', hi:'रिपोर्ट'},
+    mark_all_present: {en:'Mark all present', mr:'सर्व उपस्थित नोंदवा', hi:'सभी को उपस्थित करें'},
+    clear_date: {en:'Clear this date', mr:'ही तारीख रिकामी करा', hi:'यह तारीख साफ़ करें'},
+    this_week: {en:'This week (Sun)', mr:'या आठवड्यात (रवि)', hi:'इस सप्ताह (रवि)'},
+    log_out: {en:'Log out', mr:'बाहेर पडा', hi:'लॉग आउट करें'},
+    add_student: {en:'+ Add student', mr:'+ विद्यार्थी जोडा', hi:'+ विद्यार्थी जोड़ें'},
+    cancel: {en:'Cancel', mr:'रद्द करा', hi:'रद्द करें'},
+    save_student: {en:'Save student', mr:'विद्यार्थी जतन करा', hi:'विद्यार्थी सहेजें'},
+    delete_student: {en:'Delete student', mr:'विद्यार्थी काढा', hi:'विद्यार्थी हटाएं'},
+    details: {en:'Details', mr:'तपशील', hi:'विवरण'},
+    close: {en:'Close', mr:'बंद करा', hi:'बंद करें'},
+    export_csv: {en:'Export CSV', mr:'CSV निर्यात करा', hi:'CSV निर्यात करें'},
+    export_csv_detailed: {en:'Export CSV (per-date)', mr:'CSV निर्यात करा (तारीखनिहाय)', hi:'CSV निर्यात करें (तारीखवार)'},
+    refresh: {en:'Refresh', mr:'रिफ्रेश करा', hi:'रिफ्रेश करें'},
+    print_register: {en:'Print monthly register', mr:'मासिक नोंदवही छापा', hi:'मासिक रजिस्टर प्रिंट करें'},
+    activity_log: {en:'Activity log', mr:'कार्य नोंद', hi:'गतिविधि लॉग'},
+    centre_summary: {en:'Centre summary', mr:'केंद्र सारांश', hi:'केंद्र सारांश'},
+    class_summary: {en:'Class summary', mr:'वर्ग सारांश', hi:'कक्षा सारांश'},
+    students_by_attendance: {en:'Students by attendance', mr:'हजेरीनुसार विद्यार्थी', hi:'उपस्थिति अनुसार विद्यार्थी'},
+    login_title: {en:'Sign in to Akshar Paaul', mr:'अक्षर पाऊल मध्ये लॉगिन करा', hi:'अक्षर पाऊल में साइन इन करें'},
+    login_id_label: {en:'Login ID', mr:'लॉगिन आयडी', hi:'लॉगिन आईडी'},
+    password_label: {en:'Password', mr:'पासवर्ड', hi:'पासवर्ड'},
+    login_button: {en:'Log in', mr:'लॉगिन करा', hi:'लॉग इन करें'},
+    coordinator_only: {en:'Coordinator only', mr:'फक्त समन्वयकासाठी', hi:'केवल समन्वयक के लिए'},
+    add_photo: {en:'Add photo', mr:'फोटो जोडा', hi:'फ़ोटो जोड़ें'},
+    change_photo: {en:'Change photo', mr:'फोटो बदला', hi:'फ़ोटो बदलें'},
+    remove_photo: {en:'Remove', mr:'काढा', hi:'हटाएं'},
+    lang_switch_label: {en:'Change language', mr:'भाषा बदला', hi:'भाषा बदलें'},
+    field_name: {en:'Name', mr:'नाव', hi:'नाम'},
+    field_centre: {en:'Centre', mr:'केंद्र', hi:'केंद्र'},
+    field_teacher: {en:'Teacher', mr:'शिक्षक', hi:'शिक्षक'},
+    field_std: {en:'Std / Class', mr:'इयत्ता', hi:'कक्षा'},
+    field_gender: {en:'Gender', mr:'लिंग', hi:'लिंग'},
+    field_age: {en:'Age', mr:'वय', hi:'आयु'},
+    field_medium: {en:'Medium', mr:'माध्यम', hi:'माध्यम'},
+    field_contact: {en:'Contact no.', mr:'संपर्क क्रमांक', hi:'संपर्क नंबर'},
+    field_school: {en:'School name', mr:'शाळेचे नाव', hi:'स्कूल का नाम'},
+    field_mother_edu: {en:"Mother's education", mr:'आईचे शिक्षण', hi:'माँ की शिक्षा'},
+    field_father_edu: {en:"Father's education", mr:'वडिलांचे शिक्षण', hi:'पिता की शिक्षा'},
+    field_start_level: {en:'Starting level', mr:'सुरुवातीची पातळी', hi:'शुरुआती स्तर'},
+    field_end_level: {en:'Ending level', mr:'अंतिम पातळी', hi:'अंतिम स्तर'},
+    field_reading_level: {en:'Reading level', mr:'वाचन पातळी', hi:'पठन स्तर'},
+    field_school_time: {en:'School time', mr:'शाळेची वेळ', hi:'स्कूल का समय'},
+    field_funding_partner: {en:'Funding partner', mr:'अर्थसहाय्य भागीदार', hi:'वित्तपोषण भागीदार'},
+    col_attendance: {en:'Attendance', mr:'हजेरी', hi:'उपस्थिति'},
+    col_class: {en:'Class', mr:'वर्ग', hi:'कक्षा'},
+    col_present: {en:'Present', mr:'उपस्थित', hi:'उपस्थित'},
+    col_marked: {en:'Marked', mr:'नोंदवले', hi:'दर्ज'},
+    reason_sick: {en:'Sick', mr:'आजारी', hi:'बीमार'},
+    reason_travel: {en:'Travelling', mr:'प्रवासात', hi:'यात्रा पर'},
+    reason_moved: {en:'Moved away', mr:'स्थलांतरित', hi:'स्थानांतरित'},
+    reason_dropped: {en:'Dropped out', mr:'शाळा सोडली', hi:'पढ़ाई छोड़ दी'},
+    reason_other: {en:'Other', mr:'इतर', hi:'अन्य'}
+  };
+  function t(key){
+    var row = STRINGS[key];
+    if(!row) return key;
+    return row[LANG] || row.en || key;
+  }
   function icon(name, cls){
     return '<svg class="icon'+(cls?' '+cls:'')+'" aria-hidden="true"><use href="#icon-'+name+'"></use></svg>';
   }
@@ -555,7 +677,10 @@
     var b = parts.length>1 ? parts[parts.length-1][0] : '';
     return (a+b).toUpperCase();
   }
-  function avatarHtml(name, seed, sizeCls){
+  function avatarHtml(name, seed, sizeCls, photo){
+    if(photo){
+      return '<img class="avatar photo'+(sizeCls?' '+sizeCls:'')+'" src="'+photo+'" alt="" aria-hidden="true">';
+    }
     var color = AVATAR_PALETTE[hashStr(seed||name||'?') % AVATAR_PALETTE.length];
     return '<div class="avatar'+(sizeCls?' '+sizeCls:'')+'" style="background:'+color+';" aria-hidden="true">'+esc(initials(name))+'</div>';
   }
@@ -632,20 +757,45 @@
     var e = attEntry(sid, date);
     return (e && typeof e === 'object' && e.by) ? e.by : null;
   }
+  function attReason(sid, date){
+    var e = attEntry(sid, date);
+    return (e && typeof e === 'object' && e.reason) ? e.reason : null;
+  }
   function mergeAttendanceDoc(d){
     STATE.attendance[d.studentId] = STATE.attendance[d.studentId] || {};
-    STATE.attendance[d.studentId][d.date] = {v:d.v, by:d.by||null, at:d.at||null};
+    STATE.attendance[d.studentId][d.date] = {v:d.v, by:d.by||null, at:d.at||null, reason:d.reason||null};
   }
   function clearAttendanceEntry(sid, date){
     if(STATE.attendance[sid]) delete STATE.attendance[sid][date];
   }
+  // Optional, non-blocking context on *why* a student was absent — chosen from
+  // the small chip row that appears under an absent row in Mark attendance.
+  // Kept short and closed-ended (rather than free text) so it stays a one-tap
+  // action and produces data a coordinator can actually tally later.
+  var ABSENCE_REASONS = [
+    ['sick','reason_sick'], ['travel','reason_travel'], ['moved','reason_moved'], ['dropped','reason_dropped'], ['other','reason_other']
+  ];
+  function absenceReasonLabel(key){
+    var found = ABSENCE_REASONS.filter(function(r){return r[0]===key;})[0];
+    return found ? t(found[1]) : '';
+  }
+  // Consecutive-absence streak: how many of a student's most recently *marked*
+  // sessions in a row were absences, counting back from the latest one. Meant
+  // to surface a student quietly trailing off before they're gone entirely —
+  // school-day gaps don't count against them, only actual marked absences do.
+  var STREAK_RISK_THRESHOLD = 3;
   function studentStats(id){
     var rec = studentAttendance(id);
     var dates = Object.keys(rec);
     var total = dates.length;
     var present = dates.filter(function(d){return attVal(id,d)===1;}).length;
     var pct = total ? Math.round((present/total)*100) : null;
-    return {total:total, present:present, pct:pct, dates:dates.sort()};
+    var sortedDates = dates.sort();
+    var streak = 0;
+    for(var i=sortedDates.length-1;i>=0;i--){
+      if(attVal(id, sortedDates[i])===0){ streak++; } else { break; }
+    }
+    return {total:total, present:present, pct:pct, dates:sortedDates, streak:streak};
   }
   function showToast(text){
     var t = document.getElementById('toast');
@@ -738,6 +888,128 @@
       input.focus();
     });
   }
+  function auditActionLabel(action){
+    return ({create:'Added', edit:'Edited', delete:'Deleted', photo:'Photo changed for'})[action] || action;
+  }
+  // Coordinator-only view of the audit_log collection — who changed which
+  // student record and when. Read-only, most recent 50 entries.
+  async function showActivityLog(){
+    modalPreviousFocus = document.activeElement;
+    modalOverlay.innerHTML = '<div class="modal-card modal-wide" role="document"><h3>'+icon('activity')+' Activity log</h3><p>Loading recent changes…</p></div>';
+    modalOverlay.removeAttribute('hidden');
+    function onKey(e){
+      if(e.key==='Escape'){ closeModal(); document.removeEventListener('keydown', onKey); return; }
+      trapModalTab(e);
+    }
+    document.addEventListener('keydown', onKey);
+    var entries = [];
+    var loadError = false;
+    try{
+      var col = collection(db, 'audit_log');
+      var q = query(col, orderBy('at','desc'), limit(50));
+      var snap = await getDocs(q);
+      snap.forEach(function(d){ entries.push(d.data()); });
+    }catch(e){ loadError = true; }
+    var body;
+    if(loadError){
+      body = '<p style="color:var(--accent-soft-ink);font-size:.85rem;">Could not load the activity log — check your connection and try again.</p>';
+    } else if(!entries.length){
+      body = '<p style="color:var(--ink-soft);font-size:.85rem;">No activity recorded yet.</p>';
+    } else {
+      body = '<div class="table-scroll" style="max-height:50vh;overflow-y:auto;"><table><thead><tr><th>When</th><th>Who</th><th>What</th><th>Details</th></tr></thead><tbody>';
+      entries.forEach(function(e){
+        var when = e.at ? new Date(e.at).toLocaleString() : '—';
+        body += '<tr><td style="white-space:nowrap;">'+esc(when)+'</td><td>'+esc(e.by||'—')+'</td><td>'+esc(auditActionLabel(e.action))+' '+esc(e.studentName||'')+'</td><td>'+esc(e.details||'')+'</td></tr>';
+      });
+      body += '</tbody></table></div>';
+    }
+    modalOverlay.innerHTML = '<div class="modal-card modal-wide" role="document"><h3>'+icon('activity')+' Activity log</h3>'+body+'<div class="modal-actions"><button class="btn primary" id="modal-close-activity">Close</button></div></div>';
+    document.getElementById('modal-close-activity').addEventListener('click', function(){ closeModal(); document.removeEventListener('keydown', onKey); });
+    document.getElementById('modal-close-activity').focus();
+  }
+
+  // ---------- printable monthly register ----------
+  // Asks which centre (coordinator only — a teacher's is fixed) and which
+  // month, then returns {centre, month} or null if cancelled.
+  function showPrintPickerModal(centreList, defaultMonth){
+    return new Promise(function(resolve){
+      modalPreviousFocus = document.activeElement;
+      var centreField = centreList
+        ? '<div class="field" style="margin-bottom:12px;">'+fieldLabel('pin','Centre')+'<select id="pr-centre">'
+          + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; }).join('')
+          + '</select></div>'
+        : '';
+      modalOverlay.innerHTML =
+        '<div class="modal-card" role="document">'
+        + '<h3>'+icon('print')+' Print monthly register</h3>'
+        + '<p>Opens a printable page for this month — use your browser\'s print dialog to save it as a PDF.</p>'
+        + centreField
+        + '<div class="field">'+fieldLabel('book','Month')+'<input type="month" id="pr-month" value="'+defaultMonth+'" max="'+todayIso().slice(0,7)+'"></div>'
+        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">Cancel</button><button class="btn primary" id="modal-confirm">Open register</button></div>'
+        + '</div>';
+      modalOverlay.removeAttribute('hidden');
+      function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
+      function onKey(e){ if(e.key==='Escape'){ finish(null); return; } trapModalTab(e); }
+      document.addEventListener('keydown', onKey);
+      document.getElementById('modal-cancel').addEventListener('click', function(){ finish(null); });
+      document.getElementById('modal-confirm').addEventListener('click', function(){
+        var centreEl = document.getElementById('pr-centre');
+        finish({ centre: centreEl ? centreEl.value : null, month: document.getElementById('pr-month').value || defaultMonth });
+      });
+    });
+  }
+  async function openPrintRegister(){
+    var centre, month;
+    if(IDENTITY && IDENTITY.role==='coordinator'){
+      var picked = await showPrintPickerModal(centres(), todayIso().slice(0,7));
+      if(!picked) return;
+      centre = picked.centre; month = picked.month;
+    } else {
+      var pickedTeacher = await showPrintPickerModal(null, todayIso().slice(0,7));
+      if(!pickedTeacher) return;
+      centre = IDENTITY.centre; month = pickedTeacher.month;
+    }
+    renderPrintRegisterWindow(centre, month);
+  }
+  function renderPrintRegisterWindow(centre, month){
+    var stus = STATE.roster.filter(function(s){ return s.centre===centre; })
+      .sort(function(a,b){ var ck=classSortKey(a.std)-classSortKey(b.std); return ck!==0?ck:a.name.localeCompare(b.name); });
+    var dateSet = {};
+    stus.forEach(function(s){
+      Object.keys(studentAttendance(s.id)).forEach(function(d){ if(d.indexOf(month)===0) dateSet[d] = true; });
+    });
+    var dates = Object.keys(dateSet).sort();
+    var monthLabel = new Date(month+'-01T00:00:00').toLocaleDateString(undefined, {month:'long', year:'numeric'});
+    var rowsHtml = stus.map(function(s){
+      var cells = dates.map(function(d){
+        var v = attVal(s.id, d);
+        var reason = attReason(s.id, d);
+        var mark = v===1 ? 'P' : (v===0 ? 'A' : '');
+        var title = v===0 && reason ? ' title="'+esc(absenceReasonLabel(reason))+'"' : '';
+        return '<td'+title+'>'+mark+'</td>';
+      }).join('');
+      var st = studentStats(s.id);
+      var pctTxt = st.pct===null ? '—' : st.pct+'%';
+      return '<tr><td class="nm">'+esc(s.name)+'</td><td>'+esc(s.std||'—')+'</td>'+cells+'<td class="tot">'+pctTxt+'</td></tr>';
+    }).join('');
+    var headCells = dates.map(function(d){ return '<th>'+d.slice(8,10)+'</th>'; }).join('');
+    var doc = '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(shortCentre(centre))+' — '+esc(monthLabel)+'</title><style>'
+      + 'body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}'
+      + 'h1{font-size:18px;margin:0 0 2px;} h2{font-size:13px;font-weight:normal;color:#555;margin:0 0 18px;}'
+      + 'table{border-collapse:collapse;width:100%;font-size:11px;} th,td{border:1px solid #999;padding:4px 6px;text-align:center;}'
+      + 'td.nm{text-align:left;font-weight:600;white-space:nowrap;} .tot{font-weight:700;}'
+      + '.printbar{margin-bottom:16px;} @media print{ .printbar{display:none;} }'
+      + '</style></head><body>'
+      + '<div class="printbar"><button onclick="window.print()">Print / Save as PDF</button></div>'
+      + '<h1>Akshar Paaul Attendance Register</h1><h2>'+esc(shortCentre(centre))+' · '+esc(monthLabel)+'</h2>'
+      + (dates.length===0
+        ? '<p>No attendance was marked for this centre in '+esc(monthLabel)+'.</p>'
+        : '<table><thead><tr><th>Name</th><th>Std</th>'+headCells+'<th>%</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>')
+      + '</body></html>';
+    var win = window.open('', '_blank');
+    if(!win){ showToast('Please allow pop-ups to open the printable register.'); return; }
+    win.document.open(); win.document.write(doc); win.document.close();
+  }
 
   // ---------- header ----------
   function renderHeader(){
@@ -798,6 +1070,28 @@
     lastMarkAction = {sid:sid, val:resultVal};
     renderMark();
     var ok = await persistWrite(item);
+    if(!ok) showToast('Saved on this device — will sync when back online.');
+  }
+  // Attaches an optional reason to an *existing* absence without disturbing
+  // fast marking — tapping present/absent never blocks on this. Tapping the
+  // same reason chip again clears it.
+  async function setAbsenceReason(sid, date, reason){
+    var student = studentsById()[sid];
+    var existing = attEntry(sid, date);
+    if(!student || existing===undefined) return;
+    var curVal = (typeof existing==='object') ? existing.v : existing;
+    if(curVal !== 0) return;
+    var curReason = (typeof existing==='object') ? existing.reason : null;
+    var nextReason = (curReason===reason) ? null : reason;
+    var data = {
+      studentId: sid, centre: student.centre, date: date, v: 0,
+      by: (typeof existing==='object' && existing.by) ? existing.by : IDENTITY.name,
+      at: (typeof existing==='object' && existing.at) ? existing.at : new Date().toISOString(),
+      reason: nextReason
+    };
+    mergeAttendanceDoc(data);
+    renderMark();
+    var ok = await persistWrite({type:'set', col:'attendance', docId:sid+'_'+date, data:data});
     if(!ok) showToast('Saved on this device — will sync when back online.');
   }
   // A quick swipe left/right on a roster row marks absent/present without having
@@ -886,7 +1180,7 @@
     });
     html += '</select></div>';
     html += '<div class="field"><label>Date</label><input type="date" id="mk-date" value="'+markFilters.date+'" min="'+MARK_DATE_MIN+'" max="'+todayIso()+'"></div>';
-    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="mk-today">This week (Sun)</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="mk-today">'+t('this_week')+'</button></div>';
     html += '</div>';
 
     var list = centreList.filter(function(s){ return !markFilters.std || s.std===markFilters.std; });
@@ -910,9 +1204,21 @@
     html += '<div class="mark-progress-text"><span class="n">'+markedCount+' of '+list.length+'</span><span class="lbl">marked for '+esc(fmtDateLabel(markFilters.date))+'</span></div>';
     html += '</div>';
     html += '<span style="display:flex;gap:8px;">';
-    html += '<button class="btn small" id="mk-allpresent">Mark all present</button>';
-    html += '<button class="btn ghost small" id="mk-clear">Clear this date</button>';
+    html += '<button class="btn small" id="mk-allpresent">'+t('mark_all_present')+'</button>';
+    html += '<button class="btn ghost small" id="mk-clear">'+t('clear_date')+'</button>';
     html += '</span></div>';
+
+    // Centres meet weekly (the default date is always the nearest Sunday, same
+    // one "This week (Sun)" jumps back to) rather than daily, so the nudge is
+    // keyed to "the current session" — the default date — not literally
+    // today's calendar date, which usually isn't a Sunday at all.
+    var unmarkedCount = list.length - markedCount;
+    var nudgeKey = 'ap_nudge_dismissed_'+markFilters.date+'_'+markFilters.centre;
+    var nudgeDismissed = false;
+    try{ nudgeDismissed = sessionStorage.getItem(nudgeKey)==='1'; }catch(e){}
+    if(markFilters.date===nearestSunday() && list.length>0 && unmarkedCount>0 && !nudgeDismissed){
+      html += '<div class="banner" id="mk-nudge">'+icon('alert')+'<span>You haven\'t marked '+unmarkedCount+' student'+(unmarkedCount>1?'s':'')+' yet for this week\'s session.</span><button class="btn ghost small" id="mk-nudge-dismiss">Dismiss</button></div>';
+    }
 
     html += '<div class="roster-list" id="mk-list">';
     if(list.length===0){
@@ -927,16 +1233,27 @@
       }
       var v = attVal(s.id, markFilters.date);
       var isP = v === 1, isA = v === 0;
+      var streak = studentStats(s.id).streak;
+      var atRisk = streak >= STREAK_RISK_THRESHOLD;
       html += '<div class="stu-row" data-sid="'+s.id+'">';
       html += '<div class="swipe-reveal"><span class="icon-wrap check">'+icon('check','icon-lg')+'</span><span class="icon-wrap cross">'+icon('cross','icon-lg')+'</span></div>';
       html += '<div class="stu-row-inner">';
-      html += '<div class="stu-main">'+avatarHtml(s.name, s.centre)+'<div class="stu-text"><div class="stu-name">'+esc(s.name)+'</div>';
+      html += '<div class="stu-main">'+avatarHtml(s.name, s.centre, null, s.photo)+'<div class="stu-text"><div class="stu-name">'+esc(s.name)+(atRisk?' <span class="chip streak" title="'+streak+' absences in a row">'+icon('alert')+' '+streak+'</span>':'')+'</div>';
       html += '<div class="stu-sub">'+esc(s.std||'—')+(s.teacher?' · '+esc(s.teacher):'')+'</div></div></div>';
       html += '<div class="mark-toggle">';
       html += '<button class="mark-seg absent'+(isA?' on':'')+'" data-act="absent" aria-pressed="'+isA+'" aria-label="Mark '+esc(s.name)+' absent">'+icon('cross')+'</button>';
       html += '<button class="mark-seg present'+(isP?' on':'')+'" data-act="present" aria-pressed="'+isP+'" aria-label="Mark '+esc(s.name)+' present">'+icon('check')+'</button>';
       html += '</div>';
-      html += '</div></div>';
+      html += '</div>';
+      if(isA){
+        var curReason = attReason(s.id, markFilters.date);
+        html += '<div class="reason-row" data-reason-for="'+s.id+'">';
+        ABSENCE_REASONS.forEach(function(r){
+          html += '<button type="button" class="reason-chip'+(curReason===r[0]?' on':'')+'" data-reason="'+r[0]+'">'+esc(t(r[1]))+'</button>';
+        });
+        html += '</div>';
+      }
+      html += '</div>';
     });
     html += '</div></div>';
 
@@ -1015,6 +1332,20 @@
     el.querySelectorAll('.stu-row').forEach(function(row){
       attachSwipe(row, row.getAttribute('data-sid'));
     });
+    el.querySelectorAll('.reason-chip').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var wrap = btn.closest('[data-reason-for]');
+        var sid = wrap.getAttribute('data-reason-for');
+        setAbsenceReason(sid, markFilters.date, btn.getAttribute('data-reason'));
+      });
+    });
+    var nudgeDismissBtn = document.getElementById('mk-nudge-dismiss');
+    if(nudgeDismissBtn){
+      nudgeDismissBtn.addEventListener('click', function(){
+        try{ sessionStorage.setItem(nudgeKey, '1'); }catch(e){}
+        renderMark();
+      });
+    }
     // Give the just-tapped/swiped segment a quick pop (and, for "present", a
     // self-drawing checkmark) so a repeated, high-frequency action feels like
     // a satisfying little event rather than a flat colour swap.
@@ -1030,7 +1361,7 @@
 
   // ================= TAB: STUDENTS & RECORDS =================
   var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, expanded:null, adding:false, sortKey:'std', sortDir:'asc' };
-  var STU_COLUMNS = [['name','Name'],['centre','Centre'],['teacher','Teacher'],['std','Std'],['attendance','Attendance']];
+  var STU_COLUMNS = [['name','field_name'],['centre','field_centre'],['teacher','field_teacher'],['std','field_std'],['attendance','col_attendance']];
   function compareStudents(a, b, key){
     if(key==='std'){
       var ck = classSortKey(a.std)-classSortKey(b.std);
@@ -1049,17 +1380,23 @@
     return cmp!==0 ? cmp : a.name.localeCompare(b.name);
   }
 
+  // Second element is a STRINGS key (not literal text) so these labels follow
+  // the language switcher instead of being frozen in English at page load.
   var EDIT_FIELDS = [
-    ['name','Name'], ['centre','Centre'], ['teacher','Teacher'], ['std','Std / Class'],
-    ['gender','Gender'], ['age','Age'], ['medium','Medium'], ['contact','Contact no.'],
-    ['school','School name'], ['mother_edu',"Mother's education"], ['father_edu',"Father's education"],
-    ['start_level','Starting level'], ['end_level','Ending level'], ['reading_level','Reading level'],
-    ['school_time','School time'], ['funding_partner','Funding partner']
+    ['name','field_name'], ['centre','field_centre'], ['teacher','field_teacher'], ['std','field_std'],
+    ['gender','field_gender'], ['age','field_age'], ['medium','field_medium'], ['contact','field_contact'],
+    ['school','field_school'], ['mother_edu','field_mother_edu'], ['father_edu','field_father_edu'],
+    ['start_level','field_start_level'], ['end_level','field_end_level'], ['reading_level','field_reading_level'],
+    ['school_time','field_school_time'], ['funding_partner','field_funding_partner']
   ];
   // Shorter set asked for up front when adding a new student — the rest
   // (mother's education, reading level, etc.) can be filled in afterwards
   // through the same "Details" edit panel used for review.
   var ADD_FIELDS = EDIT_FIELDS.slice(0, 9);
+  function fieldLabelText(key){
+    var found = EDIT_FIELDS.filter(function(p){return p[0]===key;})[0];
+    return found ? t(found[1]) : key;
+  }
   // A centre teacher only needs to identify a student and mark their attendance —
   // a parent's phone number and education background aren't needed for that, so
   // these stay coordinator-only in the Details panel. Centre also gets special
@@ -1105,6 +1442,48 @@
     // Fallback for the rare browser without crypto.randomUUID (older Safari/WebViews).
     return 's_' + Date.now().toString(16) + '_' + Math.random().toString(16).slice(2,10);
   }
+  function genAuditId(){
+    if(window.crypto && typeof window.crypto.randomUUID === 'function'){
+      return 'a_' + window.crypto.randomUUID();
+    }
+    return 'a_' + Date.now().toString(16) + '_' + Math.random().toString(16).slice(2,10);
+  }
+  // A lightweight, append-only trail of who changed a student record and when —
+  // separate from attendance, which already carries its own "by" per mark.
+  // Best-effort: goes through the same offline queue as everything else, but a
+  // failure here never blocks or rolls back the edit it's describing.
+  function logAudit(action, studentId, studentName, details){
+    var data = {
+      action: action, studentId: studentId || null, studentName: studentName || null,
+      by: (IDENTITY && IDENTITY.name) || 'unknown', byEmail: (IDENTITY && IDENTITY.email) || null,
+      byRole: (IDENTITY && IDENTITY.role) || null, details: details || '', at: new Date().toISOString()
+    };
+    persistWrite({type:'set', col:'audit_log', docId:genAuditId(), data:data});
+  }
+  // Crops to a centered square and downsamples to a small JPEG data URL so a
+  // student photo can live directly on the Firestore document (well under the
+  // 1MB doc limit) without needing Firebase Storage or its own rules/billing.
+  function resizeImageToDataUrl(file, size){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onerror = function(){ reject(new Error('read failed')); };
+      reader.onload = function(){
+        var img = new Image();
+        img.onerror = function(){ reject(new Error('decode failed')); };
+        img.onload = function(){
+          var side = Math.min(img.width, img.height);
+          var sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+          var canvas = document.createElement('canvas');
+          canvas.width = size; canvas.height = size;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+          resolve(canvas.toDataURL('image/jpeg', 0.6));
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   function renderStudents(){
     if(isEditingStudents()) return; // don't yank focus while someone is typing a correction
@@ -1132,7 +1511,7 @@
     stClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===stuFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
-    html += '<div class="field"><label>&nbsp;</label><button class="btn primary small" id="st-add-toggle">'+(stuFilters.adding ? 'Cancel' : '+ Add student')+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn primary small" id="st-add-toggle">'+(stuFilters.adding ? t('cancel') : t('add_student'))+'</button></div>';
     html += '</div>';
 
     if(stuFilters.reviewOnly){
@@ -1144,20 +1523,20 @@
       html += '<div class="card" id="st-add-card" style="background:var(--surface-2);margin-bottom:16px;">';
       html += '<h2 class="section-title" style="margin-top:0;">Add a new student</h2>';
       ADD_FIELDS.forEach(function(pair){
-        var key = pair[0], label = pair[1];
+        var key = pair[0], label = t(pair[1]);
         if(key==='centre'){
           if(IDENTITY && IDENTITY.role!=='coordinator'){
-            html += '<div class="detail-item"><label>Centre</label><span>'+esc(IDENTITY.centre)+'</span></div>';
+            html += '<div class="detail-item"><label>'+t('field_centre')+'</label><span>'+esc(IDENTITY.centre)+'</span></div>';
           } else {
-            html += '<div class="detail-item"><label for="add-f-centre">Centre</label><select id="add-f-centre">';
+            html += '<div class="detail-item"><label for="add-f-centre">'+t('field_centre')+'</label><select id="add-f-centre">';
             cList.forEach(function(c){ html += '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; });
             html += '<option value="__new__">+ New centre…</option></select></div>';
           }
           return;
         }
-        html += '<div class="detail-item"><label for="add-f-'+key+'">'+label+'</label><input type="text" id="add-f-'+key+'" data-field="'+key+'"></div>';
+        html += '<div class="detail-item"><label for="add-f-'+key+'">'+esc(label)+'</label><input type="text" id="add-f-'+key+'" data-field="'+key+'"></div>';
       });
-      html += '<div class="controls-row" style="margin-top:10px;"><button class="btn primary" id="st-add-submit">Save student</button><button class="btn ghost" id="st-add-cancel">Cancel</button></div>';
+      html += '<div class="controls-row" style="margin-top:10px;"><button class="btn primary" id="st-add-submit">'+t('save_student')+'</button><button class="btn ghost" id="st-add-cancel">'+t('cancel')+'</button></div>';
       html += '<p id="st-add-error" style="color:var(--absent);font-size:.82rem;margin:8px 0 0;"></p>';
       html += '</div>';
     }
@@ -1183,7 +1562,7 @@
     if(list.length>0){
     html += '<div class="table-scroll"><table><thead><tr>';
     STU_COLUMNS.forEach(function(col){
-      var key=col[0], label=col[1];
+      var key=col[0], label=t(col[1]);
       var active = stuFilters.sortKey===key;
       var arrow = active ? (stuFilters.sortDir==='asc' ? '▲' : '▼') : '';
       var ariaSort = active ? (stuFilters.sortDir==='asc' ? 'ascending' : 'descending') : 'none';
@@ -1196,23 +1575,28 @@
       var stats = studentStats(s.id);
       var pctTxt = stats.pct===null ? '—' : stats.pct+'%';
       html += '<tr data-sid="'+s.id+'">';
-      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm')+esc(s.name)+(s.needs_review?' <span class="chip review">'+icon('flag')+' Review</span>':'')+'</td>';
+      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(s.name)+(s.needs_review?' <span class="chip review">'+icon('flag')+' Review</span>':'')+(stats.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+stats.streak+' absences in a row">'+icon('alert')+' '+stats.streak+'</span>':'')+'</td>';
       html += '<td>'+esc(shortCentre(s.centre))+'</td>';
       html += '<td>'+(s.teacher?esc(s.teacher):'<em style="color:var(--accent-soft-ink);">unassigned</em>')+'</td>';
       html += '<td>'+esc(s.std||'—')+'</td>';
       html += '<td class="pct '+pctClass(stats.pct)+'">'+pctTxt+'</td>';
-      html += '<td><button class="btn ghost small" data-expand="'+s.id+'">'+(stuFilters.expanded===s.id?'Close':'Details')+'</button></td>';
+      html += '<td><button class="btn ghost small" data-expand="'+s.id+'">'+(stuFilters.expanded===s.id?t('close'):t('details'))+'</button></td>';
       html += '</tr>';
       if(stuFilters.expanded===s.id){
         var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
         html += '<tr><td colspan="6"><div class="detail-panel" data-detail="'+s.id+'">';
+        html += '<div class="photo-picker" style="grid-column:1/-1;">'+avatarHtml(s.name, s.centre, null, s.photo)
+          + '<span><input type="file" accept="image/*" id="photo-input-'+s.id+'" data-photo-for="'+s.id+'">'
+          + '<button type="button" class="btn ghost small" data-photo-pick="'+s.id+'">'+icon('camera')+' '+(s.photo?t('change_photo'):t('add_photo'))+'</button>'
+          + (s.photo ? ' <button type="button" class="btn ghost small" data-photo-remove="'+s.id+'">'+t('remove_photo')+'</button>' : '')
+          + '</span></div>';
         EDIT_FIELDS.forEach(function(pair){
-          var key=pair[0], label=pair[1];
+          var key=pair[0], label=t(pair[1]);
           var val = s[key];
           var lblId = 'lbl-'+s.id+'-'+key;
-          html += '<div class="detail-item"><label id="'+lblId+'">'+label+'</label>';
+          html += '<div class="detail-item"><label id="'+lblId+'">'+esc(label)+'</label>';
           if(isTeacherViewer && COORDINATOR_ONLY_FIELDS.indexOf(key)>-1){
-            html += '<span class="locked-field">'+icon('lock')+' Coordinator only</span></div>';
+            html += '<span class="locked-field">'+icon('lock')+' '+t('coordinator_only')+'</span></div>';
             return;
           }
           if(isTeacherViewer && key==='centre'){
@@ -1222,7 +1606,7 @@
           html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(val || 'tap to add')+'</span></div>';
         });
         if(IDENTITY && IDENTITY.role==='coordinator'){
-          html += '<div class="controls-row" style="margin-top:6px;"><button class="btn danger small" data-delete="'+s.id+'">Delete student</button></div>';
+          html += '<div class="controls-row" style="margin-top:6px;"><button class="btn danger small" data-delete="'+s.id+'">'+t('delete_student')+'</button></div>';
         }
         html += '</div></td></tr>';
       }
@@ -1299,6 +1683,7 @@
         addSubmitBtn.disabled = true;
         STATE.roster.push(Object.assign({id:id}, data));
         var ok = await persistWrite({type:'set', col:'students', docId:id, data:data});
+        logAudit('create', id, data.name, 'Added student');
         stuFilters.adding = false;
         if(!ageCheck.ok || !contactCheck.ok){
           showToast('Student added, but flagged for review — ' + (!ageCheck.ok ? ageCheck.msg : contactCheck.msg));
@@ -1329,7 +1714,44 @@
         STATE.roster = STATE.roster.filter(function(s){ return s.id!==id; });
         stuFilters.expanded = null;
         var ok = await persistWrite({type:'delete', col:'students', docId:id});
+        logAudit('delete', id, stu.name, 'Deleted student');
         showToast(ok ? 'Student deleted.' : 'Deleted on this device — will sync when back online.');
+        renderStudents();
+      });
+    });
+    el.querySelectorAll('[data-photo-pick]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-photo-pick');
+        var input = document.getElementById('photo-input-'+id);
+        if(input) input.click();
+      });
+    });
+    el.querySelectorAll('[data-photo-for]').forEach(function(input){
+      input.addEventListener('change', async function(){
+        var id = input.getAttribute('data-photo-for');
+        var file = input.files && input.files[0];
+        if(!file) return;
+        try{
+          var dataUrl = await resizeImageToDataUrl(file, 128);
+          var stu = studentsById()[id];
+          Object.assign(stu, {photo: dataUrl});
+          var ok = await persistWrite({type:'update', col:'students', docId:id, data:{photo: dataUrl}});
+          logAudit('photo', id, stu.name, 'Updated photo');
+          showToast(ok ? 'Photo saved.' : 'Saved on this device — will sync when back online.');
+          renderStudents();
+        }catch(e){
+          showToast('Could not read that image — try a different photo.');
+        }
+      });
+    });
+    el.querySelectorAll('[data-photo-remove]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var id = btn.getAttribute('data-photo-remove');
+        var stu = studentsById()[id];
+        Object.assign(stu, {photo: null});
+        var ok = await persistWrite({type:'update', col:'students', docId:id, data:{photo: null}});
+        logAudit('photo', id, stu.name, 'Removed photo');
+        showToast(ok ? 'Photo removed.' : 'Saved on this device — will sync when back online.');
         renderStudents();
       });
     });
@@ -1346,8 +1768,10 @@
           var check = validateField(field, val);
           var merged = Object.assign({}, stu, patch);
           patch.needs_review = computeNeedsReview(merged);
+          var oldVal = stu[field];
           Object.assign(stu, patch);
           var ok = await persistWrite({type:'update', col:'students', docId:sid, data:patch});
+          logAudit('edit', sid, stu.name, fieldLabelText(field)+': '+(oldVal||'—')+' → '+(val||'—'));
           if(!check.ok){ showToast(check.msg); }
           else { showToast(ok ? 'Saved.' : 'Saved on this device — will sync when back online.'); }
           if(!isEditingStudents()) renderStudents();
@@ -1361,7 +1785,7 @@
 
   // ================= TAB: REPORTS =================
   var rpFilters = { std: '', sortKey:'attendance', sortDir:'asc' };
-  var RP_COLUMNS = [['name','Name'],['centre','Centre'],['std','Class'],['present','Present'],['marked','Marked'],['attendance','Attendance']];
+  var RP_COLUMNS = [['name','field_name'],['centre','field_centre'],['std','col_class'],['present','col_present'],['marked','col_marked'],['attendance','col_attendance']];
   function compareReportRows(a, b, key){
     if(key==='name') return a.s.name.localeCompare(b.s.name);
     if(key==='centre') return shortCentre(a.s.centre||'').localeCompare(shortCentre(b.s.centre||''));
@@ -1380,19 +1804,51 @@
     var cList = centres();
     var rpClassList = classesIn(STATE.roster);
     if(rpFilters.std && rpClassList.indexOf(rpFilters.std)===-1) rpFilters.std = '';
+    var atRiskCount = STATE.roster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; }).length;
     var html = '<div class="card">';
-    html += '<h2 class="section-title">Centre summary</h2>';
-    html += '<div class="grid-cards">';
-    cList.forEach(function(c){
+    html += '<div class="controls-row" style="justify-content:space-between;">';
+    html += '<h2 class="section-title" style="margin:0;">'+t('centre_summary')+'</h2>';
+    if(IDENTITY && IDENTITY.role==='coordinator'){
+      html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-activity">'+icon('activity')+' '+t('activity_log')+'</button><button class="btn ghost small" id="rp-print">'+icon('print')+' '+t('print_register')+'</button></span>';
+    } else {
+      html += '<button class="btn ghost small" id="rp-print">'+icon('print')+' '+t('print_register')+'</button>';
+    }
+    html += '</div>';
+    // Sorted lowest-attendance-first so the centre that most needs a look sits
+    // at the top of the comparison rather than wherever it falls alphabetically.
+    var centreRows = cList.map(function(c){
       var stus = STATE.roster.filter(function(s){return s.centre===c;});
       var pcts = stus.map(function(s){return studentStats(s.id).pct;}).filter(function(p){return p!==null;});
       var avg = pcts.length ? Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length) : null;
-      html += '<div class="stat-card"><div class="num">'+(avg===null?'—':avg+'%')+'</div>';
-      html += '<div class="lbl">'+esc(shortCentre(c))+' · '+stus.length+' students</div></div>';
+      return {c:c, stus:stus, avg:avg};
+    }).sort(function(a,b){
+      if(a.avg===null) return 1; if(b.avg===null) return -1;
+      return a.avg - b.avg;
     });
+    if(centreRows.length>1){
+      html += '<div class="centre-compare">';
+      centreRows.forEach(function(r){
+        var frac = r.avg===null ? 0 : r.avg/100;
+        html += '<div class="compare-row">'
+          + '<span class="compare-label">'+esc(shortCentre(r.c))+'</span>'
+          + '<span class="compare-bar"><span class="compare-fill '+pctClass(r.avg)+'" style="width:'+(frac*100).toFixed(0)+'%;"></span></span>'
+          + '<span class="compare-val">'+(r.avg===null?'—':r.avg+'%')+'</span>'
+          + '</div>';
+      });
+      html += '</div>';
+    }
+    html += '<div class="grid-cards">';
+    centreRows.forEach(function(r){
+      html += '<div class="stat-card"><div class="num">'+(r.avg===null?'—':r.avg+'%')+'</div>';
+      html += '<div class="lbl">'+esc(shortCentre(r.c))+' · '+r.stus.length+' students</div></div>';
+    });
+    if(atRiskCount>0){
+      html += '<div class="stat-card" style="border-color:var(--absent);"><div class="num" style="color:var(--absent);">'+atRiskCount+'</div>';
+      html += '<div class="lbl">'+icon('alert')+' student'+(atRiskCount>1?'s':'')+' with '+STREAK_RISK_THRESHOLD+'+ absences in a row</div></div>';
+    }
     html += '</div>';
 
-    html += '<h2 class="section-title">Class summary</h2>';
+    html += '<h2 class="section-title">'+t('class_summary')+'</h2>';
     html += '<div class="grid-cards">';
     rpClassList.forEach(function(k){
       var stus = STATE.roster.filter(function(s){return s.std===k;});
@@ -1404,8 +1860,8 @@
     html += '</div>';
 
     html += '<div class="controls-row" style="justify-content:space-between;">';
-    html += '<h2 class="section-title" style="margin:0;">Students by attendance</h2>';
-    html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">Refresh</button><button class="btn ghost small" id="rp-export-detailed">Export CSV (per-date)</button><button class="btn small" id="rp-export">Export CSV</button></span>';
+    html += '<h2 class="section-title" style="margin:0;">'+t('students_by_attendance')+'</h2>';
+    html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-refresh">'+t('refresh')+'</button><button class="btn ghost small" id="rp-export-detailed">'+t('export_csv_detailed')+'</button><button class="btn small" id="rp-export">'+t('export_csv')+'</button></span>';
     html += '</div>';
     html += '<div class="controls-row"><div class="field">'+fieldLabel('book','Class')+'<select id="rp-std"><option value="">All classes</option>';
     rpClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===rpFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
@@ -1422,7 +1878,7 @@
 
     html += '<div class="table-scroll"><table><thead><tr>';
     RP_COLUMNS.forEach(function(col){
-      var key=col[0], label=col[1];
+      var key=col[0], label=t(col[1]);
       var active = rpFilters.sortKey===key;
       var arrow = active ? (rpFilters.sortDir==='asc' ? '▲' : '▼') : '';
       var ariaSort = active ? (rpFilters.sortDir==='asc' ? 'ascending' : 'descending') : 'none';
@@ -1433,7 +1889,7 @@
     rows.slice(0,400).forEach(function(r){
       var s=r.s, st=r.st;
       var pctTxt = st.pct===null ? 'No records yet' : st.pct+'%';
-      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm')+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
+      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(s.name)+(st.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+st.streak+' absences in a row">'+icon('alert')+' '+st.streak+'</span>':'')+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
       html += '<td>'+st.present+'</td><td>'+st.total+'</td>';
       html += '<td class="pct '+pctClass(st.pct)+'">'+pctTxt+'</td>';
       html += '<td>'+sparklineHtml(s.id, st.dates.slice(-10))+'</td></tr>';
@@ -1452,6 +1908,9 @@
     document.getElementById('rp-export-detailed').addEventListener('click', function(){ exportDetailedCSV(rows.map(function(r){return r.s;})); });
     document.getElementById('rp-refresh').addEventListener('click', function(){ loadAttendanceHistory(true); });
     document.getElementById('rp-std').addEventListener('change', function(e){ rpFilters.std = e.target.value; renderReports(); });
+    document.getElementById('rp-print').addEventListener('click', openPrintRegister);
+    var activityBtn = document.getElementById('rp-activity');
+    if(activityBtn) activityBtn.addEventListener('click', showActivityLog);
     el.querySelectorAll('th.sortable').forEach(function(th){
       function toggleSort(){
         var key = th.getAttribute('data-sort');
@@ -1516,7 +1975,8 @@
       var row = [s.name, isTeacherViewer ? shortCentre(s.centre) : s.centre, s.teacher||'', s.std||''];
       dates.forEach(function(d){
         var v = attVal(s.id, d);
-        row.push(v===1 ? 'P' : (v===0 ? 'A' : ''));
+        var reason = v===0 ? attReason(s.id, d) : null;
+        row.push(v===1 ? 'P' : (v===0 ? ('A'+(reason?' ('+absenceReasonLabel(reason)+')':'')) : ''));
       });
       lines.push(row.map(csvCell).join(','));
     });
@@ -1562,13 +2022,13 @@
     el.innerHTML =
       '<div class="gate-card">'
       + '<img class="gate-emblem" src="'+EMBLEM_SRC+'" alt="Akshar Paaul">'
-      + '<h1>Sign in to Akshar Paaul</h1>'
+      + '<h1>'+t('login_title')+'</h1>'
       + '<p class="lead">Use the login ID and password your coordinator gave you.</p>'
       + '<form class="gate-form" id="login-form">'
-      + '<div class="field"><label>Login ID</label><input type="text" id="li-id" autocomplete="username" autocapitalize="off" placeholder="e.g. aruna"></div>'
-      + '<div class="field"><label>Password</label><input type="password" id="li-pass" autocomplete="current-password"></div>'
+      + '<div class="field"><label>'+t('login_id_label')+'</label><input type="text" id="li-id" autocomplete="username" autocapitalize="off" placeholder="e.g. aruna"></div>'
+      + '<div class="field"><label>'+t('password_label')+'</label><input type="password" id="li-pass" autocomplete="current-password"></div>'
       + '<div id="li-error" style="display:none;color:var(--absent);font-size:.82rem;"></div>'
-      + '<button class="btn primary" type="submit" id="li-submit">Log in</button>'
+      + '<button class="btn primary" type="submit" id="li-submit">'+t('login_button')+'</button>'
       + '</form>'
       + '<p class="gate-note">Don\'t have a login yet, or forgot your password? Ask your coordinator — they can set one up or reset it for you in a minute, right from the Firebase console.</p>'
       + '</div>';
@@ -1606,7 +2066,7 @@
     var el = document.getElementById('signedin-bar');
     if(!IDENTITY){ el.innerHTML=''; positionThemeToggle(); return; }
     var who = IDENTITY.role==='coordinator' ? 'Coordinator (all centres)' : (IDENTITY.name+' · '+shortCentre(IDENTITY.centre));
-    el.innerHTML = 'Logged in as <b>'+esc(who)+'</b><button class="link-btn" id="logout-btn" style="margin-left:auto;">Log out</button>';
+    el.innerHTML = 'Logged in as <b>'+esc(who)+'</b><button class="link-btn" id="logout-btn" style="margin-left:auto;">'+t('log_out')+'</button>';
     document.getElementById('logout-btn').addEventListener('click', function(){ signOut(auth); });
     positionThemeToggle();
   }
@@ -1639,8 +2099,8 @@
   // breaks whenever one of those shows/hides/wraps, measure what's actually
   // on screen and dock just below it.
   function positionThemeToggle(){
-    var btn = document.getElementById('theme-toggle');
-    if(!btn) return;
+    var toolbar = document.getElementById('corner-toolbar');
+    if(!toolbar) return;
     var maxBottom = 0;
     ['signedin-bar','sync-banner'].forEach(function(id){
       var el = document.getElementById(id);
@@ -1648,7 +2108,7 @@
       var r = el.getBoundingClientRect();
       if(r.height > 0 && r.bottom > maxBottom) maxBottom = r.bottom;
     });
-    btn.style.top = (maxBottom > 0 ? maxBottom + 10 : 14) + 'px';
+    toolbar.style.top = (maxBottom > 0 ? maxBottom + 10 : 14) + 'px';
   }
   function initThemeToggle(){
     var btn = document.getElementById('theme-toggle');
@@ -1669,6 +2129,57 @@
     window.addEventListener('resize', positionThemeToggle);
   }
   initThemeToggle();
+  // ---------- language toggle ----------
+  // Cycles English -> Marathi -> Hindi -> English. Applies immediately to
+  // whatever tab is currently rendered, plus the handful of static labels
+  // (nav tabs) that aren't rebuilt by a render*() call.
+  function applyStaticLangLabels(){
+    var mark = document.querySelector('[data-tab="mark"]');
+    var students = document.querySelector('[data-tab="students"]');
+    var reports = document.querySelector('[data-tab="reports"]');
+    if(mark) mark.textContent = t('nav_mark');
+    if(students) students.textContent = t('nav_students');
+    if(reports) reports.textContent = t('nav_reports');
+  }
+  function rerenderCurrentView(){
+    applyStaticLangLabels();
+    if(IDENTITY){
+      renderSignedInBar();
+      renderMark(); renderStudents(); renderReports();
+    } else {
+      renderGate();
+    }
+  }
+  function initLangToggle(){
+    var btn = document.getElementById('lang-toggle');
+    if(!btn) return;
+    function refresh(){
+      var row = LANGS.filter(function(l){return l[0]===LANG;})[0] || LANGS[0];
+      btn.textContent = row[1];
+      btn.setAttribute('aria-label', t('lang_switch_label'));
+      btn.setAttribute('title', t('lang_switch_label'));
+    }
+    refresh();
+    applyStaticLangLabels();
+    btn.addEventListener('click', function(){
+      var idx = LANGS.map(function(l){return l[0];}).indexOf(LANG);
+      LANG = LANGS[(idx+1) % LANGS.length][0];
+      try{ localStorage.setItem('ap_lang', LANG); }catch(e){}
+      refresh();
+      rerenderCurrentView();
+    });
+  }
+  initLangToggle();
+
+  // ---------- installable app shell ----------
+  // Lets the app open offline and get an icon on the home screen. Harmless
+  // no-op on file:// (local testing) or a browser without service worker
+  // support — it just quietly fails the registration in that case.
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  }
 
   // ================= OFFLINE QUEUE =================
   // Every write in this app goes through persistWrite(). It tries the real
@@ -1829,7 +2340,7 @@
     getFirestore = fsMod.getFirestore; doc = fsMod.doc; getDoc = fsMod.getDoc; setDoc = fsMod.setDoc;
     updateDoc = fsMod.updateDoc; deleteDoc = fsMod.deleteDoc; collection = fsMod.collection;
     getDocs = fsMod.getDocs; onSnapshot = fsMod.onSnapshot; writeBatch = fsMod.writeBatch;
-    query = fsMod.query; where = fsMod.where; limit = fsMod.limit;
+    query = fsMod.query; where = fsMod.where; limit = fsMod.limit; orderBy = fsMod.orderBy;
 
     app = initializeApp(FIREBASE_CONFIG);
     auth = getAuth(app);
