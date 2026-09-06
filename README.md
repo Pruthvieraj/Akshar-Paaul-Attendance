@@ -6,23 +6,31 @@ Coordinators see every centre; teachers log in and land straight on their own. N
 
 ## Live app
 
-https://pruthvieraj.github.io/Akshar-Paaul-Attendance/
+`https://<your-github-username>.github.io/<repo-name>/`
+
+(Fill this in once GitHub Pages is turned on — see **Deploying** below.)
 
 ## Features
 
 - **Mark attendance** — a roll-call-style list built around the actual field task: swipe or tap each student present/absent, with a progress ring showing how many are marked for the current session. A banner nudges a teacher who still has unmarked students for the week.
 - **Students & records** — full roster per centre, tap-to-edit details, search, and column sorting; a coordinator can add, edit, or delete students, a teacher can add and edit within their own centre. Each student can have a photo, added right from the detail panel.
-- **Attendance risk flag** — a student with 3 or more absences in a row gets a small warning badge in Mark attendance, Students & records, and Reports, so a quiet dropout risk doesn't go unnoticed. The header also shows a running "N at risk" count you can tap to jump straight to that list.
+- **CSV student import** — add a batch of students at once instead of one at a time: download a ready-made template, fill it in, and drop it on **Students & records → Import CSV** for a preview (with per-row OK/Skip status for anything missing a name or centre) before anything is actually saved. A teacher's import is automatically pinned to their own centre regardless of what the file says; a coordinator's file controls the centre per row.
+- **Attendance risk flag** — a student with 3 or more absences in a row gets a small warning badge in Mark attendance, Students & records, and Reports, so a quiet dropout risk doesn't go unnoticed.
+- **Tap-to-jump header stats** — the student/centre/needs-review/at-risk counts at the top of the app aren't just numbers: tapping **N students** opens the full roster with every filter cleared, **N centres** jumps to the Reports tab's centre-by-centre breakdown, and **N need review** / **N at risk** drop you straight into that filtered list in Students & records.
+- **Attendance calendar** — open any student's detail panel and tap **View attendance calendar** for a familiar month-grid view (current month plus the two before it) with each session date shaded present/absent/unmarked — a quick visual instead of scanning a list of dates.
 - **Absence reasons** — marking a student absent reveals an optional, one-tap reason (sick, travelling, moved away, dropped out, other) without slowing down the roll call itself.
 - **This week at a glance** — the top of Reports summarises what needs a look right now: how many students are still unmarked for the current week per centre, how many are flagged as at-risk, and a tally of this week's absence reasons — so a coordinator doesn't have to click through every centre to find what's outstanding.
 - **Attendance trend** — a month-by-month bar chart (Reports tab) showing the attendance rate over the student's whole recorded history, for a quick term-over-term or year-over-year read on whether things are improving.
 - **Your centre, month to month** — teachers get a personal stat card comparing this month's attendance rate against last month's, with an up/down indicator, right at the top of their Reports tab.
 - **Archive students** — a student who's left or graduated can be archived instead of deleted: they drop out of Mark attendance and the everyday reports, but their attendance history is kept, and a coordinator can restore them anytime from Students & records → **Show archived**.
 - **Bulk actions** — a coordinator can select multiple students in Students & records (checkboxes + "select all") to move them to a different centre, archive them, or export just that selection to CSV in one action instead of one at a time.
+- **Undo, right after the fact** — archiving a student (one at a time or in bulk) or bulk-changing a centre shows a brief **Undo** toast for a few seconds, so a slip of the finger doesn't mean digging back through Show archived or redoing a bulk action by hand. Permanent delete still asks for confirmation up front instead, since that one truly can't be undone.
 - **Quick search** — a search icon in the corner (or pressing **/** or **Ctrl/Cmd+K** anywhere in the app) opens a jump-to-student search that drops you straight into that student's detail panel, from any tab.
 - **Reports** — attendance percentage per student, a centre-by-centre comparison (coordinator view), flags for records that need review, and CSV export (totals, or a detailed per-date present/absent/reason grid). A one-tap **Copy this month's summary** puts a plain-text centre-by-centre summary on the clipboard — ready to paste into WhatsApp or email — and **This month's CSV** downloads just the current month's detailed grid, without needing to set up email or a paid Firebase plan.
 - **Printable monthly register** — a per-centre, per-month attendance grid formatted for printing or saving as a PDF straight from the browser's print dialog — no extra software needed.
+- **Printable annual/term report** — a year-long companion to the monthly register (Reports → **Annual report**, pick a year): centre and class attendance averages, a month-by-month trend, and a list of students worth checking in on, formatted the same print-or-save-as-PDF way — useful for an end-of-term or end-of-year review without re-building it by hand from twelve monthly registers.
 - **Activity log** — coordinator-only history of who added, edited, deleted, archived, restored, or changed a photo on a student record, and when. Append-only: entries can't be edited or deleted by anyone, including a coordinator.
+- **Full data backup export** — a coordinator can download everything in Firestore (teachers, students, attendance, activity log) as one JSON file from Reports → **Backup data** — a plain-language "keep this somewhere safe" copy outside Firebase, useful before a big bulk change or just as periodic peace of mind.
 - **Works offline** — a tap that can't reach the server right away is queued on-device and synced automatically the moment the connection returns, with a banner showing what's still pending. Installable as a home-screen app (see **Progressive Web App** below) so it also *opens* without a signal.
 - **Light/dark mode** — a toggle in the corner switches instantly and remembers the choice; it also follows the device's system setting until someone picks one explicitly.
 - **English / Marathi / Hindi** — a language switcher next to the theme toggle covers navigation, buttons, field labels, and the login screen. See the language note under **Known limitations** for what isn't translated yet.
@@ -70,6 +78,8 @@ If you ever want visitors to pick up a fresh copy of the app shell sooner than t
 | `audit_log` | generated ID | `action` (`create`/`edit`/`delete`/`photo`/`archive`/`restore`), `studentId`, `studentName`, `by`, `byRole`, `at`, `details` — append-only, coordinator-read-only |
 
 The `active` field is purely additive — no existing student document needed to change when archiving shipped. A document with no `active` field at all (every student that existed before this feature) is simply treated as active.
+
+CSV import, the annual/term report, the attendance calendar, undo, and the full backup export (above) are all built entirely on this existing schema and the rules below — none of them needed a new collection, a new field, or a rules change to ship.
 
 ## Roles
 
