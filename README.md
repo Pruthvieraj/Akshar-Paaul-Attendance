@@ -6,7 +6,7 @@ Coordinators see every centre; teachers log in and land straight on their own. N
 
 ## Live app
 
-`https://<your-github-username>.
+[`https://<your-github-username>.](https://pruthvieraj.github.io/Akshar-Paaul-Attendance/)
 
 ## Features
 
