@@ -6,9 +6,7 @@ Coordinators see every centre; teachers log in and land straight on their own. N
 
 ## Live app
 
-`https://<your-github-username>.github.io/<repo-name>/`
-
-(Fill this in once GitHub Pages is turned on — see **Deploying** below.)
+`https://<your-github-username>.
 
 ## Features
 
