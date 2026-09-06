@@ -739,18 +739,365 @@
     archive_student: {en:'Archive student', mr:'विद्यार्थी संग्रहित करा', hi:'विद्यार्थी संग्रहीत करें'},
     restore_student: {en:'Restore student', mr:'विद्यार्थी पूर्ववत करा', hi:'विद्यार्थी पुनर्स्थापित करें'},
     quick_search: {en:'Quick search', mr:'जलद शोध', hi:'त्वरित खोज'},
+    quick_search_aria: {en:'Quick search students', mr:'विद्यार्थ्यांचा जलद शोध', hi:'विद्यार्थियों की त्वरित खोज'},
+    quick_search_title: {en:'Quick search students (press /)', mr:'विद्यार्थ्यांचा जलद शोध (/ दाबा)', hi:'विद्यार्थियों की त्वरित खोज (/ दबाएं)'},
     change_centre: {en:'Change centre', mr:'केंद्र बदला', hi:'केंद्र बदलें'},
     clear_selection: {en:'Clear selection', mr:'निवड रद्द करा', hi:'चयन हटाएं'},
     weekly_digest_title: {en:'This week at a glance', mr:'या आठवड्याचा आढावा', hi:'इस सप्ताह की झलक'},
     monthly_trend_title: {en:'Attendance trend', mr:'हजेरी कल', hi:'उपस्थिति रुझान'},
     copy_summary: {en:'Copy this month’s summary', mr:'या महिन्याचा सारांश कॉपी करा', hi:'इस महीने का सारांश कॉपी करें'},
-    month_csv: {en:'This month’s CSV', mr:'या महिन्याचा CSV', hi:'इस महीने की CSV'}
+    month_csv: {en:'This month’s CSV', mr:'या महिन्याचा CSV', hi:'इस महीने की CSV'},
+
+    // ---- full translation pass: everything below this line was added so a
+    // Marathi/Hindi speaker never lands back in English mid-task — toasts,
+    // confirm dialogs, banners, empty states, and the printable windows.
+    // Deliberately left in English (documented in README): CSV file headers/
+    // content and the Activity log's stored "details" text — both are data
+    // records, not live UI, and translating them after the fact would make
+    // the same historical record read differently depending on when you look.
+    field_name_dev: {en:'Name (Devanagari)', mr:'नाव (देवनागरी)', hi:'नाम (देवनागरी)'},
+    name_dev_auto_hint: {en:'Auto (from name above)', mr:'आपोआप (वरील नावावरून)', hi:'स्वतः (ऊपर दिए नाम से)'},
+    field_month: {en:'Month', mr:'महिना', hi:'महीना'},
+    field_year: {en:'Year', mr:'वर्ष', hi:'वर्ष'},
+    field_search: {en:'Search', mr:'शोध', hi:'खोज'},
+    field_date: {en:'Date', mr:'तारीख', hi:'तारीख'},
+
+    confirm_default_title: {en:'Are you sure?', mr:'तुम्हाला खात्री आहे का?', hi:'क्या आप सुनिश्चित हैं?'},
+    confirm_default_confirm: {en:'Confirm', mr:'निश्चित करा', hi:'पुष्टि करें'},
+
+    audit_action_create: {en:'Added', mr:'जोडले', hi:'जोड़ा गया'},
+    audit_action_edit: {en:'Edited', mr:'संपादित केले', hi:'संपादित किया गया'},
+    audit_action_delete: {en:'Deleted', mr:'काढले', hi:'हटाया गया'},
+    audit_action_photo: {en:'Photo changed for', mr:'यांचा फोटो बदलला', hi:'की फ़ोटो बदली गई'},
+    audit_action_archive: {en:'Archived', mr:'संग्रहित केले', hi:'संग्रहीत किया गया'},
+    audit_action_restore: {en:'Restored', mr:'पूर्ववत केले', hi:'पुनर्स्थापित किया गया'},
+    activity_log_loading: {en:'Loading recent changes…', mr:'अलीकडील बदल लोड होत आहेत…', hi:'हाल के बदलाव लोड हो रहे हैं…'},
+    activity_log_error: {en:'Could not load the activity log — check your connection and try again.', mr:'कार्य नोंद लोड करता आली नाही — तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.', hi:'गतिविधि लॉग लोड नहीं हो सका — अपना कनेक्शन जांचें और फिर से प्रयास करें।'},
+    activity_log_empty: {en:'No activity recorded yet.', mr:'अद्याप कोणतीही नोंद झालेली नाही.', hi:'अभी तक कोई गतिविधि दर्ज नहीं हुई है।'},
+    col_when: {en:'When', mr:'केव्हा', hi:'कब'},
+    col_who: {en:'Who', mr:'कोण', hi:'कौन'},
+    col_what: {en:'What', mr:'काय', hi:'क्या'},
+
+    print_register_modal_title: {en:'Print monthly register', mr:'मासिक नोंदवही छापा', hi:'मासिक रजिस्टर प्रिंट करें'},
+    print_register_modal_desc: {en:'Opens a printable page for this month — use your browser’s print dialog to save it as a PDF.', mr:'या महिन्यासाठी छापण्यायोग्य पान उघडते — ते PDF म्हणून जतन करण्यासाठी तुमच्या ब्राउझरचा प्रिंट डायलॉग वापरा.', hi:'इस महीने के लिए एक प्रिंट करने योग्य पेज खुलता है — इसे PDF के रूप में सहेजने के लिए अपने ब्राउज़र के प्रिंट डायलॉग का उपयोग करें।'},
+    open_register_btn: {en:'Open register', mr:'नोंदवही उघडा', hi:'रजिस्टर खोलें'},
+
+    new_centre_title: {en:'New centre', mr:'नवीन केंद्र', hi:'नया केंद्र'},
+    new_centre_placeholder: {en:'e.g. Mogra', mr:'उदा. मोगरा', hi:'उदा. मोगरा'},
+    add_centre_btn: {en:'Add centre', mr:'केंद्र जोडा', hi:'केंद्र जोड़ें'},
+    new_centre_option: {en:'+ New centre…', mr:'+ नवीन केंद्र…', hi:'+ नया केंद्र…'},
+    change_centre_modal_desc: {en:'Move the selected students to a different centre.', mr:'निवडलेल्या विद्यार्थ्यांना दुसऱ्या केंद्रात हलवा.', hi:'चयनित विद्यार्थियों को दूसरे केंद्र में स्थानांतरित करें।'},
+
+    qs_typing_hint: {en:'Start typing a student’s name…', mr:'विद्यार्थ्याचे नाव टाइप करण्यास सुरुवात करा…', hi:'विद्यार्थी का नाम टाइप करना शुरू करें…'},
+    qs_no_matches: {en:'No students match "{q}".', mr:'"{q}" शी जुळणारा कोणताही विद्यार्थी नाही.', hi:'"{q}" से मेल खाने वाला कोई विद्यार्थी नहीं मिला।'},
+    student_name_placeholder: {en:'Student name…', mr:'विद्यार्थ्याचे नाव…', hi:'विद्यार्थी का नाम…'},
+    label_archived: {en:'archived', mr:'संग्रहित', hi:'संग्रहीत'},
+
+    popup_blocked_register: {en:'Please allow pop-ups to open the printable register.', mr:'छापण्यायोग्य नोंदवही उघडण्यासाठी कृपया पॉप-अप्सना परवानगी द्या.', hi:'प्रिंट करने योग्य रजिस्टर खोलने के लिए कृपया पॉप-अप की अनुमति दें।'},
+    register_no_data: {en:'No attendance was marked for this centre in {month}.', mr:'{month} मध्ये या केंद्रासाठी कोणतीही हजेरी नोंदवली गेली नाही.', hi:'{month} में इस केंद्र के लिए कोई उपस्थिति दर्ज नहीं की गई।'},
+    print_save_pdf_btn: {en:'Print / Save as PDF', mr:'प्रिंट करा / PDF म्हणून जतन करा', hi:'प्रिंट करें / PDF के रूप में सहेजें'},
+    register_title: {en:'Akshar Paaul Attendance Register', mr:'अक्षर पाऊल हजेरी नोंदवही', hi:'अक्षर पाऊल उपस्थिति रजिस्टर'},
+    print_col_std: {en:'Std', mr:'इयत्ता', hi:'कक्षा'},
+    col_row: {en:'Row', mr:'ओळ', hi:'पंक्ति'},
+    col_status: {en:'Status', mr:'स्थिती', hi:'स्थिति'},
+
+    popup_blocked_annual: {en:'Please allow pop-ups to open the annual report.', mr:'वार्षिक अहवाल उघडण्यासाठी कृपया पॉप-अप्सना परवानगी द्या.', hi:'वार्षिक रिपोर्ट खोलने के लिए कृपया पॉप-अप की अनुमति दें।'},
+    annual_report_modal_title: {en:'Annual report', mr:'वार्षिक अहवाल', hi:'वार्षिक रिपोर्ट'},
+    annual_report_modal_desc: {en:'Opens a printable summary for the whole year — centre and class averages, month-by-month trend, and students worth checking in on.', mr:'संपूर्ण वर्षासाठी छापण्यायोग्य सारांश उघडते — केंद्र व वर्ग सरासरी, महिनानिहाय कल, आणि लक्ष देण्याजोगे विद्यार्थी.', hi:'पूरे वर्ष के लिए एक प्रिंट करने योग्य सारांश खोलता है — केंद्र और कक्षा औसत, महीने-दर-महीने रुझान, और ध्यान देने योग्य विद्यार्थी।'},
+    open_report_btn: {en:'Open report', mr:'अहवाल उघडा', hi:'रिपोर्ट खोलें'},
+    annual_doc_title: {en:'Akshar Paaul Attendance — {year} Annual Report', mr:'अक्षर पाऊल हजेरी — {year} वार्षिक अहवाल', hi:'अक्षर पाऊल उपस्थिति — {year} वार्षिक रिपोर्ट'},
+    annual_heading: {en:'Akshar Paaul Attendance — Annual Report', mr:'अक्षर पाऊल हजेरी — वार्षिक अहवाल', hi:'अक्षर पाऊल उपस्थिति — वार्षिक रिपोर्ट'},
+    annual_calendar_year: {en:'Calendar year {year}', mr:'कॅलेंडर वर्ष {year}', hi:'कैलेंडर वर्ष {year}'},
+    annual_no_centres: {en:'No centres on record.', mr:'नोंदीत कोणतेही केंद्र नाही.', hi:'रिकॉर्ड में कोई केंद्र नहीं है।'},
+    annual_no_classes: {en:'No classes on record.', mr:'नोंदीत कोणताही वर्ग नाही.', hi:'रिकॉर्ड में कोई कक्षा नहीं है।'},
+    annual_month_by_month: {en:'Month by month', mr:'महिनानिहाय', hi:'महीने-दर-महीने'},
+    annual_no_attendance_year: {en:'No attendance was marked in {year}.', mr:'{year} मध्ये कोणतीही हजेरी नोंदवली गेली नाही.', hi:'{year} में कोई उपस्थिति दर्ज नहीं की गई।'},
+    annual_checkin_title: {en:'Students worth checking in on ({n}+ absences in a row, as of today)', mr:'लक्ष देण्याजोगे विद्यार्थी (सलग {n}+ अनुपस्थिती, आजपर्यंत)', hi:'ध्यान देने योग्य विद्यार्थी (लगातार {n}+ अनुपस्थिति, आज तक)'},
+    annual_none_now: {en:'None right now.', mr:'सध्या कोणीही नाही.', hi:'अभी कोई नहीं।'},
+    annual_col_students: {en:'Students', mr:'विद्यार्थी', hi:'विद्यार्थी'},
+    annual_col_sessions_marked: {en:'Sessions marked', mr:'नोंदवलेली सत्रे', hi:'दर्ज सत्र'},
+    annual_col_month: {en:'Month', mr:'महिना', hi:'महीना'},
+    annual_col_current_streak: {en:'Current streak', mr:'सध्याची सलग संख्या', hi:'वर्तमान लगातार गिनती'},
+
+    header_students_title: {en:'View the full roster', mr:'संपूर्ण यादी पहा', hi:'पूरी सूची देखें'},
+    header_centres_title: {en:'See the centre-by-centre breakdown', mr:'केंद्रनिहाय तपशील पहा', hi:'केंद्र-वार विवरण देखें'},
+    header_n_students: {en:'{n} students', mr:'{n} विद्यार्थी', hi:'{n} विद्यार्थी'},
+    header_n_centres: {en:'{n} centres', mr:'{n} केंद्रे', hi:'{n} केंद्र'},
+    header_n_need_review: {en:'{n} need review', mr:'{n} पुनरावलोकन आवश्यक', hi:'{n} समीक्षा आवश्यक'},
+    header_n_at_risk: {en:'{n} at risk', mr:'{n} धोक्यात', hi:'{n} जोखिम में'},
+
+    progress_n_of_m: {en:'{n} of {m}', mr:'{m} पैकी {n}', hi:'{m} में से {n}'},
+    progress_marked_for: {en:'marked for {date}', mr:'{date} साठी नोंदवले', hi:'{date} के लिए दर्ज'},
+    progress_aria: {en:'{n} of {m} marked', mr:'{m} पैकी {n} नोंदवले', hi:'{m} में से {n} दर्ज'},
+    no_class_on_file: {en:'No class on file', mr:'नोंदीत वर्ग नाही', hi:'रिकॉर्ड में कोई कक्षा नहीं'},
+    streak_title: {en:'{n} absences in a row', mr:'सलग {n} अनुपस्थिती', hi:'लगातार {n} अनुपस्थिति'},
+    aria_mark_absent: {en:'Mark {name} absent', mr:'{name} ला अनुपस्थित नोंदवा', hi:'{name} को अनुपस्थित दर्ज करें'},
+    aria_mark_present: {en:'Mark {name} present', mr:'{name} ला उपस्थित नोंदवा', hi:'{name} को उपस्थित दर्ज करें'},
+    week_nudge_msg: {en:'You haven’t marked {n} student{plural} yet for this week’s session.', mr:'तुम्ही या आठवड्याच्या सत्रासाठी अजून {n} विद्यार्थ्यांची हजेरी नोंदवलेली नाही.', hi:'आपने इस सप्ताह के सत्र के लिए अभी तक {n} विद्यार्थियों की उपस्थिति दर्ज नहीं की है।'},
+    dismiss_btn: {en:'Dismiss', mr:'दुर्लक्ष करा', hi:'अनदेखा करें'},
+    no_students_match_filter: {en:'No students match this filter', mr:'या फिल्टरशी जुळणारा कोणताही विद्यार्थी नाही', hi:'इस फ़िल्टर से मेल खाने वाला कोई विद्यार्थी नहीं'},
+    mark_empty_sub: {en:'Try a different class or centre, or double-check the date above.', mr:'वेगळा वर्ग किंवा केंद्र वापरून पहा, किंवा वरील तारीख तपासा.', hi:'कोई दूसरी कक्षा या केंद्र आज़माएं, या ऊपर दी गई तारीख जांचें।'},
+    students_empty_sub: {en:'Try clearing the search, or switching centre / class / teacher above.', mr:'शोध रिकामा करून पहा, किंवा वरील केंद्र / वर्ग / शिक्षक बदला.', hi:'खोज साफ़ करके देखें, या ऊपर केंद्र / कक्षा / शिक्षक बदलें।'},
+    err_load_attendance: {en:'Could not load attendance — check your connection.', mr:'हजेरी लोड करता आली नाही — तुमचे कनेक्शन तपासा.', hi:'उपस्थिति लोड नहीं हो सकी — अपना कनेक्शन जांचें।'},
+    saved_offline: {en:'Saved on this device — will sync when back online.', mr:'या डिव्हाइसवर जतन केले — पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'इस डिवाइस पर सहेजा गया — ऑनलाइन आते ही सिंक होगा।'},
+    marked_all_present_toast: {en:'Marked all present.', mr:'सर्वांना उपस्थित नोंदवले.', hi:'सभी को उपस्थित दर्ज किया गया।'},
+    marked_all_present_offline_toast: {en:'Marked all present — saved on this device, will sync when back online.', mr:'सर्वांना उपस्थित नोंदवले — या डिव्हाइसवर जतन केले, पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'सभी को उपस्थित दर्ज किया गया — इस डिवाइस पर सहेजा गया, ऑनलाइन आते ही सिंक होगा।'},
+    clear_date_title: {en:'Clear this date?', mr:'ही तारीख रिकामी करायची का?', hi:'क्या यह तारीख साफ़ करनी है?'},
+    clear_date_msg: {en:'Clear every attendance mark for {centre} — {date}? This removes marks for {n} student{plural} and can’t be undone.', mr:'{centre} — {date} साठीची सर्व हजेरी नोंद रिकामी करायची का? यामुळे {n} विद्यार्थ्यांच्या नोंदी काढल्या जातील आणि हे पूर्ववत करता येणार नाही.', hi:'{centre} — {date} के लिए सभी उपस्थिति चिह्न साफ़ करें? इससे {n} विद्यार्थियों के निशान हट जाएंगे और यह पूर्ववत नहीं किया जा सकता।'},
+    clear_marks_btn: {en:'Clear marks', mr:'नोंदी रिकाम्या करा', hi:'निशान साफ़ करें'},
+    cleared_toast: {en:'Cleared.', mr:'रिकामे केले.', hi:'साफ़ किया गया।'},
+    cleared_offline_toast: {en:'Cleared on this device — will sync when back online.', mr:'या डिव्हाइसवर रिकामे केले — पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'इस डिवाइस पर साफ़ किया गया — ऑनलाइन आते ही सिंक होगा।'},
+
+    csv_read_error: {en:'Could not read that file — try exporting the sheet as CSV again.', mr:'ती फाईल वाचता आली नाही — शीट पुन्हा CSV म्हणून एक्सपोर्ट करून पहा.', hi:'वह फ़ाइल पढ़ी नहीं जा सकी — शीट को दोबारा CSV के रूप में एक्सपोर्ट करके देखें।'},
+    students_imported_toast: {en:'{n} student{plural} imported.', mr:'{n} विद्यार्थी आयात केले.', hi:'{n} विद्यार्थी आयात किए गए।'},
+    csv_no_rows: {en:'No rows found in that file — check it has a header row plus at least one student below it.', mr:'त्या फाईलमध्ये कोणत्याही ओळी सापडल्या नाहीत — त्यात मथळ्याची ओळ आणि किमान एक विद्यार्थी असल्याची खात्री करा.', hi:'उस फ़ाइल में कोई पंक्ति नहीं मिली — जांचें कि उसमें एक हेडर पंक्ति और कम से कम एक विद्यार्थी है।'},
+    csv_status_ok: {en:'OK', mr:'ठीक', hi:'ठीक'},
+    csv_status_skip: {en:'Skip', mr:'वगळा', hi:'छोड़ें'},
+    csv_showing_first_50: {en:'Showing the first 50 of {n} rows — all of them will still be imported.', mr:'पहिल्या 50 पैकी {n} ओळी दाखवत आहे — त्या सर्व तरीही आयात केल्या जातील.', hi:'पहली 50 में से {n} पंक्तियाँ दिखा रहा है — वे सभी फिर भी आयात की जाएंगी।'},
+    csv_summary: {en:'{ok} student{okPlural} will be imported{skipped}.', mr:'{ok} विद्यार्थी आयात केले जातील{skipped}.', hi:'{ok} विद्यार्थी आयात किए जाएंगे{skipped}।'},
+    csv_summary_skipped_part: {en:', {n} skipped (missing name or centre)', mr:', {n} वगळले (नाव किंवा केंद्र गहाळ)', hi:', {n} छोड़े गए (नाम या केंद्र गायब)'},
+    csv_import_btn: {en:'Import {n} student{plural}', mr:'{n} विद्यार्थी आयात करा', hi:'{n} विद्यार्थी आयात करें'},
+    csv_choose_different_file: {en:'Choose a different file', mr:'वेगळी फाईल निवडा', hi:'दूसरी फ़ाइल चुनें'},
+    csv_import_title: {en:'Import students from CSV', mr:'CSV मधून विद्यार्थी आयात करा', hi:'CSV से विद्यार्थी आयात करें'},
+    csv_import_desc: {en:'A spreadsheet with a header row — Name and Centre are required, everything else is optional and can be filled in later from Details.', mr:'मथळ्याच्या ओळीसह स्प्रेडशीट — नाव आणि केंद्र आवश्यक आहे, बाकी सर्व पर्यायी असून नंतर तपशीलमधून भरता येते.', hi:'हेडर पंक्ति वाली स्प्रेडशीट — नाम और केंद्र आवश्यक हैं, बाकी सब वैकल्पिक है और बाद में विवरण से भरा जा सकता है।'},
+    csv_download_template: {en:'Download a template', mr:'टेम्पलेट डाउनलोड करा', hi:'टेम्पलेट डाउनलोड करें'},
+    csv_teacher_centre_note: {en:'Every imported student is added to your centre ({centre}) regardless of what a Centre column in the file says.', mr:'फाईलमधील केंद्र स्तंभात काहीही असले तरी प्रत्येक आयात केलेला विद्यार्थी तुमच्या केंद्रात ({centre}) जोडला जातो.', hi:'फ़ाइल के केंद्र स्तंभ में कुछ भी हो, हर आयातित विद्यार्थी आपके केंद्र ({centre}) में जोड़ा जाएगा।'},
+    import_csv_btn: {en:'Import CSV', mr:'CSV आयात करा', hi:'CSV आयात करें'},
+
+    all_centres: {en:'All centres', mr:'सर्व केंद्रे', hi:'सभी केंद्र'},
+    all_teachers: {en:'All teachers', mr:'सर्व शिक्षक', hi:'सभी शिक्षक'},
+    all_classes: {en:'All classes', mr:'सर्व वर्ग', hi:'सभी कक्षाएं'},
+    review_toggle_on: {en:'Showing: needs review', mr:'दाखवत आहे: पुनरावलोकन आवश्यक', hi:'दिखा रहे हैं: समीक्षा आवश्यक'},
+    review_toggle_off: {en:'Show all', mr:'सर्व दाखवा', hi:'सभी दिखाएं'},
+    risk_toggle_on: {en:'Showing: at risk', mr:'दाखवत आहे: धोक्यात', hi:'दिखा रहे हैं: जोखिम में'},
+    risk_toggle_off: {en:'Show at-risk', mr:'धोक्यातील दाखवा', hi:'जोखिम वाले दिखाएं'},
+    archived_toggle_on: {en:'Showing: archived', mr:'दाखवत आहे: संग्रहित', hi:'दिखा रहे हैं: संग्रहीत'},
+    archived_toggle_off: {en:'Show archived', mr:'संग्रहित दाखवा', hi:'संग्रहीत दिखाएं'},
+    review_banner_msg: {en:'These records are missing a required detail (gender, age, medium or teacher) or have an age/phone number that looks off. Tap <strong>{details}</strong> on a student below, then tap any field to fix it — it saves as soon as you tap away.', mr:'या नोंदींमध्ये आवश्यक तपशील (लिंग, वय, माध्यम किंवा शिक्षक) गहाळ आहे किंवा वय/फोन नंबर चुकीचा वाटतो. खालील विद्यार्थ्यावर <strong>{details}</strong> टॅप करा, नंतर कोणतेही क्षेत्र टॅप करून दुरुस्त करा — टॅप बाजूला होताच ते जतन होते.', hi:'इन रिकॉर्ड में एक आवश्यक विवरण (लिंग, आयु, माध्यम या शिक्षक) गायब है या आयु/फ़ोन नंबर गलत लग रहा है। नीचे किसी विद्यार्थी पर <strong>{details}</strong> टैप करें, फिर किसी भी फ़ील्ड को टैप करके ठीक करें — टैप हटते ही यह सहेज जाता है।'},
+    risk_banner_msg: {en:'These students have {n} or more absences in a row (counting the most recent marked sessions) — worth a check-in.', mr:'या विद्यार्थ्यांची सलग {n} किंवा त्याहून अधिक अनुपस्थिती आहे (अलीकडील नोंदवलेल्या सत्रांनुसार) — चौकशी करण्यासारखे आहे.', hi:'इन विद्यार्थियों की लगातार {n} या उससे अधिक अनुपस्थिति है (हाल के दर्ज सत्रों के अनुसार) — जांच करने लायक है।'},
+    archived_banner_msg: {en:'Archived students are hidden from Mark attendance and everyday reports, but their attendance history is kept. Tap <strong>{details}</strong> to restore one.', mr:'संग्रहित विद्यार्थी हजेरी नोंदवा आणि नियमित अहवालांमधून लपवले जातात, पण त्यांचा हजेरी इतिहास ठेवला जातो. एखाद्याला पूर्ववत करण्यासाठी <strong>{details}</strong> टॅप करा.', hi:'संग्रहीत विद्यार्थी उपस्थिति दर्ज करें और रोज़मर्रा की रिपोर्ट से छिपे रहते हैं, लेकिन उनका उपस्थिति इतिहास रखा जाता है। किसी को पुनर्स्थापित करने के लिए <strong>{details}</strong> टैप करें।'},
+    show_all_instead: {en:'Show all instead', mr:'त्याऐवजी सर्व दाखवा', hi:'इसके बजाय सभी दिखाएं'},
+    show_active_instead: {en:'Show active instead', mr:'त्याऐवजी सक्रिय दाखवा', hi:'इसके बजाय सक्रिय दिखाएं'},
+    n_selected: {en:'{n} selected', mr:'{n} निवडले', hi:'{n} चयनित'},
+    select_all_aria: {en:'Select all', mr:'सर्व निवडा', hi:'सभी चुनें'},
+    select_student_aria: {en:'Select {name}', mr:'{name} निवडा', hi:'{name} चुनें'},
+
+    cal_hide: {en:'Hide attendance calendar', mr:'हजेरी दिनदर्शिका लपवा', hi:'उपस्थिति कैलेंडर छुपाएं'},
+    cal_view: {en:'View attendance calendar', mr:'हजेरी दिनदर्शिका पहा', hi:'उपस्थिति कैलेंडर देखें'},
+    tap_to_add: {en:'tap to add', mr:'जोडण्यासाठी टॅप करा', hi:'जोड़ने के लिए टैप करें'},
+    name_required: {en:'Name is required.', mr:'नाव आवश्यक आहे.', hi:'नाम आवश्यक है।'},
+    centre_required: {en:'Centre is required.', mr:'केंद्र आवश्यक आहे.', hi:'केंद्र आवश्यक है।'},
+    student_flagged_review_toast: {en:'Student added, but flagged for review — {msg}', mr:'विद्यार्थी जोडला, पण पुनरावलोकनासाठी चिन्हांकित — {msg}', hi:'विद्यार्थी जोड़ा गया, लेकिन समीक्षा के लिए चिह्नित — {msg}'},
+    student_added_toast: {en:'Student added.', mr:'विद्यार्थी जोडला.', hi:'विद्यार्थी जोड़ा गया।'},
+    added_offline_toast: {en:'Added on this device — will sync when back online.', mr:'या डिव्हाइसवर जोडले — पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'इस डिवाइस पर जोड़ा गया — ऑनलाइन आते ही सिंक होगा।'},
+    age_invalid_msg: {en:'That doesn’t look like a valid age — saved, but flagged for review.', mr:'हे वैध वय वाटत नाही — जतन केले, पण पुनरावलोकनासाठी चिन्हांकित.', hi:'यह एक वैध आयु नहीं लगती — सहेजा गया, लेकिन समीक्षा के लिए चिह्नित किया गया।'},
+    phone_invalid_msg: {en:'That doesn’t look like a valid phone number — saved, but flagged for review.', mr:'हा वैध फोन नंबर वाटत नाही — जतन केले, पण पुनरावलोकनासाठी चिन्हांकित.', hi:'यह एक वैध फ़ोन नंबर नहीं लगता — सहेजा गया, लेकिन समीक्षा के लिए चिह्नित किया गया।'},
+    add_new_student_title: {en:'Add a new student', mr:'नवीन विद्यार्थी जोडा', hi:'नया विद्यार्थी जोड़ें'},
+    nothing_to_archive_toast: {en:'Nothing to archive in the current selection.', mr:'सध्याच्या निवडीत संग्रहित करण्यासारखे काहीही नाही.', hi:'वर्तमान चयन में संग्रहीत करने के लिए कुछ नहीं है।'},
+    archive_n_title: {en:'Archive {n} student{plural}?', mr:'{n} विद्यार्थी संग्रहित करायचे का?', hi:'{n} विद्यार्थियों को संग्रहीत करें?'},
+    archive_bulk_msg: {en:'Archived students drop out of Mark attendance and everyday reports, but keep their attendance history. You can restore them anytime from Show archived.', mr:'संग्रहित विद्यार्थी हजेरी नोंदवा आणि नियमित अहवालांमधून वगळले जातात, पण त्यांचा हजेरी इतिहास कायम राहतो. तुम्ही त्यांना केव्हाही "संग्रहित दाखवा" मधून पूर्ववत करू शकता.', hi:'संग्रहीत विद्यार्थी उपस्थिति दर्ज करें और रोज़मर्रा की रिपोर्ट से बाहर हो जाते हैं, लेकिन उनका उपस्थिति इतिहास बना रहता है। आप उन्हें कभी भी "संग्रहीत दिखाएं" से पुनर्स्थापित कर सकते हैं।'},
+    archive_btn_short: {en:'Archive', mr:'संग्रहित करा', hi:'संग्रहीत करें'},
+    n_students_archived_toast: {en:'{n} student{plural} archived.', mr:'{n} विद्यार्थी संग्रहित केले.', hi:'{n} विद्यार्थी संग्रहीत किए गए।'},
+    restored_toast: {en:'Restored.', mr:'पूर्ववत केले.', hi:'पुनर्स्थापित किया गया।'},
+    moved_students_toast: {en:'Moved {n} student{plural} to {centre}.', mr:'{n} विद्यार्थ्यांना {centre} मध्ये हलवले.', hi:'{n} विद्यार्थियों को {centre} में स्थानांतरित किया गया।'},
+    centre_change_undone_toast: {en:'Centre change undone.', mr:'केंद्र बदल पूर्ववत केला.', hi:'केंद्र परिवर्तन पूर्ववत किया गया।'},
+    archive_this_title: {en:'Archive this student?', mr:'या विद्यार्थ्याला संग्रहित करायचे का?', hi:'इस विद्यार्थी को संग्रहीत करें?'},
+    archive_this_msg: {en:'Archive {name}? They’ll drop out of Mark attendance and everyday reports, but their attendance history is kept and you can restore them anytime from Show archived.', mr:'{name} ला संग्रहित करायचे का? ते हजेरी नोंदवा आणि नियमित अहवालांमधून वगळले जातील, पण त्यांचा हजेरी इतिहास ठेवला जाईल आणि तुम्ही त्यांना केव्हाही "संग्रहित दाखवा" मधून पूर्ववत करू शकता.', hi:'{name} को संग्रहीत करें? वे उपस्थिति दर्ज करें और रोज़मर्रा की रिपोर्ट से बाहर हो जाएंगे, लेकिन उनका उपस्थिति इतिहास रखा जाएगा और आप उन्हें कभी भी "संग्रहीत दिखाएं" से पुनर्स्थापित कर सकते हैं।'},
+    student_archived_toast: {en:'Student archived.', mr:'विद्यार्थी संग्रहित केला.', hi:'विद्यार्थी संग्रहीत किया गया।'},
+    archived_offline_toast: {en:'Archived on this device — will sync when back online.', mr:'या डिव्हाइसवर संग्रहित केले — पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'इस डिवाइस पर संग्रहीत किया गया — ऑनलाइन आते ही सिंक होगा।'},
+    student_restored_toast: {en:'Student restored.', mr:'विद्यार्थी पूर्ववत केला.', hi:'विद्यार्थी पुनर्स्थापित किया गया।'},
+    restored_offline_toast: {en:'Restored on this device — will sync when back online.', mr:'या डिव्हाइसवर पूर्ववत केले — पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'इस डिवाइस पर पुनर्स्थापित किया गया — ऑनलाइन आते ही सिंक होगा।'},
+    delete_this_title: {en:'Delete this student?', mr:'या विद्यार्थ्याला काढायचे का?', hi:'इस विद्यार्थी को हटाएं?'},
+    delete_this_msg: {en:'Delete {name}? This removes their record from the roster and can’t be undone. Their past attendance history is kept for reporting.', mr:'{name} ला काढायचे का? यामुळे त्यांची नोंद यादीतून काढली जाईल आणि हे पूर्ववत करता येणार नाही. अहवालासाठी त्यांचा जुना हजेरी इतिहास ठेवला जाईल.', hi:'{name} को हटाएं? इससे उनका रिकॉर्ड सूची से हट जाएगा और यह पूर्ववत नहीं किया जा सकता। रिपोर्टिंग के लिए उनका पिछला उपस्थिति इतिहास रखा जाएगा।'},
+    student_deleted_toast: {en:'Student deleted.', mr:'विद्यार्थी काढला.', hi:'विद्यार्थी हटाया गया।'},
+    deleted_offline_toast: {en:'Deleted on this device — will sync when back online.', mr:'या डिव्हाइसवर काढले — पुन्हा ऑनलाइन आल्यावर सिंक होईल.', hi:'इस डिवाइस पर हटाया गया — ऑनलाइन आते ही सिंक होगा।'},
+    photo_saved_toast: {en:'Photo saved.', mr:'फोटो जतन केला.', hi:'फ़ोटो सहेजी गई।'},
+    photo_read_error_toast: {en:'Could not read that image — try a different photo.', mr:'तो फोटो वाचता आला नाही — वेगळा फोटो वापरून पहा.', hi:'वह छवि पढ़ी नहीं जा सकी — दूसरी फ़ोटो आज़माएं।'},
+    photo_removed_toast: {en:'Photo removed.', mr:'फोटो काढला.', hi:'फ़ोटो हटाई गई।'},
+    saved_toast: {en:'Saved.', mr:'जतन केले.', hi:'सहेजा गया।'},
+    showing_400_students: {en:'Showing 400 of {n} students. Narrow the search, centre, teacher, or class filter above to see the rest.', mr:'{n} पैकी 400 दाखवत आहे. उर्वरित पाहण्यासाठी वरील शोध, केंद्र, शिक्षक किंवा वर्ग फिल्टर संकुचित करा.', hi:'{n} में से 400 दिखा रहे हैं। बाकी देखने के लिए ऊपर खोज, केंद्र, शिक्षक या कक्षा फ़िल्टर को सीमित करें।'},
+    unassigned_label: {en:'unassigned', mr:'नियुक्त नाही', hi:'अनियुक्त'},
+    chip_review: {en:'Review', mr:'पुनरावलोकन', hi:'समीक्षा'},
+    chip_archived: {en:'Archived', mr:'संग्रहित', hi:'संग्रहीत'},
+
+    no_reason_given: {en:'No reason given', mr:'कारण दिलेले नाही', hi:'कोई कारण नहीं दिया गया'},
+    all_caught_up: {en:'All caught up', mr:'सर्व पूर्ण झाले', hi:'सब पूरा हो गया'},
+    everyone_marked_for: {en:'Everyone’s marked for {date}.', mr:'{date} साठी सर्वांची नोंद झाली आहे.', hi:'{date} के लिए सभी की उपस्थिति दर्ज हो गई है।'},
+    n_unmarked: {en:'{n} unmarked', mr:'{n} नोंद न झालेले', hi:'{n} अचिह्नित'},
+    digest_progress: {en:'{centre} · {marked} of {total} done for {date}', mr:'{centre} · {date} साठी {total} पैकी {marked} पूर्ण', hi:'{centre} · {date} के लिए {total} में से {marked} पूर्ण'},
+    students_with_streak: {en:'student{plural} with {n}+ absences in a row', mr:'{n}+ सलग अनुपस्थिती असलेले विद्यार्थी', hi:'{n}+ लगातार अनुपस्थिति वाले विद्यार्थी'},
+    your_centre_month_title: {en:'Your centre, month to month', mr:'तुमचे केंद्र, महिन्यानुसार', hi:'आपका केंद्र, माह-दर-माह'},
+    this_month_label: {en:'This month ({month})', mr:'हा महिना ({month})', hi:'इस महीने ({month})'},
+    last_month_label: {en:'Last month ({month})', mr:'मागील महिना ({month})', hi:'पिछला महीना ({month})'},
+    vs_last_month: {en:'vs last month', mr:'मागील महिन्याच्या तुलनेत', hi:'पिछले महीने की तुलना में'},
+    no_change: {en:'no change', mr:'बदल नाही', hi:'कोई बदलाव नहीं'},
+    backup_data_btn: {en:'Backup data', mr:'डेटा बॅकअप घ्या', hi:'डेटा बैकअप लें'},
+    annual_report_btn: {en:'Annual report', mr:'वार्षिक अहवाल', hi:'वार्षिक रिपोर्ट'},
+    recent_col: {en:'Recent', mr:'अलीकडील', hi:'हाल का'},
+    no_records_yet: {en:'No records yet', mr:'अद्याप नोंदी नाहीत', hi:'अभी तक कोई रिकॉर्ड नहीं'},
+    showing_400_report: {en:'Showing 400 of {n} students. Use the Students tab to search for a specific student, or export CSV for the full list.', mr:'{n} पैकी 400 दाखवत आहे. विशिष्ट विद्यार्थ्यासाठी विद्यार्थी टॅब वापरा, किंवा संपूर्ण यादीसाठी CSV एक्सपोर्ट करा.', hi:'{n} में से 400 दिखा रहे हैं। किसी विशेष विद्यार्थी को खोजने के लिए विद्यार्थी टैब का उपयोग करें, या पूरी सूची के लिए CSV एक्सपोर्ट करें।'},
+    loading_attendance_history: {en:'Loading attendance history…', mr:'हजेरी इतिहास लोड होत आहे…', hi:'उपस्थिति इतिहास लोड हो रहा है…'},
+    summary_header: {en:'Akshar Paaul Attendance — {month} summary', mr:'अक्षर पाऊल हजेरी — {month} सारांश', hi:'अक्षर पाऊल उपस्थिति — {month} सारांश'},
+    summary_no_records: {en:'no records yet', mr:'अद्याप नोंदी नाहीत', hi:'अभी तक कोई रिकॉर्ड नहीं'},
+    summary_students_count: {en:'({n} students)', mr:'({n} विद्यार्थी)', hi:'({n} विद्यार्थी)'},
+    summary_atrisk_line: {en:'{n} student{plural} with {threshold}+ absences in a row — worth a check-in.', mr:'{n} विद्यार्थ्यांची सलग {threshold}+ अनुपस्थिती — चौकशी करण्यासारखे.', hi:'{n} विद्यार्थियों की लगातार {threshold}+ अनुपस्थिति — जांच करने लायक।'},
+    summary_copied_toast: {en:'Summary copied — paste it into WhatsApp, email, anywhere.', mr:'सारांश कॉपी केला — तो WhatsApp, ईमेल, कुठेही पेस्ट करा.', hi:'सारांश कॉपी किया गया — इसे WhatsApp, ईमेल, कहीं भी पेस्ट करें।'},
+    summary_copy_fail_toast: {en:'Could not copy automatically — select and copy the text yourself.', mr:'आपोआप कॉपी करता आले नाही — मजकूर स्वतः निवडून कॉपी करा.', hi:'स्वचालित रूप से कॉपी नहीं हो सका — पाठ स्वयं चुनकर कॉपी करें।'},
+    csv_downloaded_toast: {en:'CSV downloaded.', mr:'CSV डाउनलोड झाले.', hi:'CSV डाउनलोड हो गई।'},
+    backup_preparing_toast: {en:'Preparing backup…', mr:'बॅकअप तयार होत आहे…', hi:'बैकअप तैयार हो रहा है…'},
+    backup_downloaded_toast: {en:'Backup downloaded — keep it somewhere safe outside Firebase.', mr:'बॅकअप डाउनलोड झाला — तो Firebase बाहेर सुरक्षित ठिकाणी ठेवा.', hi:'बैकअप डाउनलोड हो गया — इसे Firebase के बाहर कहीं सुरक्षित रखें।'},
+    backup_fail_toast: {en:'Could not create a backup — check your connection and try again.', mr:'बॅकअप तयार करता आला नाही — तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.', hi:'बैकअप नहीं बन सका — अपना कनेक्शन जांचें और फिर से प्रयास करें।'},
+    nothing_to_export_month_toast: {en:'No attendance marked yet this month — nothing to export.', mr:'या महिन्यात अद्याप कोणतीही हजेरी नोंदवलेली नाही — एक्सपोर्ट करण्यासारखे काहीही नाही.', hi:'इस महीने अभी तक कोई उपस्थिति दर्ज नहीं हुई — एक्सपोर्ट करने के लिए कुछ नहीं।'},
+    nothing_to_export_list_toast: {en:'No attendance marked yet for this list — nothing to export.', mr:'या यादीसाठी अद्याप कोणतीही हजेरी नोंदवलेली नाही — एक्सपोर्ट करण्यासारखे काहीही नाही.', hi:'इस सूची के लिए अभी तक कोई उपस्थिति दर्ज नहीं हुई — एक्सपोर्ट करने के लिए कुछ नहीं।'},
+
+    setup_title: {en:'Almost there', mr:'जवळपास झाले', hi:'लगभग हो गया'},
+    setup_lead: {en:'This copy of the app isn’t connected to a database yet.', mr:'अ‍ॅपची ही प्रत अद्याप डेटाबेसशी जोडलेली नाही.', hi:'ऐप की यह प्रति अभी डेटाबेस से जुड़ी नहीं है।'},
+    setup_note: {en:'Open this file, find {code} near the top of the last &lt;script&gt; tag, and paste in your Firebase project’s web config. See the setup guide for exact steps.', mr:'ही फाईल उघडा, शेवटच्या &lt;script&gt; टॅगच्या सुरुवातीला {code} शोधा, आणि तुमच्या Firebase प्रकल्पाचे वेब कॉन्फिग पेस्ट करा. नेमक्या पायऱ्यांसाठी सेटअप मार्गदर्शक पहा.', hi:'यह फ़ाइल खोलें, अंतिम &lt;script&gt; टैग की शुरुआत में {code} खोजें, और अपने Firebase प्रोजेक्ट का वेब कॉन्फ़िग पेस्ट करें। सटीक चरणों के लिए सेटअप गाइड देखें।'},
+    connect_fail_title: {en:'Couldn’t connect', mr:'जोडता आले नाही', hi:'कनेक्ट नहीं हो सका'},
+    connect_fail_lead: {en:'This needs an internet connection to sign in.', mr:'साइन इन करण्यासाठी इंटरनेट कनेक्शन आवश्यक आहे.', hi:'साइन इन करने के लिए इंटरनेट कनेक्शन आवश्यक है।'},
+    connect_fail_note: {en:'Check your connection and try again. If it keeps happening, ask your coordinator to check the internet filter/firewall isn’t blocking {code}.', mr:'तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा. हे सतत होत असल्यास, इंटरनेट फिल्टर/फायरवॉल {code} ला अडवत नाही ना हे तपासण्यास तुमच्या समन्वयकाला सांगा.', hi:'अपना कनेक्शन जांचें और फिर से प्रयास करें। यदि यह बार-बार हो रहा है, तो अपने समन्वयक से जांच करने को कहें कि इंटरनेट फ़िल्टर/फ़ायरवॉल {code} को ब्लॉक नहीं कर रहा है।'},
+    try_again_btn: {en:'Try again', mr:'पुन्हा प्रयत्न करा', hi:'फिर से प्रयास करें'},
+    login_lead: {en:'Use the login ID and password your coordinator gave you.', mr:'तुमच्या समन्वयकाने दिलेला लॉगिन आयडी आणि पासवर्ड वापरा.', hi:'अपने समन्वयक द्वारा दिया गया लॉगिन आईडी और पासवर्ड उपयोग करें।'},
+    login_id_placeholder: {en:'e.g. aruna', mr:'उदा. अरुणा', hi:'उदा. अरुणा'},
+    login_note: {en:'Don’t have a login yet, or forgot your password? Ask your coordinator — they can set one up or reset it for you in a minute, right from the Firebase console.', mr:'अद्याप लॉगिन नाही, किंवा पासवर्ड विसरलात? तुमच्या समन्वयकाला विचारा — ते Firebase कन्सोलवरून एका मिनिटात तुमच्यासाठी सेट किंवा रीसेट करू शकतात.', hi:'अभी तक लॉगिन नहीं है, या पासवर्ड भूल गए? अपने समन्वयक से पूछें — वे Firebase कंसोल से एक मिनट में आपके लिए सेट या रीसेट कर सकते हैं।'},
+    signing_in: {en:'Signing in…', mr:'साइन इन होत आहे…', hi:'साइन इन हो रहा है…'},
+    auth_err_bad_creds: {en:'That login ID or password isn’t right. Double-check with your coordinator.', mr:'तो लॉगिन आयडी किंवा पासवर्ड चुकीचा आहे. तुमच्या समन्वयकाकडे पुन्हा तपासा.', hi:'वह लॉगिन आईडी या पासवर्ड सही नहीं है। अपने समन्वयक से दोबारा जांच करें।'},
+    auth_err_too_many: {en:'Too many attempts — wait a bit and try again.', mr:'खूप जास्त प्रयत्न झाले — थोडा वेळ थांबून पुन्हा प्रयत्न करा.', hi:'बहुत अधिक प्रयास हुए — थोड़ी देर रुककर फिर से प्रयास करें।'},
+    auth_err_offline: {en:'No internet connection — try again once you’re online.', mr:'इंटरनेट कनेक्शन नाही — ऑनलाइन झाल्यावर पुन्हा प्रयत्न करा.', hi:'इंटरनेट कनेक्शन नहीं है — ऑनलाइन होने पर फिर से प्रयास करें।'},
+    auth_err_invalid_email: {en:'That doesn’t look like a valid login ID.', mr:'तो वैध लॉगिन आयडी वाटत नाही.', hi:'वह मान्य लॉगिन आईडी नहीं लगती।'},
+    auth_err_generic: {en:'Could not sign in. Please try again.', mr:'साइन इन करता आले नाही. कृपया पुन्हा प्रयत्न करा.', hi:'साइन इन नहीं हो सका। कृपया फिर से प्रयास करें।'},
+    account_not_setup_toast: {en:'Your account isn’t set up yet — ask your coordinator to add you.', mr:'तुमचे खाते अद्याप सेट केलेले नाही — तुमच्या समन्वयकाला तुम्हाला जोडण्यास सांगा.', hi:'आपका खाता अभी सेट नहीं हुआ है — अपने समन्वयक से आपको जोड़ने के लिए कहें।'},
+    signin_fail_toast: {en:'Could not sign you in — check your connection and try again.', mr:'तुम्हाला साइन इन करता आले नाही — तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.', hi:'आपको साइन इन नहीं किया जा सका — अपना कनेक्शन जांचें और फिर से प्रयास करें।'},
+    roster_load_fail_toast: {en:'Could not load the roster — check your connection.', mr:'यादी लोड करता आली नाही — तुमचे कनेक्शन तपासा.', hi:'सूची लोड नहीं हो सकी — अपना कनेक्शन जांचें।'},
+    attendance_history_fail_toast: {en:'Could not load attendance history — check your connection.', mr:'हजेरी इतिहास लोड करता आला नाही — तुमचे कनेक्शन तपासा.', hi:'उपस्थिति इतिहास लोड नहीं हो सका — अपना कनेक्शन जांचें।'},
+    loading_ellipsis: {en:'Loading…', mr:'लोड होत आहे…', hi:'लोड हो रहा है…'},
+    coordinator_all_centres: {en:'Coordinator (all centres)', mr:'समन्वयक (सर्व केंद्रे)', hi:'समन्वयक (सभी केंद्र)'},
+    logged_in_as: {en:'Logged in as {who}', mr:'{who} म्हणून लॉगिन केले आहे', hi:'{who} के रूप में लॉगिन है'},
+
+    dark_mode_switch_light: {en:'Switch to light mode', mr:'लाइट मोडवर स्विच करा', hi:'लाइट मोड पर स्विच करें'},
+    dark_mode_switch_dark: {en:'Switch to dark mode', mr:'डार्क मोडवर स्विच करा', hi:'डार्क मोड पर स्विच करें'},
+    offline_msg: {en:'You’re offline.', mr:'तुम्ही ऑफलाइन आहात.', hi:'आप ऑफ़लाइन हैं।'},
+    offline_pending_msg: {en:'{n} change{plural} will sync automatically once you’re back online.', mr:'{n} बदल पुन्हा ऑनलाइन झाल्यावर आपोआप सिंक होतील.', hi:'{n} बदलाव ऑनलाइन होते ही अपने आप सिंक हो जाएंगे।'},
+    offline_no_pending_msg: {en:'Changes will be saved and synced once you’re back online.', mr:'बदल ऑनलाइन झाल्यावर जतन आणि सिंक केले जातील.', hi:'बदलाव ऑनलाइन होते ही सहेजे और सिंक किए जाएंगे।'},
+    pending_not_synced_msg: {en:'{n} change{plural} not yet synced.', mr:'{n} बदल अद्याप सिंक झालेले नाहीत.', hi:'{n} बदलाव अभी सिंक नहीं हुए।'},
+    retry_now_btn: {en:'Retry now', mr:'आता पुन्हा प्रयत्न करा', hi:'अभी फिर से प्रयास करें'},
+    changes_synced_toast: {en:'{n} change{plural} synced.', mr:'{n} बदल सिंक झाले.', hi:'{n} बदलाव सिंक हो गए।'}
   };
   function t(key){
     var row = STRINGS[key];
     if(!row) return key;
     return row[LANG] || row.en || key;
   }
+  // Same as t(), but fills in {placeholders} from `vars` — used for every
+  // translated string that has to embed a name, a count, a date, etc.
+  function tf(key, vars){
+    var str = t(key);
+    if(vars){
+      Object.keys(vars).forEach(function(k){ str = str.split('{'+k+'}').join(vars[k]); });
+    }
+    return str;
+  }
+  // Marathi/Hindi plural marker for "N student(s)" — both languages use the
+  // same noun form regardless of count, so this only affects the English row.
+  function pluralS(n){ return n===1 ? '' : 's'; }
+
+  // ---------- Marathi/Hindi name display ----------
+  // The language switcher translates every label around a student, but a
+  // name itself is data, not UI text — Firestore never stores a "Marathi
+  // version" of it. Instead this is a best-effort, rule-based Roman-to-
+  // Devanagari romanization, computed client-side purely for on-screen
+  // display when Marathi or Hindi is selected. It's necessarily approximate:
+  // English spelling doesn't distinguish retroflex from dental consonants,
+  // conjuncts, or the Sanskrit "nati" rule (why "Arun" is properly spelled
+  // अरुण, not अरुन) — exactly the kind of thing this can get wrong. That's
+  // why a student's optional `name_dev` field always wins when it's set: a
+  // coordinator or teacher corrects it once from Details (or a CSV's "Name
+  // (Devanagari)" column) and every future render just uses that instead.
+  var DEVANAGARI_CONSONANTS = [
+    ['chh','छ'], ['shh','ष'], ['ksh','क्ष'], ['gy','ज्ञ'],
+    ['kh','ख'], ['gh','घ'], ['ch','च'], ['jh','झ'], ['th','थ'], ['dh','ध'],
+    ['ph','फ'], ['bh','भ'], ['sh','श'], ['ng','ङ'], ['ny','ञ'],
+    ['k','क'], ['g','ग'], ['c','क'], ['j','ज'], ['t','त'], ['d','द'], ['n','न'],
+    ['p','प'], ['b','ब'], ['m','म'], ['y','य'], ['r','र'], ['l','ल'], ['v','व'],
+    ['w','व'], ['s','स'], ['h','ह'], ['f','फ'], ['z','ज'], ['x','क्स'], ['q','क']
+  ];
+  var DEVANAGARI_VOWELS = {
+    aa:{indep:'आ',matra:'ा'}, ee:{indep:'ई',matra:'ी'}, ii:{indep:'ई',matra:'ी'},
+    oo:{indep:'ऊ',matra:'ू'}, uu:{indep:'ऊ',matra:'ू'},
+    ai:{indep:'ऐ',matra:'ै'}, au:{indep:'औ',matra:'ौ'},
+    a:{indep:'अ',matra:''}, i:{indep:'इ',matra:'ि'}, u:{indep:'उ',matra:'ु'},
+    e:{indep:'ए',matra:'े'}, o:{indep:'ओ',matra:'ो'}
+  };
+  var DEVANAGARI_VOWEL_KEYS = ['aa','ee','ii','oo','uu','ai','au','a','i','u','e','o'];
+  function tokenizeForDevanagari(word){
+    var tokens = []; var i = 0; var lower = word.toLowerCase();
+    while(i < lower.length){
+      var matched = false, c, v;
+      for(c=0;c<DEVANAGARI_CONSONANTS.length;c++){
+        var latinC = DEVANAGARI_CONSONANTS[c][0];
+        if(lower.substr(i, latinC.length) === latinC){
+          tokens.push({type:'c', deva:DEVANAGARI_CONSONANTS[c][1]});
+          i += latinC.length; matched = true; break;
+        }
+      }
+      if(matched) continue;
+      for(v=0;v<DEVANAGARI_VOWEL_KEYS.length;v++){
+        var vk = DEVANAGARI_VOWEL_KEYS[v];
+        if(lower.substr(i, vk.length) === vk){
+          tokens.push({type:'v', key:vk});
+          i += vk.length; matched = true; break;
+        }
+      }
+      if(matched) continue;
+      tokens.push({type:'x', ch:word[i]}); // digits/punctuation — passed through untouched
+      i++;
+    }
+    return tokens;
+  }
+  function transliterateWordToDevanagari(word){
+    var tokens = tokenizeForDevanagari(word);
+    var out = ''; var i = 0;
+    while(i < tokens.length){
+      var tok = tokens[i], next = tokens[i+1];
+      if(tok.type==='x'){ out += tok.ch; i++; continue; }
+      if(tok.type==='c'){
+        if(next && next.type==='v'){
+          var isFinalA = (next.key==='a' && i+2>=tokens.length);
+          out += tok.deva + (isFinalA ? 'ा' : DEVANAGARI_VOWELS[next.key].matra);
+          i += 2;
+        } else if(next && next.type==='c'){
+          out += tok.deva + '्'; // consonant cluster — join with a virama
+          i += 1;
+        } else {
+          out += tok.deva; // word-final consonant keeps its inherent "a" in spelling
+          i += 1;
+        }
+      } else {
+        var isFinalAIndep = (tok.key==='a' && i+1>=tokens.length && i>0);
+        out += isFinalAIndep ? 'आ' : DEVANAGARI_VOWELS[tok.key].indep;
+        i += 1;
+      }
+    }
+    return out;
+  }
+  // Handles multi-word names and punctuation (hyphens, apostrophes) by
+  // splitting on anything that isn't a Latin letter and passing it through.
+  function transliterateToDevanagari(name){
+    if(!name) return name;
+    return String(name).split(/([^a-zA-Z]+)/).map(function(seg){
+      return /[a-zA-Z]/.test(seg) ? transliterateWordToDevanagari(seg) : seg;
+    }).join('');
+  }
+  // The name actually shown on screen: a manually-corrected `name_dev` always
+  // wins; otherwise it's the automatic transliteration above; in English mode
+  // it's always just the name as entered.
+  function displayName(s){
+    if(!s) return '';
+    if(LANG==='en') return s.name;
+    if(s.name_dev) return s.name_dev;
+    return transliterateToDevanagari(s.name);
+  }
+
   function icon(name, cls){
     return '<svg class="icon'+(cls?' '+cls:'')+'" aria-hidden="true"><use href="#icon-'+name+'"></use></svg>';
   }
@@ -961,11 +1308,11 @@
       var danger = !!opts.danger;
       modalOverlay.innerHTML =
         '<div class="modal-card" role="document">'
-        + '<h3>'+esc(opts.title||'Are you sure?')+'</h3>'
+        + '<h3>'+esc(opts.title||t('confirm_default_title'))+'</h3>'
         + '<p>'+esc(opts.message||'')+'</p>'
         + '<div class="modal-actions">'
-        + '<button class="btn ghost" id="modal-cancel">'+esc(opts.cancelText||'Cancel')+'</button>'
-        + '<button class="btn '+(danger?'danger':'primary')+'" id="modal-confirm">'+esc(opts.confirmText||'Confirm')+'</button>'
+        + '<button class="btn ghost" id="modal-cancel">'+esc(opts.cancelText||t('cancel'))+'</button>'
+        + '<button class="btn '+(danger?'danger':'primary')+'" id="modal-confirm">'+esc(opts.confirmText||t('confirm_default_confirm'))+'</button>'
         + '</div></div>';
       modalOverlay.removeAttribute('hidden');
       function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
@@ -990,7 +1337,7 @@
         + '<input type="text" id="modal-input" placeholder="'+esc(opts.placeholder||'')+'">'
         + '<div class="modal-actions">'
         + '<button class="btn ghost" id="modal-cancel">Cancel</button>'
-        + '<button class="btn primary" id="modal-confirm">'+esc(opts.confirmText||'Add')+'</button>'
+        + '<button class="btn primary" id="modal-confirm">'+esc(opts.confirmText||t('add_centre_btn'))+'</button>'
         + '</div></div>';
       modalOverlay.removeAttribute('hidden');
       var input = document.getElementById('modal-input');
@@ -1007,13 +1354,18 @@
     });
   }
   function auditActionLabel(action){
-    return ({create:'Added', edit:'Edited', delete:'Deleted', photo:'Photo changed for', archive:'Archived', restore:'Restored'})[action] || action;
+    var key = {create:'audit_action_create', edit:'audit_action_edit', delete:'audit_action_delete', photo:'audit_action_photo', archive:'audit_action_archive', restore:'audit_action_restore'}[action];
+    return key ? t(key) : action;
   }
   // Coordinator-only view of the audit_log collection — who changed which
-  // student record and when. Read-only, most recent 50 entries.
+  // student record and when. Read-only, most recent 50 entries. Note: the
+  // "details" free-text column itself stays as originally written (English)
+  // — it's a stored historical record, not live UI, so translating it after
+  // the fact would make the same past entry read differently depending on
+  // which language happens to be selected when someone looks it up.
   async function showActivityLog(){
     modalPreviousFocus = document.activeElement;
-    modalOverlay.innerHTML = '<div class="modal-card modal-wide" role="document"><h3>'+icon('activity')+' Activity log</h3><p>Loading recent changes…</p></div>';
+    modalOverlay.innerHTML = '<div class="modal-card modal-wide" role="document"><h3>'+icon('activity')+' '+t('activity_log')+'</h3><p>'+t('activity_log_loading')+'</p></div>';
     modalOverlay.removeAttribute('hidden');
     function onKey(e){
       if(e.key==='Escape'){ closeModal(); document.removeEventListener('keydown', onKey); return; }
@@ -1030,18 +1382,18 @@
     }catch(e){ loadError = true; }
     var body;
     if(loadError){
-      body = '<p style="color:var(--accent-soft-ink);font-size:.85rem;">Could not load the activity log — check your connection and try again.</p>';
+      body = '<p style="color:var(--accent-soft-ink);font-size:.85rem;">'+esc(t('activity_log_error'))+'</p>';
     } else if(!entries.length){
-      body = '<p style="color:var(--ink-soft);font-size:.85rem;">No activity recorded yet.</p>';
+      body = '<p style="color:var(--ink-soft);font-size:.85rem;">'+esc(t('activity_log_empty'))+'</p>';
     } else {
-      body = '<div class="table-scroll" style="max-height:50vh;overflow-y:auto;"><table><thead><tr><th>When</th><th>Who</th><th>What</th><th>Details</th></tr></thead><tbody>';
+      body = '<div class="table-scroll" style="max-height:50vh;overflow-y:auto;"><table><thead><tr><th>'+esc(t('col_when'))+'</th><th>'+esc(t('col_who'))+'</th><th>'+esc(t('col_what'))+'</th><th>'+esc(t('details'))+'</th></tr></thead><tbody>';
       entries.forEach(function(e){
         var when = e.at ? new Date(e.at).toLocaleString() : '—';
         body += '<tr><td style="white-space:nowrap;">'+esc(when)+'</td><td>'+esc(e.by||'—')+'</td><td>'+esc(auditActionLabel(e.action))+' '+esc(e.studentName||'')+'</td><td>'+esc(e.details||'')+'</td></tr>';
       });
       body += '</tbody></table></div>';
     }
-    modalOverlay.innerHTML = '<div class="modal-card modal-wide" role="document"><h3>'+icon('activity')+' Activity log</h3>'+body+'<div class="modal-actions"><button class="btn primary" id="modal-close-activity">Close</button></div></div>';
+    modalOverlay.innerHTML = '<div class="modal-card modal-wide" role="document"><h3>'+icon('activity')+' '+t('activity_log')+'</h3>'+body+'<div class="modal-actions"><button class="btn primary" id="modal-close-activity">'+esc(t('close'))+'</button></div></div>';
     document.getElementById('modal-close-activity').addEventListener('click', function(){ closeModal(); document.removeEventListener('keydown', onKey); });
     document.getElementById('modal-close-activity').focus();
   }
@@ -1053,17 +1405,17 @@
     return new Promise(function(resolve){
       modalPreviousFocus = document.activeElement;
       var centreField = centreList
-        ? '<div class="field" style="margin-bottom:12px;">'+fieldLabel('pin','Centre')+'<select id="pr-centre">'
+        ? '<div class="field" style="margin-bottom:12px;">'+fieldLabel('pin', t('field_centre'))+'<select id="pr-centre">'
           + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; }).join('')
           + '</select></div>'
         : '';
       modalOverlay.innerHTML =
         '<div class="modal-card" role="document">'
-        + '<h3>'+icon('print')+' Print monthly register</h3>'
-        + '<p>Opens a printable page for this month — use your browser\'s print dialog to save it as a PDF.</p>'
+        + '<h3>'+icon('print')+' '+esc(t('print_register_modal_title'))+'</h3>'
+        + '<p>'+esc(t('print_register_modal_desc'))+'</p>'
         + centreField
-        + '<div class="field">'+fieldLabel('book','Month')+'<input type="month" id="pr-month" value="'+defaultMonth+'" max="'+todayIso().slice(0,7)+'"></div>'
-        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">Cancel</button><button class="btn primary" id="modal-confirm">Open register</button></div>'
+        + '<div class="field">'+fieldLabel('book', t('field_month'))+'<input type="month" id="pr-month" value="'+defaultMonth+'" max="'+todayIso().slice(0,7)+'"></div>'
+        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">'+esc(t('cancel'))+'</button><button class="btn primary" id="modal-confirm">'+esc(t('open_register_btn'))+'</button></div>'
         + '</div>';
       modalOverlay.removeAttribute('hidden');
       function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
@@ -1085,10 +1437,10 @@
       modalOverlay.innerHTML =
         '<div class="modal-card" role="document">'
         + '<h3>'+icon('pin')+' '+esc(t('change_centre'))+'</h3>'
-        + '<p>Move the selected students to a different centre.</p>'
-        + '<div class="field">'+fieldLabel('pin','Centre')+'<select id="cc-centre">'
+        + '<p>'+esc(t('change_centre_modal_desc'))+'</p>'
+        + '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<select id="cc-centre">'
         + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; }).join('')
-        + '<option value="__new__">+ New centre…</option></select></div>'
+        + '<option value="__new__">'+esc(t('new_centre_option'))+'</option></select></div>'
         + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">'+esc(t('cancel'))+'</button><button class="btn primary" id="modal-confirm">'+esc(t('change_centre'))+'</button></div>'
         + '</div>';
       modalOverlay.removeAttribute('hidden');
@@ -1099,7 +1451,7 @@
       document.getElementById('modal-confirm').addEventListener('click', async function(){
         var val = document.getElementById('cc-centre').value;
         if(val==='__new__'){
-          val = await showPromptModal({title:'New centre', placeholder:'e.g. Mogra', confirmText:'Add centre'});
+          val = await showPromptModal({title:t('new_centre_title'), placeholder:t('new_centre_placeholder'), confirmText:t('add_centre_btn')});
           if(!val){ return; }
           finish(val);
           return;
@@ -1133,18 +1485,18 @@
     if(!box) return;
     var query = qval.trim().toLowerCase();
     if(!query){
-      box.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;margin:4px 2px;">Start typing a student\'s name…</p>';
+      box.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;margin:4px 2px;">'+esc(t('qs_typing_hint'))+'</p>';
       return;
     }
     var matches = STATE.roster.filter(function(s){ return s.name && s.name.toLowerCase().indexOf(query)>-1; }).slice(0,8);
     if(!matches.length){
-      box.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;margin:4px 2px;">No students match "'+esc(qval)+'".</p>';
+      box.innerHTML = '<p style="color:var(--ink-soft);font-size:.85rem;margin:4px 2px;">'+esc(tf('qs_no_matches', {q: qval}))+'</p>';
       return;
     }
     box.innerHTML = matches.map(function(s){
       return '<button type="button" class="qs-result" data-sid="'+s.id+'">'
         + avatarHtml(s.name, s.centre, 'sm', s.photo)
-        + '<span><span class="qs-name">'+esc(s.name)+(isActive(s)?'':' · archived')+'</span><span class="qs-sub">'+esc(shortCentre(s.centre))+(s.std?' · '+esc(s.std):'')+'</span></span>'
+        + '<span><span class="qs-name">'+esc(displayName(s))+(isActive(s)?'':' · '+esc(t('label_archived')))+'</span><span class="qs-sub">'+esc(shortCentre(s.centre))+(s.std?' · '+esc(s.std):'')+'</span></span>'
         + '</button>';
     }).join('');
     box.querySelectorAll('.qs-result').forEach(function(btn){
@@ -1166,7 +1518,7 @@
     modalOverlay.innerHTML =
       '<div class="modal-card" role="document">'
       + '<h3>'+icon('search')+' '+esc(t('quick_search'))+'</h3>'
-      + '<input type="text" id="qs-input" placeholder="Student name…">'
+      + '<input type="text" id="qs-input" placeholder="'+esc(t('student_name_placeholder'))+'">'
       + '<div id="qs-results" class="qs-results"></div>'
       + '</div>';
     modalOverlay.removeAttribute('hidden');
@@ -1231,7 +1583,7 @@
       }).join('');
       var st = studentStats(s.id);
       var pctTxt = st.pct===null ? '—' : st.pct+'%';
-      return '<tr><td class="nm">'+esc(s.name)+'</td><td>'+esc(s.std||'—')+'</td>'+cells+'<td class="tot">'+pctTxt+'</td></tr>';
+      return '<tr><td class="nm">'+esc(displayName(s))+'</td><td>'+esc(s.std||'—')+'</td>'+cells+'<td class="tot">'+pctTxt+'</td></tr>';
     }).join('');
     var headCells = dates.map(function(d){ return '<th>'+d.slice(8,10)+'</th>'; }).join('');
     var doc = '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(shortCentre(centre))+' — '+esc(monthLabel)+'</title><style>'
@@ -1241,14 +1593,14 @@
       + 'td.nm{text-align:left;font-weight:600;white-space:nowrap;} .tot{font-weight:700;}'
       + '.printbar{margin-bottom:16px;} @media print{ .printbar{display:none;} }'
       + '</style></head><body>'
-      + '<div class="printbar"><button onclick="window.print()">Print / Save as PDF</button></div>'
-      + '<h1>Akshar Paaul Attendance Register</h1><h2>'+esc(shortCentre(centre))+' · '+esc(monthLabel)+'</h2>'
+      + '<div class="printbar"><button onclick="window.print()">'+esc(t('print_save_pdf_btn'))+'</button></div>'
+      + '<h1>'+esc(t('register_title'))+'</h1><h2>'+esc(shortCentre(centre))+' · '+esc(monthLabel)+'</h2>'
       + (dates.length===0
-        ? '<p>No attendance was marked for this centre in '+esc(monthLabel)+'.</p>'
-        : '<table><thead><tr><th>Name</th><th>Std</th>'+headCells+'<th>%</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>')
+        ? '<p>'+esc(tf('register_no_data', {month: monthLabel}))+'</p>'
+        : '<table><thead><tr><th>'+esc(t('field_name'))+'</th><th>'+esc(t('print_col_std'))+'</th>'+headCells+'<th>%</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>')
       + '</body></html>';
     var win = window.open('', '_blank');
-    if(!win){ showToast('Please allow pop-ups to open the printable register.'); return; }
+    if(!win){ showToast(t('popup_blocked_register')); return; }
     win.document.open(); win.document.write(doc); win.document.close();
   }
 
@@ -1260,12 +1612,12 @@
       for(var y=Number(defaultYear); y>=2024; y--){ years.push(String(y)); }
       modalOverlay.innerHTML =
         '<div class="modal-card" role="document">'
-        + '<h3>'+icon('chart')+' Annual report</h3>'
-        + '<p>Opens a printable summary for the whole year — centre and class averages, month-by-month trend, and students worth checking in on.</p>'
-        + '<div class="field">'+fieldLabel('book','Year')+'<select id="ar-year">'
+        + '<h3>'+icon('chart')+' '+esc(t('annual_report_modal_title'))+'</h3>'
+        + '<p>'+esc(t('annual_report_modal_desc'))+'</p>'
+        + '<div class="field">'+fieldLabel('book', t('field_year'))+'<select id="ar-year">'
         + years.map(function(y){ return '<option value="'+y+'">'+y+'</option>'; }).join('')
         + '</select></div>'
-        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">Cancel</button><button class="btn primary" id="modal-confirm">Open report</button></div>'
+        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">'+esc(t('cancel'))+'</button><button class="btn primary" id="modal-confirm">'+esc(t('open_report_btn'))+'</button></div>'
         + '</div>';
       modalOverlay.removeAttribute('hidden');
       function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
@@ -1303,28 +1655,28 @@
     var centreRowsHtml = centreRows.map(function(r){ return '<tr><td>'+esc(shortCentre(r.c))+'</td><td>'+r.total+'</td><td>'+r.marked+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
     var classRowsHtml = classRows.map(function(r){ return '<tr><td>'+esc(r.k)+'</td><td>'+r.total+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
     var trendRowsHtml = trend.map(function(m){ return '<tr><td>'+esc(monthShortLabel(m.month))+'</td><td>'+m.total+'</td><td>'+(m.pct===null?'—':m.pct+'%')+'</td></tr>'; }).join('');
-    var atRiskRowsHtml = atRisk.map(function(s){ return '<tr><td>'+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+studentStats(s.id).streak+'</td></tr>'; }).join('');
+    var atRiskRowsHtml = atRisk.map(function(s){ return '<tr><td>'+esc(displayName(s))+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+studentStats(s.id).streak+'</td></tr>'; }).join('');
 
-    var doc = '<!doctype html><html><head><meta charset="utf-8"><title>Akshar Paaul Attendance — '+esc(year)+' Annual Report</title><style>'
+    var doc = '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(tf('annual_doc_title', {year: year}))+'</title><style>'
       + 'body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}'
       + 'h1{font-size:20px;margin:0 0 2px;} h2{font-size:13px;font-weight:normal;color:#555;margin:0 0 20px;}'
       + 'h3{font-size:14px;margin:22px 0 8px;border-bottom:1px solid #999;padding-bottom:4px;}'
       + 'table{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:6px;} th,td{border:1px solid #999;padding:5px 8px;text-align:left;}'
       + '.printbar{margin-bottom:16px;} @media print{ .printbar{display:none;} }'
       + '</style></head><body>'
-      + '<div class="printbar"><button onclick="window.print()">Print / Save as PDF</button></div>'
-      + '<h1>Akshar Paaul Attendance — Annual Report</h1><h2>Calendar year '+esc(year)+'</h2>'
-      + '<h3>Centre summary</h3>'
-      + (centreRows.length ? '<table><thead><tr><th>Centre</th><th>Students</th><th>Sessions marked</th><th>Attendance</th></tr></thead><tbody>'+centreRowsHtml+'</tbody></table>' : '<p>No centres on record.</p>')
-      + '<h3>Class summary</h3>'
-      + (classRows.length ? '<table><thead><tr><th>Class</th><th>Students</th><th>Attendance</th></tr></thead><tbody>'+classRowsHtml+'</tbody></table>' : '<p>No classes on record.</p>')
-      + '<h3>Month by month</h3>'
-      + (trend.length ? '<table><thead><tr><th>Month</th><th>Sessions marked</th><th>Attendance</th></tr></thead><tbody>'+trendRowsHtml+'</tbody></table>' : '<p>No attendance was marked in '+esc(year)+'.</p>')
-      + '<h3>Students worth checking in on ('+STREAK_RISK_THRESHOLD+'+ absences in a row, as of today)</h3>'
-      + (atRisk.length ? '<table><thead><tr><th>Name</th><th>Centre</th><th>Current streak</th></tr></thead><tbody>'+atRiskRowsHtml+'</tbody></table>' : '<p>None right now.</p>')
+      + '<div class="printbar"><button onclick="window.print()">'+esc(t('print_save_pdf_btn'))+'</button></div>'
+      + '<h1>'+esc(t('annual_heading'))+'</h1><h2>'+esc(tf('annual_calendar_year', {year: year}))+'</h2>'
+      + '<h3>'+esc(t('centre_summary'))+'</h3>'
+      + (centreRows.length ? '<table><thead><tr><th>'+esc(t('field_centre'))+'</th><th>'+esc(t('annual_col_students'))+'</th><th>'+esc(t('annual_col_sessions_marked'))+'</th><th>'+esc(t('col_attendance'))+'</th></tr></thead><tbody>'+centreRowsHtml+'</tbody></table>' : '<p>'+esc(t('annual_no_centres'))+'</p>')
+      + '<h3>'+esc(t('class_summary'))+'</h3>'
+      + (classRows.length ? '<table><thead><tr><th>'+esc(t('col_class'))+'</th><th>'+esc(t('annual_col_students'))+'</th><th>'+esc(t('col_attendance'))+'</th></tr></thead><tbody>'+classRowsHtml+'</tbody></table>' : '<p>'+esc(t('annual_no_classes'))+'</p>')
+      + '<h3>'+esc(t('annual_month_by_month'))+'</h3>'
+      + (trend.length ? '<table><thead><tr><th>'+esc(t('annual_col_month'))+'</th><th>'+esc(t('annual_col_sessions_marked'))+'</th><th>'+esc(t('col_attendance'))+'</th></tr></thead><tbody>'+trendRowsHtml+'</tbody></table>' : '<p>'+esc(tf('annual_no_attendance_year', {year: year}))+'</p>')
+      + '<h3>'+esc(tf('annual_checkin_title', {n: STREAK_RISK_THRESHOLD}))+'</h3>'
+      + (atRisk.length ? '<table><thead><tr><th>'+esc(t('field_name'))+'</th><th>'+esc(t('field_centre'))+'</th><th>'+esc(t('annual_col_current_streak'))+'</th></tr></thead><tbody>'+atRiskRowsHtml+'</tbody></table>' : '<p>'+esc(t('annual_none_now'))+'</p>')
       + '</body></html>';
     var win = window.open('', '_blank');
-    if(!win){ showToast('Please allow pop-ups to open the annual report.'); return; }
+    if(!win){ showToast(t('popup_blocked_annual')); return; }
     win.document.open(); win.document.write(doc); win.document.close();
   }
 
@@ -1335,13 +1687,13 @@
     var needsReview = activeRoster.filter(function(s){return s.needs_review;}).length;
     var atRisk = activeRoster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; }).length;
     var parts = [];
-    parts.push('<button class="stat-pill link" id="students-jump" title="View the full roster">'+icon('users')+' '+activeRoster.length+' students</button>');
-    parts.push('<button class="stat-pill link" id="centres-jump" title="See the centre-by-centre breakdown">'+icon('pin')+' '+centres().length+' centres</button>');
+    parts.push('<button class="stat-pill link" id="students-jump" title="'+esc(t('header_students_title'))+'">'+icon('users')+' '+esc(tf('header_n_students', {n: activeRoster.length}))+'</button>');
+    parts.push('<button class="stat-pill link" id="centres-jump" title="'+esc(t('header_centres_title'))+'">'+icon('pin')+' '+esc(tf('header_n_centres', {n: centres().length}))+'</button>');
     if(needsReview>0){
-      parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+icon('flag')+' '+needsReview+' need review</button>');
+      parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+icon('flag')+' '+esc(tf('header_n_need_review', {n: needsReview}))+'</button>');
     }
     if(atRisk>0){
-      parts.push('<button class="stat-pill link" id="atrisk-jump" style="border-color:var(--absent);color:var(--absent);background:var(--absent-soft);">'+icon('alert')+' '+atRisk+' at risk</button>');
+      parts.push('<button class="stat-pill link" id="atrisk-jump" style="border-color:var(--absent);color:var(--absent);background:var(--absent-soft);">'+icon('alert')+' '+esc(tf('header_n_at_risk', {n: atRisk}))+'</button>');
     }
     el.innerHTML = parts.join('');
     var studentsBtn = document.getElementById('students-jump');
@@ -1376,7 +1728,12 @@
   }
 
   // ================= TAB: MARK ATTENDANCE =================
-  var markFilters = { centre: '', date: nearestSunday(), std: '' };
+  // stdTouched tracks whether the person has actually used the Class dropdown
+  // yet (picked a specific class, or deliberately chosen "All classes"). Until
+  // then, renderMark() defaults std to the centre's first class so a teacher
+  // lands on one class's roster instead of every class merged together — the
+  // combined view is still one dropdown pick away, never removed.
+  var markFilters = { centre: '', date: nearestSunday(), std: '', stdTouched: false };
 
   function resubscribeMark(){
     if(markUnsub){ markUnsub(); markUnsub = null; }
@@ -1387,7 +1744,7 @@
       snap.forEach(function(docSnap){ mergeAttendanceDoc(docSnap.data()); });
       renderMark();
     }, function(err){
-      showToast('Could not load attendance — check your connection.');
+      showToast(t('err_load_attendance'));
     });
   }
 
@@ -1414,7 +1771,7 @@
     lastMarkAction = {sid:sid, val:resultVal};
     renderMark();
     var ok = await persistWrite(item);
-    if(!ok) showToast('Saved on this device — will sync when back online.');
+    if(!ok) showToast(t('saved_offline'));
   }
   // Attaches an optional reason to an *existing* absence without disturbing
   // fast marking — tapping present/absent never blocks on this. Tapping the
@@ -1436,7 +1793,7 @@
     mergeAttendanceDoc(data);
     renderMark();
     var ok = await persistWrite({type:'set', col:'attendance', docId:sid+'_'+date, data:data});
-    if(!ok) showToast('Saved on this device — will sync when back online.');
+    if(!ok) showToast(t('saved_offline'));
   }
   // A quick swipe left/right on a roster row marks absent/present without having
   // to land a tap on the small toggle — meant for the common case of working
@@ -1504,12 +1861,12 @@
 
     var html = '';
     html += '<div class="card">';
-    html += '<h2 class="section-title">Mark attendance</h2>';
+    html += '<h2 class="section-title">'+t('nav_mark')+'</h2>';
     html += '<div class="controls-row">';
     if(locked){
-      html += '<div class="field">'+fieldLabel('pin','Centre')+'<div class="locked-value">'+esc(shortCentre(markFilters.centre))+'</div></div>';
+      html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<div class="locked-value">'+esc(shortCentre(markFilters.centre))+'</div></div>';
     } else {
-      html += '<div class="field">'+fieldLabel('pin','Centre')+'<select id="mk-centre">';
+      html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<select id="mk-centre">';
       cList.forEach(function(c){
         html += '<option value="'+esc(c)+'"'+(c===markFilters.centre?' selected':'')+'>'+esc(shortCentre(c))+'</option>';
       });
@@ -1518,12 +1875,18 @@
     var centreList = STATE.roster.filter(function(s){ return s.centre===markFilters.centre && isActive(s); });
     var classList = classesIn(centreList);
     if(markFilters.std && classList.indexOf(markFilters.std)===-1) markFilters.std = '';
-    html += '<div class="field">'+fieldLabel('book','Class')+'<select id="mk-std"><option value="">All classes</option>';
+    // Default to the centre's first class until the person has actually used
+    // this dropdown themselves — a roll call is normally taken one class at a
+    // time, so that's a better first screen than every class stacked together.
+    if(!markFilters.stdTouched && !markFilters.std && classList.length>0){
+      markFilters.std = classList[0];
+    }
+    html += '<div class="field">'+fieldLabel('book', t('col_class'))+'<select id="mk-std"><option value="">'+t('all_classes')+'</option>';
     classList.forEach(function(k){
       html += '<option value="'+esc(k)+'"'+(k===markFilters.std?' selected':'')+'>'+esc(k)+'</option>';
     });
     html += '</select></div>';
-    html += '<div class="field"><label>Date</label><input type="date" id="mk-date" value="'+markFilters.date+'" min="'+MARK_DATE_MIN+'" max="'+todayIso()+'"></div>';
+    html += '<div class="field"><label>'+esc(t('field_date'))+'</label><input type="date" id="mk-date" value="'+markFilters.date+'" min="'+MARK_DATE_MIN+'" max="'+todayIso()+'"></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="mk-today">'+t('this_week')+'</button></div>';
     html += '</div>';
 
@@ -1541,11 +1904,11 @@
     var ringOffset = ringC*(1-progFrac);
     html += '<div class="controls-row" style="justify-content:space-between;">';
     html += '<div class="mark-progress">';
-    html += '<svg class="progress-ring" width="44" height="44" viewBox="0 0 44 44" role="img" aria-label="'+markedCount+' of '+list.length+' marked">';
+    html += '<svg class="progress-ring" width="44" height="44" viewBox="0 0 44 44" role="img" aria-label="'+esc(tf('progress_aria', {n:markedCount, m:list.length}))+'">';
     html += '<circle class="ring-bg" cx="22" cy="22" r="'+ringR+'"></circle>';
     html += '<circle class="ring-fg" cx="22" cy="22" r="'+ringR+'" stroke-dasharray="'+ringC.toFixed(2)+'" stroke-dashoffset="'+ringOffset.toFixed(2)+'" transform="rotate(-90 22 22)"></circle>';
     html += '</svg>';
-    html += '<div class="mark-progress-text"><span class="n">'+markedCount+' of '+list.length+'</span><span class="lbl">marked for '+esc(fmtDateLabel(markFilters.date))+'</span></div>';
+    html += '<div class="mark-progress-text"><span class="n">'+esc(tf('progress_n_of_m', {n:markedCount, m:list.length}))+'</span><span class="lbl">'+esc(tf('progress_marked_for', {date:fmtDateLabel(markFilters.date)}))+'</span></div>';
     html += '</div>';
     html += '<span style="display:flex;gap:8px;">';
     html += '<button class="btn small" id="mk-allpresent">'+t('mark_all_present')+'</button>';
@@ -1561,19 +1924,19 @@
     var nudgeDismissed = false;
     try{ nudgeDismissed = sessionStorage.getItem(nudgeKey)==='1'; }catch(e){}
     if(markFilters.date===nearestSunday() && list.length>0 && unmarkedCount>0 && !nudgeDismissed){
-      html += '<div class="banner" id="mk-nudge">'+icon('alert')+'<span>You haven\'t marked '+unmarkedCount+' student'+(unmarkedCount>1?'s':'')+' yet for this week\'s session.</span><button class="btn ghost small" id="mk-nudge-dismiss">Dismiss</button></div>';
+      html += '<div class="banner" id="mk-nudge">'+icon('alert')+'<span>'+esc(tf('week_nudge_msg', {n:unmarkedCount, plural:pluralS(unmarkedCount)}))+'</span><button class="btn ghost small" id="mk-nudge-dismiss">'+esc(t('dismiss_btn'))+'</button></div>';
     }
 
     html += '<div class="roster-list" id="mk-list">';
     if(list.length===0){
-      html += '<div class="empty-state">'+icon('search')+'<div class="title">No students match this filter</div><div class="sub">Try a different class or centre, or double-check the date above.</div></div>';
+      html += '<div class="empty-state">'+icon('search')+'<div class="title">'+esc(t('no_students_match_filter'))+'</div><div class="sub">'+esc(t('mark_empty_sub'))+'</div></div>';
     }
     var lastGroupStd = null;
     var showGroups = !markFilters.std;
     list.forEach(function(s){
       if(showGroups && s.std !== lastGroupStd){
         lastGroupStd = s.std;
-        html += '<div class="class-group-header">'+esc(s.std || 'No class on file')+'</div>';
+        html += '<div class="class-group-header">'+esc(s.std || t('no_class_on_file'))+'</div>';
       }
       var v = attVal(s.id, markFilters.date);
       var isP = v === 1, isA = v === 0;
@@ -1582,11 +1945,11 @@
       html += '<div class="stu-row" data-sid="'+s.id+'">';
       html += '<div class="swipe-reveal"><span class="icon-wrap check">'+icon('check','icon-lg')+'</span><span class="icon-wrap cross">'+icon('cross','icon-lg')+'</span></div>';
       html += '<div class="stu-row-inner">';
-      html += '<div class="stu-main">'+avatarHtml(s.name, s.centre, null, s.photo)+'<div class="stu-text"><div class="stu-name">'+esc(s.name)+(atRisk?' <span class="chip streak" title="'+streak+' absences in a row">'+icon('alert')+' '+streak+'</span>':'')+'</div>';
+      html += '<div class="stu-main">'+avatarHtml(s.name, s.centre, null, s.photo)+'<div class="stu-text"><div class="stu-name">'+esc(displayName(s))+(atRisk?' <span class="chip streak" title="'+esc(tf('streak_title', {n:streak}))+'">'+icon('alert')+' '+streak+'</span>':'')+'</div>';
       html += '<div class="stu-sub">'+esc(s.std||'—')+(s.teacher?' · '+esc(s.teacher):'')+'</div></div></div>';
       html += '<div class="mark-toggle">';
-      html += '<button class="mark-seg absent'+(isA?' on':'')+'" data-act="absent" aria-pressed="'+isA+'" aria-label="Mark '+esc(s.name)+' absent">'+icon('cross')+'</button>';
-      html += '<button class="mark-seg present'+(isP?' on':'')+'" data-act="present" aria-pressed="'+isP+'" aria-label="Mark '+esc(s.name)+' present">'+icon('check')+'</button>';
+      html += '<button class="mark-seg absent'+(isA?' on':'')+'" data-act="absent" aria-pressed="'+isA+'" aria-label="'+esc(tf('aria_mark_absent', {name:displayName(s)}))+'">'+icon('cross')+'</button>';
+      html += '<button class="mark-seg present'+(isP?' on':'')+'" data-act="present" aria-pressed="'+isP+'" aria-label="'+esc(tf('aria_mark_present', {name:displayName(s)}))+'">'+icon('check')+'</button>';
       html += '</div>';
       html += '</div>';
       if(isA){
@@ -1605,11 +1968,14 @@
 
     if(!locked){
       document.getElementById('mk-centre').addEventListener('change', function(e){
-        markFilters.centre = e.target.value; markFilters.std = ''; resubscribeMark();
+        // A new centre has its own classes, so re-apply the "land on the
+        // first class" default there too, rather than carrying over whatever
+        // was picked (or "All classes") for the previous centre.
+        markFilters.centre = e.target.value; markFilters.std = ''; markFilters.stdTouched = false; resubscribeMark();
       });
     }
     document.getElementById('mk-std').addEventListener('change', function(e){
-      markFilters.std = e.target.value; renderMark();
+      markFilters.std = e.target.value; markFilters.stdTouched = true; renderMark();
     });
     document.getElementById('mk-date').addEventListener('change', function(e){
       markFilters.date = clampMarkDate(e.target.value); resubscribeMark();
@@ -1636,15 +2002,15 @@
         ok = false;
         items.forEach(queueWrite);
       }
-      showToast(ok ? 'Marked all present.' : 'Marked all present — saved on this device, will sync when back online.');
+      showToast(ok ? t('marked_all_present_toast') : t('marked_all_present_offline_toast'));
     });
     document.getElementById('mk-clear').addEventListener('click', async function(){
       var btn = this;
       var label = fmtDateLabel(markFilters.date)+(markFilters.std ? ' · '+markFilters.std : '');
       var confirmed = await showConfirmModal({
-        title: 'Clear this date?',
-        message: 'Clear every attendance mark for '+shortCentre(markFilters.centre)+' — '+label+'? This removes marks for '+list.length+' student'+(list.length===1?'':'s')+' and can\'t be undone.',
-        confirmText: 'Clear marks', danger: true
+        title: t('clear_date_title'),
+        message: tf('clear_date_msg', {centre:shortCentre(markFilters.centre), date:label, n:list.length, plural:pluralS(list.length)}),
+        confirmText: t('clear_marks_btn'), danger: true
       });
       if(!confirmed) return;
       btn.disabled = true;
@@ -1663,7 +2029,7 @@
         ok = false;
         items.forEach(queueWrite);
       }
-      showToast(ok ? 'Cleared.' : 'Cleared on this device — will sync when back online.');
+      showToast(ok ? t('cleared_toast') : t('cleared_offline_toast'));
     });
     el.querySelectorAll('.mark-seg').forEach(function(btn){
       btn.addEventListener('click', function(){
@@ -1767,7 +2133,11 @@
     ['gender','field_gender'], ['age','field_age'], ['medium','field_medium'], ['contact','field_contact'],
     ['school','field_school'], ['mother_edu','field_mother_edu'], ['father_edu','field_father_edu'],
     ['start_level','field_start_level'], ['end_level','field_end_level'], ['reading_level','field_reading_level'],
-    ['school_time','field_school_time'], ['funding_partner','field_funding_partner']
+    ['school_time','field_school_time'], ['funding_partner','field_funding_partner'],
+    // Kept at the end (not in the quick "Add student" form's first 9 fields)
+    // since it's purely optional — leaving it blank just falls back to the
+    // automatic transliteration described above transliterateToDevanagari().
+    ['name_dev','field_name_dev']
   ];
   // Shorter set asked for up front when adding a new student — the rest
   // (mother's education, reading level, etc.) can be filled in afterwards
@@ -1826,7 +2196,8 @@
     end_level: ['endinglevel','endlevel'],
     reading_level: ['readinglevel'],
     school_time: ['schooltime'],
-    funding_partner: ['fundingpartner']
+    funding_partner: ['fundingpartner'],
+    name_dev: ['namedevanagari','devanagariname','namemr','namehi','marathiname','hindiname']
   };
   function normalizeHeader(h){ return String(h||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
   function matchCsvField(header){
@@ -1840,7 +2211,7 @@
   }
   // A ready-made header row so nobody has to guess the expected column names.
   function downloadCsvTemplate(){
-    var header = ['Name','Centre','Teacher','Std','Gender','Age','Medium','Contact','School Name','Funding Partner'];
+    var header = ['Name','Name (Devanagari)','Centre','Teacher','Std','Gender','Age','Medium','Contact','School Name','Funding Partner'];
     downloadCSV([header.join(',')], 'akshar-paaul-student-import-template.csv');
   }
   // Turns raw parsed CSV rows into student-shaped objects + a per-row verdict,
@@ -1870,22 +2241,23 @@
     if(!csvPreview){ box.innerHTML = ''; return; }
     var items = csvPreview.items;
     if(!items.length){
-      box.innerHTML = '<p style="color:var(--accent-soft-ink);font-size:.85rem;margin-top:10px;">No rows found in that file — check it has a header row plus at least one student below it.</p>';
+      box.innerHTML = '<p style="color:var(--accent-soft-ink);font-size:.85rem;margin-top:10px;">'+esc(t('csv_no_rows'))+'</p>';
       return;
     }
     var okCount = items.filter(function(it){ return it.ok; }).length;
     var problemCount = items.length - okCount;
     var rowsHtml = items.slice(0,50).map(function(it){
       var status = it.ok
-        ? '<span class="chip" style="background:var(--present-soft);color:var(--present);">OK</span>'
-        : '<span class="chip" style="background:var(--absent-soft);color:var(--absent);" title="'+esc(it.problems.join(', '))+'">Skip</span>';
+        ? '<span class="chip" style="background:var(--present-soft);color:var(--present);">'+esc(t('csv_status_ok'))+'</span>'
+        : '<span class="chip" style="background:var(--absent-soft);color:var(--absent);" title="'+esc(it.problems.join(', '))+'">'+esc(t('csv_status_skip'))+'</span>';
       return '<tr><td>'+it.rowNum+'</td><td>'+esc(it.data.name||'—')+'</td><td>'+esc(it.data.centre?shortCentre(it.data.centre):'—')+'</td><td>'+esc(it.data.std||'—')+'</td><td>'+status+'</td></tr>';
     }).join('');
-    var moreNote = items.length>50 ? '<p style="color:var(--ink-soft);font-size:.8rem;">Showing the first 50 of '+items.length+' rows — all of them will still be imported.</p>' : '';
-    box.innerHTML = '<div class="table-scroll" style="margin-top:10px;max-height:40vh;overflow-y:auto;"><table><thead><tr><th>Row</th><th>Name</th><th>Centre</th><th>Std</th><th>Status</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'
+    var moreNote = items.length>50 ? '<p style="color:var(--ink-soft);font-size:.8rem;">'+esc(tf('csv_showing_first_50', {n:items.length}))+'</p>' : '';
+    var summaryHtml = tf('csv_summary', {ok:okCount, okPlural:pluralS(okCount), skipped: problemCount ? tf('csv_summary_skipped_part', {n:problemCount}) : ''});
+    box.innerHTML = '<div class="table-scroll" style="margin-top:10px;max-height:40vh;overflow-y:auto;"><table><thead><tr><th>'+esc(t('col_row'))+'</th><th>'+esc(t('field_name'))+'</th><th>'+esc(t('field_centre'))+'</th><th>'+esc(t('print_col_std'))+'</th><th>'+esc(t('col_status'))+'</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'
       + moreNote
-      + '<p style="font-size:.85rem;margin-top:8px;"><b>'+okCount+'</b> student'+(okCount===1?'':'s')+' will be imported'+(problemCount?', <b>'+problemCount+'</b> skipped (missing name or centre)':'')+'.</p>'
-      + '<div class="controls-row"><button class="btn primary small" id="st-import-confirm"'+(okCount?'':' disabled')+'>Import '+okCount+' student'+(okCount===1?'':'s')+'</button><button class="btn ghost small" id="st-import-clear">Choose a different file</button></div>';
+      + '<p style="font-size:.85rem;margin-top:8px;">'+summaryHtml+'</p>'
+      + '<div class="controls-row"><button class="btn primary small" id="st-import-confirm"'+(okCount?'':' disabled')+'>'+esc(tf('csv_import_btn', {n:okCount, plural:pluralS(okCount)}))+'</button><button class="btn ghost small" id="st-import-clear">'+esc(t('csv_choose_different_file'))+'</button></div>';
     var confirmBtn = document.getElementById('st-import-confirm');
     if(confirmBtn){
       confirmBtn.addEventListener('click', async function(){
@@ -1922,13 +2294,13 @@
     if(!val) return {ok:true};
     if(field==='age'){
       if(!/^\d{1,2}$/.test(val) || Number(val)<3 || Number(val)>25){
-        return {ok:false, msg:'That doesn\'t look like a valid age — saved, but flagged for review.'};
+        return {ok:false, msg:t('age_invalid_msg')};
       }
     }
     if(field==='contact'){
       var digits = val.replace(/[^0-9]/g,'');
       if(digits.length<10 || digits.length>13){
-        return {ok:false, msg:'That doesn\'t look like a valid phone number — saved, but flagged for review.'};
+        return {ok:false, msg:t('phone_invalid_msg')};
       }
     }
     return {ok:true};
@@ -2001,49 +2373,49 @@
     var cList = centres(), tList = teachers();
 
     var html = '<div class="card">';
-    html += '<h2 class="section-title">Students &amp; records</h2>';
+    html += '<h2 class="section-title">'+esc(t('nav_students'))+'</h2>';
     html += '<div class="controls-row">';
-    html += '<div class="field">'+fieldLabel('search','Search')+'<input type="search" id="st-q" placeholder="Student name…" value="'+esc(stuFilters.q)+'"></div>';
+    html += '<div class="field">'+fieldLabel('search', t('field_search'))+'<input type="search" id="st-q" placeholder="'+esc(t('student_name_placeholder'))+'" value="'+esc(stuFilters.q)+'"></div>';
     if(IDENTITY && IDENTITY.role==='coordinator'){
-      html += '<div class="field">'+fieldLabel('pin','Centre')+'<select id="st-centre"><option value="">All centres</option>';
+      html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<select id="st-centre"><option value="">'+esc(t('all_centres'))+'</option>';
       cList.forEach(function(c){ html += '<option value="'+esc(c)+'"'+(c===stuFilters.centre?' selected':'')+'>'+esc(shortCentre(c))+'</option>'; });
       html += '</select></div>';
     }
-    html += '<div class="field">'+fieldLabel('users','Teacher')+'<select id="st-teacher"><option value="">All teachers</option>';
+    html += '<div class="field">'+fieldLabel('users', t('field_teacher'))+'<select id="st-teacher"><option value="">'+esc(t('all_teachers'))+'</option>';
     tList.forEach(function(t){ html += '<option value="'+esc(t)+'"'+(t===stuFilters.teacher?' selected':'')+'>'+esc(t)+'</option>'; });
     html += '</select></div>';
     var stuScope = STATE.roster.filter(function(s){ return !stuFilters.centre || s.centre===stuFilters.centre; });
     var stClassList = classesIn(stuScope);
-    html += '<div class="field">'+fieldLabel('book','Class')+'<select id="st-std"><option value="">All classes</option>';
+    html += '<div class="field">'+fieldLabel('book', t('col_class'))+'<select id="st-std"><option value="">'+esc(t('all_classes'))+'</option>';
     stClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===stuFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div>';
-    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
-    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-risk-toggle">'+(stuFilters.atRiskOnly ? 'Showing: at risk' : 'Show at-risk')+'</button></div>';
-    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-archived-toggle">'+(stuFilters.archivedOnly ? 'Showing: archived' : 'Show archived')+'</button></div>';
-    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-import-toggle">'+(stuFilters.importing ? t('cancel') : icon('copy')+' Import CSV')+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+esc(stuFilters.reviewOnly ? t('review_toggle_on') : t('review_toggle_off'))+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-risk-toggle">'+esc(stuFilters.atRiskOnly ? t('risk_toggle_on') : t('risk_toggle_off'))+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-archived-toggle">'+esc(stuFilters.archivedOnly ? t('archived_toggle_on') : t('archived_toggle_off'))+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-import-toggle">'+(stuFilters.importing ? t('cancel') : icon('copy')+' '+esc(t('import_csv_btn')))+'</button></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn primary small" id="st-add-toggle">'+(stuFilters.adding ? t('cancel') : t('add_student'))+'</button></div>';
     html += '</div>';
 
     if(stuFilters.reviewOnly){
-      html += '<div class="banner"><span>These records are missing a required detail (gender, age, medium or teacher) or have an age/phone number that looks off. Tap <strong>Details</strong> on a student below, then tap any field to fix it — it saves as soon as you tap away.</span>'
-        + '<button class="btn ghost small" id="st-review-dismiss">Show all instead</button></div>';
+      html += '<div class="banner"><span>'+tf('review_banner_msg', {details:esc(t('details'))})+'</span>'
+        + '<button class="btn ghost small" id="st-review-dismiss">'+esc(t('show_all_instead'))+'</button></div>';
     }
     if(stuFilters.atRiskOnly){
-      html += '<div class="banner"><span>These students have '+STREAK_RISK_THRESHOLD+' or more absences in a row (counting the most recent marked sessions) — worth a check-in.</span>'
-        + '<button class="btn ghost small" id="st-risk-dismiss">Show all instead</button></div>';
+      html += '<div class="banner"><span>'+esc(tf('risk_banner_msg', {n:STREAK_RISK_THRESHOLD}))+'</span>'
+        + '<button class="btn ghost small" id="st-risk-dismiss">'+esc(t('show_all_instead'))+'</button></div>';
     }
     if(stuFilters.archivedOnly){
-      html += '<div class="banner"><span>Archived students are hidden from Mark attendance and everyday reports, but their attendance history is kept. Tap <strong>Details</strong> to restore one.</span>'
-        + '<button class="btn ghost small" id="st-archived-dismiss">Show active instead</button></div>';
+      html += '<div class="banner"><span>'+tf('archived_banner_msg', {details:esc(t('details'))})+'</span>'
+        + '<button class="btn ghost small" id="st-archived-dismiss">'+esc(t('show_active_instead'))+'</button></div>';
     }
 
     if(stuFilters.importing){
       var importCentreNote = (IDENTITY && IDENTITY.role!=='coordinator')
-        ? '<p style="color:var(--ink-soft);font-size:.82rem;">Every imported student is added to your centre ('+esc(shortCentre(IDENTITY.centre))+') regardless of what a Centre column in the file says.</p>'
+        ? '<p style="color:var(--ink-soft);font-size:.82rem;">'+esc(tf('csv_teacher_centre_note', {centre:shortCentre(IDENTITY.centre)}))+'</p>'
         : '';
       html += '<div class="card" id="st-import-card" style="background:var(--surface-2);margin-bottom:16px;">';
-      html += '<h2 class="section-title" style="margin-top:0;">Import students from CSV</h2>';
-      html += '<p style="color:var(--ink-soft);font-size:.85rem;">A spreadsheet with a header row — Name and Centre are required, everything else is optional and can be filled in later from Details. <button type="button" class="link-btn" id="st-import-template">Download a template</button></p>';
+      html += '<h2 class="section-title" style="margin-top:0;">'+esc(t('csv_import_title'))+'</h2>';
+      html += '<p style="color:var(--ink-soft);font-size:.85rem;">'+esc(t('csv_import_desc'))+' <button type="button" class="link-btn" id="st-import-template">'+esc(t('csv_download_template'))+'</button></p>';
       html += importCentreNote;
       html += '<input type="file" accept=".csv,text/csv" id="st-import-file">';
       html += '<div id="st-import-preview"></div>';
@@ -2052,7 +2424,7 @@
 
     if(stuFilters.adding){
       html += '<div class="card" id="st-add-card" style="background:var(--surface-2);margin-bottom:16px;">';
-      html += '<h2 class="section-title" style="margin-top:0;">Add a new student</h2>';
+      html += '<h2 class="section-title" style="margin-top:0;">'+esc(t('add_new_student_title'))+'</h2>';
       ADD_FIELDS.forEach(function(pair){
         var key = pair[0], label = t(pair[1]);
         if(key==='centre'){
@@ -2061,7 +2433,7 @@
           } else {
             html += '<div class="detail-item"><label for="add-f-centre">'+t('field_centre')+'</label><select id="add-f-centre">';
             cList.forEach(function(c){ html += '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; });
-            html += '<option value="__new__">+ New centre…</option></select></div>';
+            html += '<option value="__new__">'+esc(t('new_centre_option'))+'</option></select></div>';
           }
           return;
         }
@@ -2100,26 +2472,26 @@
     }
     var selectedCount = canBulk ? Object.keys(stuSelected).length : 0;
 
-    html += '<div class="controls-row" style="justify-content:space-between;"><span class="stat-pill">'+list.length+' students</span></div>';
+    html += '<div class="controls-row" style="justify-content:space-between;"><span class="stat-pill">'+esc(tf('header_n_students', {n:list.length}))+'</span></div>';
 
     if(canBulk && selectedCount>0){
-      html += '<div class="bulk-toolbar"><b>'+selectedCount+'</b> selected'
+      html += '<div class="bulk-toolbar"><b>'+esc(tf('n_selected', {n:selectedCount}))+'</b>'
         + '<button class="btn small" id="bulk-change-centre">'+icon('pin')+' '+esc(t('change_centre'))+'</button>'
-        + '<button class="btn small" id="bulk-archive">'+icon('archive')+' '+esc(t('archive_student')).replace(' student','')+'</button>'
+        + '<button class="btn small" id="bulk-archive">'+icon('archive')+' '+esc(t('archive_btn_short'))+'</button>'
         + '<button class="btn small" id="bulk-export">'+icon('copy')+' '+esc(t('export_csv'))+'</button>'
         + '<button class="btn ghost small" id="bulk-clear" style="margin-left:auto;">'+esc(t('clear_selection'))+'</button>'
         + '</div>';
     }
 
     if(list.length===0){
-      html += '<div class="empty-state">'+icon('search')+'<div class="title">No students match this filter</div><div class="sub">Try clearing the search, or switching centre / class / teacher above.</div></div>';
+      html += '<div class="empty-state">'+icon('search')+'<div class="title">'+esc(t('no_students_match_filter'))+'</div><div class="sub">'+esc(t('students_empty_sub'))+'</div></div>';
     }
     if(list.length>0){
     var colCount = STU_COLUMNS.length + 1 + (canBulk?1:0);
     html += '<div class="table-scroll"><table><thead><tr>';
     if(canBulk){
       var allSelected = list.length>0 && list.every(function(s){ return !!stuSelected[s.id]; });
-      html += '<th class="select-cell"><input type="checkbox" id="st-select-all" aria-label="Select all"'+(allSelected?' checked':'')+'></th>';
+      html += '<th class="select-cell"><input type="checkbox" id="st-select-all" aria-label="'+esc(t('select_all_aria'))+'"'+(allSelected?' checked':'')+'></th>';
     }
     STU_COLUMNS.forEach(function(col){
       var key=col[0], label=t(col[1]);
@@ -2136,11 +2508,11 @@
       var pctTxt = stats.pct===null ? '—' : stats.pct+'%';
       html += '<tr data-sid="'+s.id+'">';
       if(canBulk){
-        html += '<td class="select-cell"><input type="checkbox" class="stu-select" data-sid="'+s.id+'" aria-label="Select '+esc(s.name)+'"'+(stuSelected[s.id]?' checked':'')+'></td>';
+        html += '<td class="select-cell"><input type="checkbox" class="stu-select" data-sid="'+s.id+'" aria-label="'+esc(tf('select_student_aria', {name:displayName(s)}))+'"'+(stuSelected[s.id]?' checked':'')+'></td>';
       }
-      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(s.name)+(s.needs_review?' <span class="chip review">'+icon('flag')+' Review</span>':'')+(stats.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+stats.streak+' absences in a row">'+icon('alert')+' '+stats.streak+'</span>':'')+(isActive(s)?'':' <span class="chip" style="background:var(--surface-2);color:var(--ink-soft);">'+icon('archive')+' Archived</span>')+'</td>';
+      html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(displayName(s))+(s.needs_review?' <span class="chip review">'+icon('flag')+' '+esc(t('chip_review'))+'</span>':'')+(stats.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+esc(tf('streak_title', {n:stats.streak}))+'">'+icon('alert')+' '+stats.streak+'</span>':'')+(isActive(s)?'':' <span class="chip" style="background:var(--surface-2);color:var(--ink-soft);">'+icon('archive')+' '+esc(t('chip_archived'))+'</span>')+'</td>';
       html += '<td>'+esc(shortCentre(s.centre))+'</td>';
-      html += '<td>'+(s.teacher?esc(s.teacher):'<em style="color:var(--accent-soft-ink);">unassigned</em>')+'</td>';
+      html += '<td>'+(s.teacher?esc(s.teacher):'<em style="color:var(--accent-soft-ink);">'+esc(t('unassigned_label'))+'</em>')+'</td>';
       html += '<td>'+esc(s.std||'—')+'</td>';
       html += '<td class="pct '+pctClass(stats.pct)+'">'+pctTxt+'</td>';
       html += '<td><button class="btn ghost small" data-expand="'+s.id+'">'+(stuFilters.expanded===s.id?t('close'):t('details'))+'</button></td>';
@@ -2154,7 +2526,7 @@
           + (s.photo ? ' <button type="button" class="btn ghost small" data-photo-remove="'+s.id+'">'+t('remove_photo')+'</button>' : '')
           + '</span></div>';
         html += '<div style="grid-column:1/-1;">'
-          + '<button type="button" class="btn ghost small" data-cal-toggle="'+s.id+'">'+icon('chart')+' '+(stuCalendarOpen[s.id] ? 'Hide attendance calendar' : 'View attendance calendar')+'</button>'
+          + '<button type="button" class="btn ghost small" data-cal-toggle="'+s.id+'">'+icon('chart')+' '+esc(stuCalendarOpen[s.id] ? t('cal_hide') : t('cal_view'))+'</button>'
           + (stuCalendarOpen[s.id] ? renderAttendanceCalendarHtml(s.id) : '')
           + '</div>';
         EDIT_FIELDS.forEach(function(pair){
@@ -2170,7 +2542,15 @@
             html += '<span>'+esc(shortCentre(val))+'</span></div>';
             return;
           }
-          html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(val || 'tap to add')+'</span></div>';
+          if(key==='name_dev'){
+            var autoDev = transliterateToDevanagari(s.name);
+            var showVal = val || autoDev;
+            html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(showVal)+'</span>'
+              + (val ? '' : ' <span style="color:var(--ink-soft);font-size:.72rem;">'+esc(t('name_dev_auto_hint'))+'</span>')
+              + '</div>';
+            return;
+          }
+          html += '<span class="editable'+(val?'':' missing')+'" contenteditable="true" role="textbox" aria-multiline="false" aria-labelledby="'+lblId+'" data-field="'+key+'">'+esc(val || t('tap_to_add'))+'</span></div>';
         });
         if(IDENTITY && IDENTITY.role==='coordinator'){
           html += '<div class="controls-row" style="margin-top:6px;">';
@@ -2186,7 +2566,7 @@
     });
     html += '</tbody></table></div>';
     if(list.length>400){
-      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Showing 400 of '+list.length+' students. Narrow the search, centre, teacher, or class filter above to see the rest.</p>';
+      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">'+esc(tf('showing_400_students', {n:list.length}))+'</p>';
     }
     }
     html += '</div>';
@@ -2247,7 +2627,7 @@
           csvPreview = buildCsvPreview(rows, forcedCentre);
           renderCsvPreview();
         };
-        reader.onerror = function(){ showToast('Could not read that file — try exporting the sheet as CSV again.'); };
+        reader.onerror = function(){ showToast(t('csv_read_error')); };
         reader.readAsText(file);
       });
     }
@@ -2273,12 +2653,12 @@
           var centreEl = document.getElementById('add-f-centre');
           var centreVal = centreEl ? centreEl.value : '';
           if(centreVal==='__new__'){
-            centreVal = await showPromptModal({title:'New centre', placeholder:'e.g. Mogra', confirmText:'Add centre'});
+            centreVal = await showPromptModal({title:t('new_centre_title'), placeholder:t('new_centre_placeholder'), confirmText:t('add_centre_btn')});
           }
           data.centre = centreVal || '';
         }
-        if(!data.name){ errEl.textContent = 'Name is required.'; return; }
-        if(!data.centre){ errEl.textContent = 'Centre is required.'; return; }
+        if(!data.name){ errEl.textContent = t('name_required'); return; }
+        if(!data.centre){ errEl.textContent = t('centre_required'); return; }
         var ageCheck = validateField('age', data.age||'');
         var contactCheck = validateField('contact', data.contact||'');
         data.needs_review = computeNeedsReview(data);
@@ -2289,9 +2669,9 @@
         logAudit('create', id, data.name, 'Added student');
         stuFilters.adding = false;
         if(!ageCheck.ok || !contactCheck.ok){
-          showToast('Student added, but flagged for review — ' + (!ageCheck.ok ? ageCheck.msg : contactCheck.msg));
+          showToast(tf('student_flagged_review_toast', {msg: !ageCheck.ok ? ageCheck.msg : contactCheck.msg}));
         } else {
-          showToast(ok ? 'Student added.' : 'Added on this device — will sync when back online.');
+          showToast(ok ? t('student_added_toast') : t('added_offline_toast'));
         }
         renderStudents();
       });
@@ -2330,11 +2710,11 @@
       if(bulkArchiveBtn) bulkArchiveBtn.addEventListener('click', async function(){
         var chosen = Object.keys(stuSelected).map(function(id){ return studentsById()[id]; }).filter(Boolean);
         var toArchive = chosen.filter(isActive);
-        if(!toArchive.length){ showToast('Nothing to archive in the current selection.'); return; }
+        if(!toArchive.length){ showToast(t('nothing_to_archive_toast')); return; }
         var confirmed = await showConfirmModal({
-          title: 'Archive '+toArchive.length+' student'+(toArchive.length===1?'':'s')+'?',
-          message: 'Archived students drop out of Mark attendance and everyday reports, but keep their attendance history. You can restore them anytime from Show archived.',
-          confirmText: 'Archive', danger: false
+          title: tf('archive_n_title', {n:toArchive.length, plural:pluralS(toArchive.length)}),
+          message: t('archive_bulk_msg'),
+          confirmText: t('archive_btn_short'), danger: false
         });
         if(!confirmed) return;
         bulkArchiveBtn.disabled = true;
@@ -2346,7 +2726,7 @@
         }
         stuSelected = {};
         var archivedIds = toArchive.map(function(s){ return s.id; });
-        showUndoToast(toArchive.length+' student'+(toArchive.length===1?'':'s')+' archived.', async function(){
+        showUndoToast(tf('n_students_archived_toast', {n:toArchive.length, plural:pluralS(toArchive.length)}), async function(){
           for(var j=0;j<archivedIds.length;j++){
             var s2 = studentsById()[archivedIds[j]];
             if(!s2) continue;
@@ -2354,7 +2734,7 @@
             await persistWrite({type:'update', col:'students', docId:archivedIds[j], data:{active:true}});
             logAudit('restore', archivedIds[j], s2.name, 'Undid bulk archive');
           }
-          showToast('Restored.');
+          showToast(t('restored_toast'));
           renderStudents();
         });
         renderStudents();
@@ -2377,7 +2757,7 @@
           logAudit('edit', stu.id, stu.name, 'Centre: '+(oldCentre||'—')+' → '+newCentre);
         }
         stuSelected = {};
-        showUndoToast('Moved '+moved.length+' student'+(moved.length===1?'':'s')+' to '+shortCentre(newCentre)+'.', async function(){
+        showUndoToast(tf('moved_students_toast', {n:moved.length, plural:pluralS(moved.length), centre:shortCentre(newCentre)}), async function(){
           for(var j=0;j<moved.length;j++){
             var s2 = studentsById()[moved[j].id];
             if(!s2) continue;
@@ -2385,7 +2765,7 @@
             await persistWrite({type:'update', col:'students', docId:moved[j].id, data:{centre:moved[j].from}});
             logAudit('edit', moved[j].id, s2.name, 'Undid bulk centre change → '+(moved[j].from||'—'));
           }
-          showToast('Centre change undone.');
+          showToast(t('centre_change_undone_toast'));
           renderStudents();
         });
         renderStudents();
@@ -2397,21 +2777,21 @@
         var stu = studentsById()[id];
         if(!stu) return;
         var confirmed = await showConfirmModal({
-          title: 'Archive this student?',
-          message: 'Archive '+stu.name+'? They\'ll drop out of Mark attendance and everyday reports, but their attendance history is kept and you can restore them anytime from Show archived.',
-          confirmText: 'Archive', danger: false
+          title: t('archive_this_title'),
+          message: tf('archive_this_msg', {name: displayName(stu)}),
+          confirmText: t('archive_btn_short'), danger: false
         });
         if(!confirmed) return;
         Object.assign(stu, {active:false});
         var ok = await persistWrite({type:'update', col:'students', docId:id, data:{active:false}});
         logAudit('archive', id, stu.name, 'Archived student');
-        showUndoToast(ok ? 'Student archived.' : 'Archived on this device — will sync when back online.', async function(){
+        showUndoToast(ok ? t('student_archived_toast') : t('archived_offline_toast'), async function(){
           var s2 = studentsById()[id];
           if(!s2) return;
           Object.assign(s2, {active:true});
           await persistWrite({type:'update', col:'students', docId:id, data:{active:true}});
           logAudit('restore', id, s2.name, 'Undid archive');
-          showToast('Restored.');
+          showToast(t('restored_toast'));
           renderStudents();
         });
         renderStudents();
@@ -2425,7 +2805,7 @@
         Object.assign(stu, {active:true});
         var ok = await persistWrite({type:'update', col:'students', docId:id, data:{active:true}});
         logAudit('restore', id, stu.name, 'Restored student');
-        showToast(ok ? 'Student restored.' : 'Restored on this device — will sync when back online.');
+        showToast(ok ? t('student_restored_toast') : t('restored_offline_toast'));
         stuFilters.archivedOnly = false;
         renderStudents();
       });
@@ -2436,16 +2816,16 @@
         var stu = studentsById()[id];
         if(!stu) return;
         var confirmed = await showConfirmModal({
-          title: 'Delete this student?',
-          message: 'Delete '+stu.name+'? This removes their record from the roster and can\'t be undone. Their past attendance history is kept for reporting.',
-          confirmText: 'Delete student', danger: true
+          title: t('delete_this_title'),
+          message: tf('delete_this_msg', {name: displayName(stu)}),
+          confirmText: t('delete_student'), danger: true
         });
         if(!confirmed) return;
         STATE.roster = STATE.roster.filter(function(s){ return s.id!==id; });
         stuFilters.expanded = null;
         var ok = await persistWrite({type:'delete', col:'students', docId:id});
         logAudit('delete', id, stu.name, 'Deleted student');
-        showToast(ok ? 'Student deleted.' : 'Deleted on this device — will sync when back online.');
+        showToast(ok ? t('student_deleted_toast') : t('deleted_offline_toast'));
         renderStudents();
       });
     });
@@ -2474,10 +2854,10 @@
           Object.assign(stu, {photo: dataUrl});
           var ok = await persistWrite({type:'update', col:'students', docId:id, data:{photo: dataUrl}});
           logAudit('photo', id, stu.name, 'Updated photo');
-          showToast(ok ? 'Photo saved.' : 'Saved on this device — will sync when back online.');
+          showToast(ok ? t('photo_saved_toast') : t('saved_offline'));
           renderStudents();
         }catch(e){
-          showToast('Could not read that image — try a different photo.');
+          showToast(t('photo_read_error_toast'));
         }
       });
     });
@@ -2488,7 +2868,7 @@
         Object.assign(stu, {photo: null});
         var ok = await persistWrite({type:'update', col:'students', docId:id, data:{photo: null}});
         logAudit('photo', id, stu.name, 'Removed photo');
-        showToast(ok ? 'Photo removed.' : 'Saved on this device — will sync when back online.');
+        showToast(ok ? t('photo_removed_toast') : t('saved_offline'));
         renderStudents();
       });
     });
@@ -2498,8 +2878,9 @@
         var sid = panel.getAttribute('data-detail');
         var field = span.getAttribute('data-field');
         var val = span.textContent.trim();
-        if(val==='tap to add') val='';
+        if(val===t('tap_to_add')) val='';
         var stu = studentsById()[sid];
+        if(field==='name_dev' && val===transliterateToDevanagari(stu.name)) val='';
         if(stu[field] !== val){
           var patch = {}; patch[field] = val || null;
           var check = validateField(field, val);
@@ -2510,7 +2891,7 @@
           var ok = await persistWrite({type:'update', col:'students', docId:sid, data:patch});
           logAudit('edit', sid, stu.name, fieldLabelText(field)+': '+(oldVal||'—')+' → '+(val||'—'));
           if(!check.ok){ showToast(check.msg); }
-          else { showToast(ok ? 'Saved.' : 'Saved on this device — will sync when back online.'); }
+          else { showToast(ok ? t('saved_toast') : t('saved_offline')); }
           if(!isEditingStudents()) renderStudents();
         }
       });
@@ -2610,12 +2991,12 @@
   // pasted straight into WhatsApp/email/SMS — the no-backend stand-in for an
   // automated "email me this month's numbers" job.
   function buildMonthlySummaryText(centreRows, monthLabel, atRiskCount){
-    var lines = ['Akshar Paaul Attendance — '+monthLabel+' summary'];
+    var lines = [tf('summary_header', {month:monthLabel})];
     centreRows.forEach(function(r){
-      lines.push(shortCentre(r.c)+': '+(r.pct===null?'no records yet':r.pct+'%')+' ('+r.total+' students)');
+      lines.push(shortCentre(r.c)+': '+(r.pct===null?t('summary_no_records'):r.pct+'%')+' '+tf('summary_students_count', {n:r.total}));
     });
     if(atRiskCount>0){
-      lines.push(atRiskCount+' student'+(atRiskCount>1?'s':'')+' with '+STREAK_RISK_THRESHOLD+'+ absences in a row — worth a check-in.');
+      lines.push(tf('summary_atrisk_line', {n:atRiskCount, plural:pluralS(atRiskCount), threshold:STREAK_RISK_THRESHOLD}));
     }
     return lines.join('\n');
   }
@@ -2649,14 +3030,14 @@
     html += '<div class="controls-row" style="justify-content:space-between;"><h2 class="section-title" style="margin:0;">'+esc(t('weekly_digest_title'))+'</h2></div>';
     html += '<div class="digest-grid">';
     if(unmarkedCentres.length===0){
-      html += '<div class="digest-item"><div class="digest-num" style="color:var(--present);">'+icon('check')+' All caught up</div><div class="digest-lbl">Everyone\'s marked for '+esc(fmtDateLabel(digest.weekDate))+'.</div></div>';
+      html += '<div class="digest-item"><div class="digest-num" style="color:var(--present);">'+icon('check')+' '+esc(t('all_caught_up'))+'</div><div class="digest-lbl">'+esc(tf('everyone_marked_for', {date:fmtDateLabel(digest.weekDate)}))+'</div></div>';
     } else {
       unmarkedCentres.forEach(function(c){
-        html += '<div class="digest-item"><div class="digest-num">'+(c.total-c.marked)+' unmarked</div><div class="digest-lbl">'+esc(shortCentre(c.centre))+' · '+c.marked+' of '+c.total+' done for '+esc(fmtDateLabel(digest.weekDate))+'</div></div>';
+        html += '<div class="digest-item"><div class="digest-num">'+esc(tf('n_unmarked', {n:c.total-c.marked}))+'</div><div class="digest-lbl">'+esc(tf('digest_progress', {centre:shortCentre(c.centre), marked:c.marked, total:c.total, date:fmtDateLabel(digest.weekDate)}))+'</div></div>';
       });
     }
     if(atRiskCount>0){
-      html += '<div class="digest-item" style="border-color:var(--absent);"><div class="digest-num" style="color:var(--absent);">'+icon('alert')+' '+atRiskCount+'</div><div class="digest-lbl">student'+(atRiskCount>1?'s':'')+' with '+STREAK_RISK_THRESHOLD+'+ absences in a row</div></div>';
+      html += '<div class="digest-item" style="border-color:var(--absent);"><div class="digest-num" style="color:var(--absent);">'+icon('alert')+' '+atRiskCount+'</div><div class="digest-lbl">'+esc(tf('students_with_streak', {plural:pluralS(atRiskCount), n:STREAK_RISK_THRESHOLD}))+'</div></div>';
     }
     html += '</div>';
     var reasonKeys = Object.keys(digest.reasonTally);
@@ -2674,16 +3055,16 @@
       var lastMonthKey = monthKeyOffset(thisMonthKey, -1);
       var thisMonthStat = computeMonthPct(activeRoster, thisMonthKey);
       var lastMonthStat = computeMonthPct(activeRoster, lastMonthKey);
-      html += '<h2 class="section-title">Your centre, month to month</h2>';
+      html += '<h2 class="section-title">'+esc(t('your_centre_month_title'))+'</h2>';
       html += '<div class="month-compare">';
-      html += '<div class="stat-card"><div class="num">'+(thisMonthStat.pct===null?'—':thisMonthStat.pct+'%')+'</div><div class="lbl">This month ('+esc(monthShortLabel(thisMonthKey))+')</div>';
+      html += '<div class="stat-card"><div class="num">'+(thisMonthStat.pct===null?'—':thisMonthStat.pct+'%')+'</div><div class="lbl">'+esc(tf('this_month_label', {month:monthShortLabel(thisMonthKey)}))+'</div>';
       if(thisMonthStat.pct!==null && lastMonthStat.pct!==null){
         var delta = thisMonthStat.pct - lastMonthStat.pct;
         var deltaCls = delta>0 ? 'up' : (delta<0 ? 'down' : 'flat');
-        html += '<div class="month-delta '+deltaCls+'">'+(delta>0?'▲ +':delta<0?'▼ ':'— ')+(delta===0?'no change':Math.abs(delta)+'%')+' vs last month</div>';
+        html += '<div class="month-delta '+deltaCls+'">'+(delta>0?'▲ +':delta<0?'▼ ':'— ')+(delta===0?esc(t('no_change')):Math.abs(delta)+'%')+' '+esc(t('vs_last_month'))+'</div>';
       }
       html += '</div>';
-      html += '<div class="stat-card"><div class="num">'+(lastMonthStat.pct===null?'—':lastMonthStat.pct+'%')+'</div><div class="lbl">Last month ('+esc(monthShortLabel(lastMonthKey))+')</div></div>';
+      html += '<div class="stat-card"><div class="num">'+(lastMonthStat.pct===null?'—':lastMonthStat.pct+'%')+'</div><div class="lbl">'+esc(tf('last_month_label', {month:monthShortLabel(lastMonthKey)}))+'</div></div>';
       html += '</div>';
     }
 
@@ -2692,9 +3073,9 @@
     html += '<span style="display:flex;gap:8px;flex-wrap:wrap;">';
     if(IDENTITY && IDENTITY.role==='coordinator'){
       html += '<button class="btn ghost small" id="rp-activity">'+icon('activity')+' '+t('activity_log')+'</button>';
-      html += '<button class="btn ghost small" id="rp-backup">'+icon('archive')+' Backup data</button>';
+      html += '<button class="btn ghost small" id="rp-backup">'+icon('archive')+' '+esc(t('backup_data_btn'))+'</button>';
     }
-    html += '<button class="btn ghost small" id="rp-annual">'+icon('chart')+' Annual report</button>';
+    html += '<button class="btn ghost small" id="rp-annual">'+icon('chart')+' '+esc(t('annual_report_btn'))+'</button>';
     html += '<button class="btn ghost small" id="rp-print">'+icon('print')+' '+t('print_register')+'</button>';
     html += '</span></div>';
     // Sorted lowest-attendance-first so the centre that most needs a look sits
@@ -2723,11 +3104,11 @@
     html += '<div class="grid-cards">';
     centreRows.forEach(function(r){
       html += '<div class="stat-card"><div class="num">'+(r.avg===null?'—':r.avg+'%')+'</div>';
-      html += '<div class="lbl">'+esc(shortCentre(r.c))+' · '+r.stus.length+' students</div></div>';
+      html += '<div class="lbl">'+esc(shortCentre(r.c))+' · '+esc(tf('header_n_students', {n:r.stus.length}))+'</div></div>';
     });
     if(atRiskCount>0){
       html += '<div class="stat-card" style="border-color:var(--absent);"><div class="num" style="color:var(--absent);">'+atRiskCount+'</div>';
-      html += '<div class="lbl">'+icon('alert')+' student'+(atRiskCount>1?'s':'')+' with '+STREAK_RISK_THRESHOLD+'+ absences in a row</div></div>';
+      html += '<div class="lbl">'+icon('alert')+' '+esc(tf('students_with_streak', {plural:pluralS(atRiskCount), n:STREAK_RISK_THRESHOLD}))+'</div></div>';
     }
     html += '</div>';
 
@@ -2738,7 +3119,7 @@
       var pcts = stus.map(function(s){return studentStats(s.id).pct;}).filter(function(p){return p!==null;});
       var avg = pcts.length ? Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length) : null;
       html += '<div class="stat-card"><div class="num">'+(avg===null?'—':avg+'%')+'</div>';
-      html += '<div class="lbl">'+esc(k)+' · '+stus.length+' students</div></div>';
+      html += '<div class="lbl">'+esc(k)+' · '+esc(tf('header_n_students', {n:stus.length}))+'</div></div>';
     });
     html += '</div>';
 
@@ -2762,7 +3143,7 @@
     html += '<h2 class="section-title" style="margin:0;">'+t('students_by_attendance')+'</h2>';
     html += '<span style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn ghost small" id="rp-copy-summary">'+icon('copy')+' '+esc(t('copy_summary'))+'</button><button class="btn ghost small" id="rp-month-csv">'+icon('print')+' '+esc(t('month_csv'))+'</button><button class="btn ghost small" id="rp-refresh">'+t('refresh')+'</button><button class="btn ghost small" id="rp-export-detailed">'+t('export_csv_detailed')+'</button><button class="btn small" id="rp-export">'+t('export_csv')+'</button></span>';
     html += '</div>';
-    html += '<div class="controls-row"><div class="field">'+fieldLabel('book','Class')+'<select id="rp-std"><option value="">All classes</option>';
+    html += '<div class="controls-row"><div class="field">'+fieldLabel('book', t('col_class'))+'<select id="rp-std"><option value="">'+esc(t('all_classes'))+'</option>';
     rpClassList.forEach(function(k){ html += '<option value="'+esc(k)+'"'+(k===rpFilters.std?' selected':'')+'>'+esc(k)+'</option>'; });
     html += '</select></div></div>';
 
@@ -2783,22 +3164,22 @@
       var ariaSort = active ? (rpFilters.sortDir==='asc' ? 'ascending' : 'descending') : 'none';
       html += '<th class="sortable'+(active?' active':'')+'" data-sort="'+key+'" aria-sort="'+ariaSort+'" tabindex="0" role="button">'+esc(label)+(arrow?' <span class="arrow">'+arrow+'</span>':'')+'</th>';
     });
-    html += '<th>Recent</th>';
+    html += '<th>'+esc(t('recent_col'))+'</th>';
     html += '</tr></thead><tbody>';
     rows.slice(0,400).forEach(function(r){
       var s=r.s, st=r.st;
-      var pctTxt = st.pct===null ? 'No records yet' : st.pct+'%';
-      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(s.name)+(st.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+st.streak+' absences in a row">'+icon('alert')+' '+st.streak+'</span>':'')+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
+      var pctTxt = st.pct===null ? t('no_records_yet') : st.pct+'%';
+      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(displayName(s))+(st.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+esc(tf('streak_title', {n:st.streak}))+'">'+icon('alert')+' '+st.streak+'</span>':'')+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
       html += '<td>'+st.present+'</td><td>'+st.total+'</td>';
       html += '<td class="pct '+pctClass(st.pct)+'">'+pctTxt+'</td>';
       html += '<td>'+sparklineHtml(s.id, st.dates.slice(-10))+'</td></tr>';
     });
     html += '</tbody></table></div>';
     if(rows.length>400){
-      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Showing 400 of '+rows.length+' students. Use the Students tab to search for a specific student, or export CSV for the full list.</p>';
+      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">'+esc(tf('showing_400_report', {n:rows.length}))+'</p>';
     }
     if(!ATTENDANCE_HISTORY_LOADED){
-      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">Loading attendance history…</p>';
+      html += '<p style="color:var(--ink-soft);font-size:.8rem;margin-top:8px;">'+esc(t('loading_attendance_history'))+'</p>';
     }
     html += '</div>';
     el.innerHTML = html;
@@ -2816,9 +3197,9 @@
       });
       var text = buildMonthlySummaryText(monthCentreRows, monthLabel, atRiskCount);
       copyTextToClipboard(text).then(function(){
-        showToast('Summary copied — paste it into WhatsApp, email, anywhere.');
+        showToast(t('summary_copied_toast'));
       }).catch(function(){
-        showToast('Could not copy automatically — select and copy the text yourself.');
+        showToast(t('summary_copy_fail_toast'));
       });
     });
     document.getElementById('rp-refresh').addEventListener('click', function(){ loadAttendanceHistory(true); });
@@ -2854,7 +3235,7 @@
     a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
-    showToast('CSV downloaded.');
+    showToast(t('csv_downloaded_toast'));
   }
   function downloadJSON(obj, filename){
     var blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json;charset=utf-8;'});
@@ -2871,7 +3252,7 @@
   // result instead of rendering it.
   async function downloadFullBackup(){
     if(!(IDENTITY && IDENTITY.role==='coordinator')){ return; }
-    showToast('Preparing backup…');
+    showToast(t('backup_preparing_toast'));
     try{
       var collNames = ['teachers','students','attendance','audit_log'];
       var out = { exportedAt: new Date().toISOString(), exportedBy: IDENTITY.email };
@@ -2884,9 +3265,9 @@
       }
       var stamp = todayIso();
       downloadJSON(out, 'akshar-paaul-backup-'+stamp+'.json');
-      showToast('Backup downloaded — keep it somewhere safe outside Firebase.');
+      showToast(t('backup_downloaded_toast'));
     }catch(e){
-      showToast('Could not create a backup — check your connection and try again.');
+      showToast(t('backup_fail_toast'));
     }
   }
   // `rosterList` is optional — pass a subset (e.g. a Students-tab bulk
@@ -2925,7 +3306,7 @@
     });
     var dates = Object.keys(dateSet).sort();
     if(!dates.length){
-      showToast(monthPrefix ? 'No attendance marked yet this month — nothing to export.' : 'No attendance marked yet for this list — nothing to export.');
+      showToast(monthPrefix ? t('nothing_to_export_month_toast') : t('nothing_to_export_list_toast'));
       return;
     }
     var isTeacherViewer = !(IDENTITY && IDENTITY.role==='coordinator');
@@ -2966,16 +3347,16 @@
   function renderGate(){
     var el = document.getElementById('gate-screen');
     if(NEEDS_SETUP){
-      el.innerHTML = '<div class="gate-card"><img class="gate-emblem" src="'+EMBLEM_SRC+'" alt="Akshar Paaul"><h1>Almost there</h1>'
-        + '<p class="lead">This copy of the app isn\'t connected to a database yet.</p>'
-        + '<p class="gate-note">Open this file, find <code>FIREBASE_CONFIG</code> near the top of the last &lt;script&gt; tag, and paste in your Firebase project\'s web config. See the setup guide for exact steps.</p></div>';
+      el.innerHTML = '<div class="gate-card"><img class="gate-emblem" src="'+EMBLEM_SRC+'" alt="Akshar Paaul"><h1>'+esc(t('setup_title'))+'</h1>'
+        + '<p class="lead">'+esc(t('setup_lead'))+'</p>'
+        + '<p class="gate-note">'+tf('setup_note', {code:'<code>FIREBASE_CONFIG</code>'})+'</p></div>';
       return;
     }
     if(LOAD_FAILED){
-      el.innerHTML = '<div class="gate-card"><img class="gate-emblem" src="'+EMBLEM_SRC+'" alt="Akshar Paaul"><h1>Couldn\'t connect</h1>'
-        + '<p class="lead">This needs an internet connection to sign in.</p>'
-        + '<p class="gate-note">Check your connection and try again. If it keeps happening, ask your coordinator to check the internet filter/firewall isn\'t blocking <code>gstatic.com</code>.</p>'
-        + '<button class="btn primary" id="retry-load-btn" style="margin-top:8px;">Try again</button></div>';
+      el.innerHTML = '<div class="gate-card"><img class="gate-emblem" src="'+EMBLEM_SRC+'" alt="Akshar Paaul"><h1>'+esc(t('connect_fail_title'))+'</h1>'
+        + '<p class="lead">'+esc(t('connect_fail_lead'))+'</p>'
+        + '<p class="gate-note">'+tf('connect_fail_note', {code:'<code>gstatic.com</code>'})+'</p>'
+        + '<button class="btn primary" id="retry-load-btn" style="margin-top:8px;">'+esc(t('try_again_btn'))+'</button></div>';
       document.getElementById('retry-load-btn').addEventListener('click', function(){ boot(); });
       return;
     }
@@ -2983,14 +3364,14 @@
       '<div class="gate-card">'
       + '<img class="gate-emblem" src="'+EMBLEM_SRC+'" alt="Akshar Paaul">'
       + '<h1>'+t('login_title')+'</h1>'
-      + '<p class="lead">Use the login ID and password your coordinator gave you.</p>'
+      + '<p class="lead">'+esc(t('login_lead'))+'</p>'
       + '<form class="gate-form" id="login-form">'
-      + '<div class="field"><label>'+t('login_id_label')+'</label><input type="text" id="li-id" autocomplete="username" autocapitalize="off" placeholder="e.g. aruna"></div>'
+      + '<div class="field"><label>'+t('login_id_label')+'</label><input type="text" id="li-id" autocomplete="username" autocapitalize="off" placeholder="'+esc(t('login_id_placeholder'))+'"></div>'
       + '<div class="field"><label>'+t('password_label')+'</label><input type="password" id="li-pass" autocomplete="current-password"></div>'
       + '<div id="li-error" style="display:none;color:var(--absent);font-size:.82rem;"></div>'
       + '<button class="btn primary" type="submit" id="li-submit">'+t('login_button')+'</button>'
       + '</form>'
-      + '<p class="gate-note">Don\'t have a login yet, or forgot your password? Ask your coordinator — they can set one up or reset it for you in a minute, right from the Firebase console.</p>'
+      + '<p class="gate-note">'+esc(t('login_note'))+'</p>'
       + '</div>';
 
     document.getElementById('login-form').addEventListener('submit', function(e){
@@ -3002,11 +3383,11 @@
       var submitBtn = document.getElementById('li-submit');
       var errEl = document.getElementById('li-error');
       errEl.style.display = 'none';
-      submitBtn.disabled = true; submitBtn.textContent = 'Signing in…';
+      submitBtn.disabled = true; submitBtn.textContent = t('signing_in');
       signInWithEmailAndPassword(auth, email, pass).catch(function(err){
         errEl.textContent = friendlyAuthError(err);
         errEl.style.display = 'block';
-        submitBtn.disabled = false; submitBtn.textContent = 'Log in';
+        submitBtn.disabled = false; submitBtn.textContent = t('login_button');
       });
     });
   }
@@ -3014,19 +3395,19 @@
   function friendlyAuthError(err){
     var code = err && err.code;
     if(code==='auth/invalid-credential' || code==='auth/wrong-password' || code==='auth/user-not-found'){
-      return 'That login ID or password isn\'t right. Double-check with your coordinator.';
+      return t('auth_err_bad_creds');
     }
-    if(code==='auth/too-many-requests'){ return 'Too many attempts — wait a bit and try again.'; }
-    if(code==='auth/network-request-failed'){ return 'No internet connection — try again once you\'re online.'; }
-    if(code==='auth/invalid-email'){ return 'That doesn\'t look like a valid login ID.'; }
-    return 'Could not sign in. Please try again.';
+    if(code==='auth/too-many-requests'){ return t('auth_err_too_many'); }
+    if(code==='auth/network-request-failed'){ return t('auth_err_offline'); }
+    if(code==='auth/invalid-email'){ return t('auth_err_invalid_email'); }
+    return t('auth_err_generic');
   }
 
   function renderSignedInBar(){
     var el = document.getElementById('signedin-bar');
     if(!IDENTITY){ el.innerHTML=''; positionThemeToggle(); return; }
-    var who = IDENTITY.role==='coordinator' ? 'Coordinator (all centres)' : (IDENTITY.name+' · '+shortCentre(IDENTITY.centre));
-    el.innerHTML = 'Logged in as <b>'+esc(who)+'</b><button class="link-btn" id="logout-btn" style="margin-left:auto;">'+t('log_out')+'</button>';
+    var who = IDENTITY.role==='coordinator' ? t('coordinator_all_centres') : (IDENTITY.name+' · '+shortCentre(IDENTITY.centre));
+    el.innerHTML = tf('logged_in_as', {who: '<b>'+esc(who)+'</b>'})+'<button class="link-btn" id="logout-btn" style="margin-left:auto;">'+t('log_out')+'</button>';
     document.getElementById('logout-btn').addEventListener('click', function(){ signOut(auth); });
     positionThemeToggle();
   }
@@ -3078,7 +3459,7 @@
     var btn = document.getElementById('theme-toggle');
     if(!btn) return;
     function refreshLabel(){
-      var label = isDarkActive() ? 'Switch to light mode' : 'Switch to dark mode';
+      var label = isDarkActive() ? t('dark_mode_switch_light') : t('dark_mode_switch_dark');
       btn.setAttribute('aria-label', label);
       btn.setAttribute('title', label);
     }
@@ -3091,6 +3472,7 @@
     });
     positionThemeToggle();
     window.addEventListener('resize', positionThemeToggle);
+    window._refreshThemeToggleLabel = refreshLabel;
   }
   initThemeToggle();
   // ---------- language toggle ----------
@@ -3104,12 +3486,16 @@
     if(mark) mark.textContent = t('nav_mark');
     if(students) students.textContent = t('nav_students');
     if(reports) reports.textContent = t('nav_reports');
+    if(window._refreshThemeToggleLabel) window._refreshThemeToggleLabel();
+    var qsBtn = document.getElementById('quick-search-btn');
+    if(qsBtn){ qsBtn.setAttribute('aria-label', t('quick_search_aria')); qsBtn.setAttribute('title', t('quick_search_title')); }
   }
   function rerenderCurrentView(){
     applyStaticLangLabels();
     if(IDENTITY){
       renderSignedInBar();
-      renderMark(); renderStudents(); renderReports();
+      renderHeader(); renderMark(); renderStudents(); renderReports();
+      updateSyncBanner();
     } else {
       renderGate();
     }
@@ -3193,7 +3579,7 @@
     PENDING_QUEUE = stillPending;
     savePendingQueue();
     updateSyncBanner();
-    if(synced>0) showToast(synced+' change'+(synced>1?'s':'')+' synced.');
+    if(synced>0) showToast(tf('changes_synced_toast', {n:synced, plural:pluralS(synced)}));
   }
   function updateSyncBanner(){
     var el = document.getElementById('sync-banner');
@@ -3205,9 +3591,9 @@
     }
     el.removeAttribute('hidden');
     if(!navigator.onLine){
-      el.innerHTML = '<span>'+icon('sync')+' You\'re offline. '+(PENDING_QUEUE.length ? PENDING_QUEUE.length+' change'+(PENDING_QUEUE.length>1?'s':'')+' will sync automatically once you\'re back online.' : 'Changes will be saved and synced once you\'re back online.')+'</span>';
+      el.innerHTML = '<span>'+icon('sync')+' '+esc(t('offline_msg'))+' '+(PENDING_QUEUE.length ? esc(tf('offline_pending_msg', {n:PENDING_QUEUE.length, plural:pluralS(PENDING_QUEUE.length)})) : esc(t('offline_no_pending_msg')))+'</span>';
     } else {
-      el.innerHTML = '<span>'+icon('sync')+' '+PENDING_QUEUE.length+' change'+(PENDING_QUEUE.length>1?'s':'')+' not yet synced.</span><button class="btn ghost small" id="sync-retry-btn">Retry now</button>';
+      el.innerHTML = '<span>'+icon('sync')+' '+esc(tf('pending_not_synced_msg', {n:PENDING_QUEUE.length, plural:pluralS(PENDING_QUEUE.length)}))+'</span><button class="btn ghost small" id="sync-retry-btn">'+esc(t('retry_now_btn'))+'</button>';
       var retryBtn = document.getElementById('sync-retry-btn');
       if(retryBtn) retryBtn.addEventListener('click', flushPendingQueue);
     }
@@ -3233,10 +3619,10 @@
         await afterLogin();
         return;
       }
-      showToast('Your account isn\'t set up yet — ask your coordinator to add you.');
+      showToast(t('account_not_setup_toast'));
       await signOut(auth);
     }catch(err){
-      showToast('Could not sign you in — check your connection and try again.');
+      showToast(t('signin_fail_toast'));
       try{ await signOut(auth); }catch(e2){}
     }
   }
@@ -3253,7 +3639,7 @@
         else if(!isEditingStudents()){
           renderHeader(); renderMark(); renderStudents(); renderReports();
         }
-      }, function(err){ showToast('Could not load the roster — check your connection.'); resolve(); });
+      }, function(err){ showToast(t('roster_load_fail_toast')); resolve(); });
     });
   }
 
@@ -3269,7 +3655,7 @@
       // attendance history, which usually isn't in yet at the initial
       // showApp() render — refresh it here too, once the real numbers exist.
       renderHeader(); renderMark(); renderStudents(); renderReports();
-    }catch(e){ showToast('Could not load attendance history — check your connection.'); }
+    }catch(e){ showToast(t('attendance_history_fail_toast')); }
   }
 
   async function afterLogin(){
@@ -3283,7 +3669,7 @@
   async function boot(){
     if(NEEDS_SETUP){ showGate(); return; }
     LOAD_FAILED = false;
-    document.getElementById('gate-screen').innerHTML = '<div class="gate-card"><h1>Loading…</h1></div>';
+    document.getElementById('gate-screen').innerHTML = '<div class="gate-card"><h1>'+esc(t('loading_ellipsis'))+'</h1></div>';
     document.getElementById('gate-screen').removeAttribute('hidden');
     document.getElementById('app-shell').setAttribute('hidden','');
     var base = "https://www.gstatic.com/firebasejs/" + FIREBASE_SDK_VERSION + "/";
