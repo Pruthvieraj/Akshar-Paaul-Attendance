@@ -351,6 +351,18 @@
     box-shadow:var(--shadow);
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .undo-toast{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-12px);
+    background:var(--ink);color:var(--bg);padding:8px 8px 8px 16px;border-radius:999px;font-size:.85rem;
+    opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:51;
+    box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);
+  }
+  .undo-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .undo-toast button{
+    appearance:none;border:none;background:var(--primary);color:var(--primary-ink);
+    border-radius:999px;padding:6px 14px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;
+    flex-shrink:0;
+  }
 
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
@@ -491,6 +503,22 @@
   .month-delta.up{color:var(--present);}
   .month-delta.down{color:var(--absent);}
   .month-delta.flat{color:var(--ink-faint);}
+
+  /* ---- per-student attendance calendar (Students detail panel) ---- */
+  .cal-wrap{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;align-items:flex-start;}
+  .cal-month{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;}
+  .cal-month-lbl{font-family:var(--font-display);font-weight:700;font-size:.78rem;margin-bottom:6px;text-align:center;}
+  .cal-dow{display:grid;grid-template-columns:repeat(7,18px);gap:3px;margin-bottom:3px;}
+  .cal-dow span{font-size:.58rem;color:var(--ink-faint);text-align:center;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,18px);grid-auto-rows:18px;gap:3px;}
+  .cal-cell{display:flex;align-items:center;justify-content:center;font-size:.6rem;border-radius:4px;color:var(--ink-faint);background:var(--surface-2);}
+  .cal-cell.empty{background:transparent;}
+  .cal-cell.present{background:var(--present);color:#fff;}
+  .cal-cell.absent{background:var(--absent);color:#fff;}
+  .cal-cell.unmarked{background:var(--surface-2);color:var(--ink-faint);}
+  .cal-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.72rem;color:var(--ink-soft);align-self:center;}
+  .cal-legend span{display:inline-flex;align-items:center;gap:4px;}
+  .cal-legend i{display:inline-block;border-radius:3px;}
 </style>
 <body>
   <svg style="display:none" aria-hidden="true">
@@ -565,6 +593,7 @@
     </main>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="undo-toast" id="undo-toast" role="status" aria-live="polite"></div>
 
   <div class="modal-overlay" id="modal-overlay" hidden role="dialog" aria-modal="true"></div>
 
@@ -869,6 +898,29 @@
     t.classList.add('show');
     clearTimeout(showToast._t);
     showToast._t = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+  }
+  // A short-lived "Undo" affordance for actions that are already reversible by
+  // hand (archive, bulk centre change) — this just makes reversing them a
+  // single tap for the next few seconds, instead of hunting back through
+  // Show archived or redoing the bulk action. Deliberately not used for
+  // permanent delete, which already has its own "can't be undone" confirmation.
+  var undoTimeoutId = null;
+  function showUndoToast(message, revertFn, seconds){
+    var el = document.getElementById('undo-toast');
+    if(!el) return;
+    if(undoTimeoutId){ clearTimeout(undoTimeoutId); undoTimeoutId = null; }
+    var used = false;
+    function hide(){ el.classList.remove('show'); el.innerHTML = ''; }
+    el.innerHTML = '<span>'+esc(message)+'</span><button type="button" id="undo-toast-btn">Undo</button>';
+    el.classList.add('show');
+    document.getElementById('undo-toast-btn').addEventListener('click', function(){
+      if(used) return;
+      used = true;
+      if(undoTimeoutId){ clearTimeout(undoTimeoutId); undoTimeoutId = null; }
+      hide();
+      revertFn();
+    });
+    undoTimeoutId = setTimeout(function(){ used = true; hide(); }, (seconds||6)*1000);
   }
   function isEditingStudents(){
     var active = document.activeElement;
@@ -1200,6 +1252,82 @@
     win.document.open(); win.document.write(doc); win.document.close();
   }
 
+  // ---------- printable annual / term report ----------
+  function showYearPickerModal(defaultYear){
+    return new Promise(function(resolve){
+      modalPreviousFocus = document.activeElement;
+      var years = [];
+      for(var y=Number(defaultYear); y>=2024; y--){ years.push(String(y)); }
+      modalOverlay.innerHTML =
+        '<div class="modal-card" role="document">'
+        + '<h3>'+icon('chart')+' Annual report</h3>'
+        + '<p>Opens a printable summary for the whole year — centre and class averages, month-by-month trend, and students worth checking in on.</p>'
+        + '<div class="field">'+fieldLabel('book','Year')+'<select id="ar-year">'
+        + years.map(function(y){ return '<option value="'+y+'">'+y+'</option>'; }).join('')
+        + '</select></div>'
+        + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">Cancel</button><button class="btn primary" id="modal-confirm">Open report</button></div>'
+        + '</div>';
+      modalOverlay.removeAttribute('hidden');
+      function finish(result){ closeModal(); document.removeEventListener('keydown', onKey); resolve(result); }
+      function onKey(e){ if(e.key==='Escape'){ finish(null); return; } trapModalTab(e); }
+      document.addEventListener('keydown', onKey);
+      document.getElementById('modal-cancel').addEventListener('click', function(){ finish(null); });
+      document.getElementById('modal-confirm').addEventListener('click', function(){
+        finish(document.getElementById('ar-year').value);
+      });
+    });
+  }
+  async function openAnnualReport(){
+    var year = await showYearPickerModal(todayIso().slice(0,4));
+    if(!year) return;
+    renderAnnualReportWindow(year);
+  }
+  // A year-long companion to the monthly register — same printable-window
+  // pattern, but rolled up to centre/class/month level for an end-of-year or
+  // end-of-term review rather than a single centre's day-by-day grid.
+  function renderAnnualReportWindow(year){
+    var roster = STATE.roster.filter(isActive);
+    var centreRows = centres().map(function(c){
+      var stus = roster.filter(function(s){ return s.centre===c; });
+      var stat = computeMonthPct(stus, year);
+      return { c:c, total: stus.length, marked: stat.total, pct: stat.pct };
+    });
+    var classRows = classesIn(roster).map(function(k){
+      var stus = roster.filter(function(s){ return s.std===k; });
+      var stat = computeMonthPct(stus, year);
+      return { k:k, total: stus.length, pct: stat.pct };
+    });
+    var trend = computeMonthlyTrend(roster).filter(function(m){ return m.month.indexOf(year)===0; });
+    var atRisk = roster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; });
+
+    var centreRowsHtml = centreRows.map(function(r){ return '<tr><td>'+esc(shortCentre(r.c))+'</td><td>'+r.total+'</td><td>'+r.marked+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
+    var classRowsHtml = classRows.map(function(r){ return '<tr><td>'+esc(r.k)+'</td><td>'+r.total+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
+    var trendRowsHtml = trend.map(function(m){ return '<tr><td>'+esc(monthShortLabel(m.month))+'</td><td>'+m.total+'</td><td>'+(m.pct===null?'—':m.pct+'%')+'</td></tr>'; }).join('');
+    var atRiskRowsHtml = atRisk.map(function(s){ return '<tr><td>'+esc(s.name)+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+studentStats(s.id).streak+'</td></tr>'; }).join('');
+
+    var doc = '<!doctype html><html><head><meta charset="utf-8"><title>Akshar Paaul Attendance — '+esc(year)+' Annual Report</title><style>'
+      + 'body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}'
+      + 'h1{font-size:20px;margin:0 0 2px;} h2{font-size:13px;font-weight:normal;color:#555;margin:0 0 20px;}'
+      + 'h3{font-size:14px;margin:22px 0 8px;border-bottom:1px solid #999;padding-bottom:4px;}'
+      + 'table{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:6px;} th,td{border:1px solid #999;padding:5px 8px;text-align:left;}'
+      + '.printbar{margin-bottom:16px;} @media print{ .printbar{display:none;} }'
+      + '</style></head><body>'
+      + '<div class="printbar"><button onclick="window.print()">Print / Save as PDF</button></div>'
+      + '<h1>Akshar Paaul Attendance — Annual Report</h1><h2>Calendar year '+esc(year)+'</h2>'
+      + '<h3>Centre summary</h3>'
+      + (centreRows.length ? '<table><thead><tr><th>Centre</th><th>Students</th><th>Sessions marked</th><th>Attendance</th></tr></thead><tbody>'+centreRowsHtml+'</tbody></table>' : '<p>No centres on record.</p>')
+      + '<h3>Class summary</h3>'
+      + (classRows.length ? '<table><thead><tr><th>Class</th><th>Students</th><th>Attendance</th></tr></thead><tbody>'+classRowsHtml+'</tbody></table>' : '<p>No classes on record.</p>')
+      + '<h3>Month by month</h3>'
+      + (trend.length ? '<table><thead><tr><th>Month</th><th>Sessions marked</th><th>Attendance</th></tr></thead><tbody>'+trendRowsHtml+'</tbody></table>' : '<p>No attendance was marked in '+esc(year)+'.</p>')
+      + '<h3>Students worth checking in on ('+STREAK_RISK_THRESHOLD+'+ absences in a row, as of today)</h3>'
+      + (atRisk.length ? '<table><thead><tr><th>Name</th><th>Centre</th><th>Current streak</th></tr></thead><tbody>'+atRiskRowsHtml+'</tbody></table>' : '<p>None right now.</p>')
+      + '</body></html>';
+    var win = window.open('', '_blank');
+    if(!win){ showToast('Please allow pop-ups to open the annual report.'); return; }
+    win.document.open(); win.document.write(doc); win.document.close();
+  }
+
   // ---------- header ----------
   function renderHeader(){
     var el = document.getElementById('header-stats');
@@ -1207,8 +1335,8 @@
     var needsReview = activeRoster.filter(function(s){return s.needs_review;}).length;
     var atRisk = activeRoster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; }).length;
     var parts = [];
-    parts.push('<span class="stat-pill">'+icon('users')+' '+activeRoster.length+' students</span>');
-    parts.push('<span class="stat-pill">'+icon('pin')+' '+centres().length+' centres</span>');
+    parts.push('<button class="stat-pill link" id="students-jump" title="View the full roster">'+icon('users')+' '+activeRoster.length+' students</button>');
+    parts.push('<button class="stat-pill link" id="centres-jump" title="See the centre-by-centre breakdown">'+icon('pin')+' '+centres().length+' centres</button>');
     if(needsReview>0){
       parts.push('<button class="stat-pill link" id="review-jump" style="border-color:var(--accent);color:var(--accent-soft-ink);background:var(--accent-soft);">'+icon('flag')+' '+needsReview+' need review</button>');
     }
@@ -1216,6 +1344,21 @@
       parts.push('<button class="stat-pill link" id="atrisk-jump" style="border-color:var(--absent);color:var(--absent);background:var(--absent-soft);">'+icon('alert')+' '+atRisk+' at risk</button>');
     }
     el.innerHTML = parts.join('');
+    var studentsBtn = document.getElementById('students-jump');
+    if(studentsBtn){
+      studentsBtn.addEventListener('click', function(){
+        // A plain "show me everyone" reset — clears whatever filter someone
+        // was left in (search, a centre/teacher/class pick, review/at-risk/
+        // archived toggles) so the full active roster is what greets them.
+        stuFilters.q = ''; stuFilters.centre = ''; stuFilters.teacher = ''; stuFilters.std = '';
+        stuFilters.reviewOnly = false; stuFilters.atRiskOnly = false; stuFilters.archivedOnly = false;
+        switchTab('students');
+      });
+    }
+    var centresBtn = document.getElementById('centres-jump');
+    if(centresBtn){
+      centresBtn.addEventListener('click', function(){ switchTab('reports'); });
+    }
     var jumpBtn = document.getElementById('review-jump');
     if(jumpBtn){
       jumpBtn.addEventListener('click', function(){
@@ -1561,10 +1704,43 @@
   }
 
   // ================= TAB: STUDENTS & RECORDS =================
-  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, atRiskOnly:false, archivedOnly:false, expanded:null, adding:false, sortKey:'std', sortDir:'asc' };
+  var stuFilters = { q:'', centre:'', teacher:'', std:'', reviewOnly:false, atRiskOnly:false, archivedOnly:false, expanded:null, adding:false, importing:false, sortKey:'std', sortDir:'asc' };
   // Bulk-select state for the Students tab's multi-select toolbar — a plain
   // id->true map so it survives a re-render without needing to live in the DOM.
   var stuSelected = {};
+  // Parsed-but-not-yet-imported CSV rows, shown as a preview before the actual
+  // bulk create — cleared whenever the import panel closes or a new file loads.
+  var csvPreview = null;
+  // Which students currently have their attendance calendar expanded in the
+  // detail panel — a plain id->true map, same pattern as stuSelected.
+  var stuCalendarOpen = {};
+  // A traditional month-grid calendar (not a GitHub-style contribution strip)
+  // — this app's sessions are weekly on Sundays, so a real calendar makes the
+  // marked Sundays jump out exactly where a teacher already expects to look.
+  function monthCalendarHtml(sid, monthKey){
+    var parts = monthKey.split('-'); var y = Number(parts[0]), m = Number(parts[1]);
+    var firstDow = new Date(y, m-1, 1).getDay();
+    var numDays = new Date(y, m, 0).getDate();
+    var cells = '';
+    for(var i=0;i<firstDow;i++){ cells += '<span class="cal-cell empty"></span>'; }
+    for(var d=1; d<=numDays; d++){
+      var dateStr = y+'-'+pad2(m)+'-'+pad2(d);
+      var v = attVal(sid, dateStr);
+      var reason = v===0 ? attReason(sid, dateStr) : null;
+      var cls = v===1 ? 'present' : (v===0 ? 'absent' : 'unmarked');
+      var title = dateStr + (v===1 ? ': present' : (v===0 ? ': absent'+(reason?' ('+absenceReasonLabel(reason)+')':'') : ''));
+      cells += '<span class="cal-cell '+cls+'" title="'+esc(title)+'">'+d+'</span>';
+    }
+    return '<div class="cal-month"><div class="cal-month-lbl">'+esc(monthShortLabel(monthKey))+'</div>'
+      + '<div class="cal-dow"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>'
+      + '<div class="cal-grid">'+cells+'</div></div>';
+  }
+  function renderAttendanceCalendarHtml(sid){
+    var months = []; var cur = todayIso().slice(0,7);
+    for(var i=2;i>=0;i--){ months.push(monthKeyOffset(cur, -i)); }
+    return '<div class="cal-wrap">'+months.map(function(mk){ return monthCalendarHtml(sid, mk); }).join('')
+      + '<div class="cal-legend"><span><i class="cal-cell present" style="width:10px;height:10px;"></i> present</span><span><i class="cal-cell absent" style="width:10px;height:10px;"></i> absent</span><span><i class="cal-cell unmarked" style="width:10px;height:10px;"></i> unmarked</span></div></div>';
+  }
   var STU_COLUMNS = [['name','field_name'],['centre','field_centre'],['teacher','field_teacher'],['std','field_std'],['attendance','col_attendance']];
   function compareStudents(a, b, key){
     if(key==='std'){
@@ -1607,6 +1783,133 @@
   // handling: teachers see the short centre name (matches everywhere else in the
   // app), not the full stored value, which typically carries the street address.
   var COORDINATOR_ONLY_FIELDS = ['contact', 'mother_edu', 'father_edu'];
+
+  // ---------- CSV student import ----------
+  // A small hand-rolled CSV reader (RFC4180-ish: quoted fields, "" for an
+  // escaped quote, either \n or \r\n line endings) — no library needed for
+  // something this scoped, consistent with the rest of the app.
+  function parseCSV(text){
+    var rows = []; var row = []; var field = ''; var inQuotes = false;
+    for(var i=0;i<text.length;i++){
+      var c = text[i];
+      if(inQuotes){
+        if(c==='"'){
+          if(text[i+1]==='"'){ field += '"'; i++; }
+          else { inQuotes = false; }
+        } else { field += c; }
+      } else {
+        if(c==='"'){ inQuotes = true; }
+        else if(c===','){ row.push(field); field=''; }
+        else if(c==='\r'){ /* ignore, \n (or end) closes the row */ }
+        else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+        else { field += c; }
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    return rows.filter(function(r){ return !(r.length===1 && r[0].trim()===''); });
+  }
+  // Header matching is deliberately forgiving — different punctuation/casing
+  // in a spreadsheet someone typed by hand shouldn't break the import.
+  var CSV_FIELD_ALIASES = {
+    name: ['name','studentname'],
+    centre: ['centre','center'],
+    teacher: ['teacher'],
+    std: ['std','class','standard','stdclass'],
+    gender: ['gender'],
+    age: ['age'],
+    medium: ['medium'],
+    contact: ['contact','contactno','phone','mobile','phonenumber'],
+    school: ['school','schoolname'],
+    mother_edu: ['mothereducation','mothersedu','motheredu'],
+    father_edu: ['fathereducation','fathersedu','fatheredu'],
+    start_level: ['startinglevel','startlevel'],
+    end_level: ['endinglevel','endlevel'],
+    reading_level: ['readinglevel'],
+    school_time: ['schooltime'],
+    funding_partner: ['fundingpartner']
+  };
+  function normalizeHeader(h){ return String(h||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+  function matchCsvField(header){
+    var norm = normalizeHeader(header);
+    var found = null;
+    Object.keys(CSV_FIELD_ALIASES).forEach(function(key){
+      if(found) return;
+      if(CSV_FIELD_ALIASES[key].indexOf(norm)>-1) found = key;
+    });
+    return found;
+  }
+  // A ready-made header row so nobody has to guess the expected column names.
+  function downloadCsvTemplate(){
+    var header = ['Name','Centre','Teacher','Std','Gender','Age','Medium','Contact','School Name','Funding Partner'];
+    downloadCSV([header.join(',')], 'akshar-paaul-student-import-template.csv');
+  }
+  // Turns raw parsed CSV rows into student-shaped objects + a per-row verdict,
+  // without writing anything yet — used to show a preview before import.
+  function buildCsvPreview(rows, forcedCentre){
+    if(!rows.length) return {fieldMap:{}, items:[]};
+    var headerRow = rows[0];
+    var fieldMap = {};
+    headerRow.forEach(function(h, idx){ var key = matchCsvField(h); if(key) fieldMap[idx] = key; });
+    var items = rows.slice(1).map(function(r, i){
+      var data = {};
+      Object.keys(fieldMap).forEach(function(idx){ data[fieldMap[idx]] = (r[idx]||'').trim(); });
+      if(forcedCentre) data.centre = forcedCentre;
+      var problems = [];
+      if(!data.name) problems.push('missing name');
+      if(!data.centre) problems.push('missing centre');
+      return { rowNum: i+2, data: data, problems: problems, ok: problems.length===0 };
+    });
+    return { fieldMap: fieldMap, items: items };
+  }
+  // Renders (or clears) the preview table inside the Students tab's import
+  // panel from the current `csvPreview` state — called on its own, separately
+  // from a full renderStudents(), so picking a file doesn't reset the <input>.
+  function renderCsvPreview(){
+    var box = document.getElementById('st-import-preview');
+    if(!box) return;
+    if(!csvPreview){ box.innerHTML = ''; return; }
+    var items = csvPreview.items;
+    if(!items.length){
+      box.innerHTML = '<p style="color:var(--accent-soft-ink);font-size:.85rem;margin-top:10px;">No rows found in that file — check it has a header row plus at least one student below it.</p>';
+      return;
+    }
+    var okCount = items.filter(function(it){ return it.ok; }).length;
+    var problemCount = items.length - okCount;
+    var rowsHtml = items.slice(0,50).map(function(it){
+      var status = it.ok
+        ? '<span class="chip" style="background:var(--present-soft);color:var(--present);">OK</span>'
+        : '<span class="chip" style="background:var(--absent-soft);color:var(--absent);" title="'+esc(it.problems.join(', '))+'">Skip</span>';
+      return '<tr><td>'+it.rowNum+'</td><td>'+esc(it.data.name||'—')+'</td><td>'+esc(it.data.centre?shortCentre(it.data.centre):'—')+'</td><td>'+esc(it.data.std||'—')+'</td><td>'+status+'</td></tr>';
+    }).join('');
+    var moreNote = items.length>50 ? '<p style="color:var(--ink-soft);font-size:.8rem;">Showing the first 50 of '+items.length+' rows — all of them will still be imported.</p>' : '';
+    box.innerHTML = '<div class="table-scroll" style="margin-top:10px;max-height:40vh;overflow-y:auto;"><table><thead><tr><th>Row</th><th>Name</th><th>Centre</th><th>Std</th><th>Status</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>'
+      + moreNote
+      + '<p style="font-size:.85rem;margin-top:8px;"><b>'+okCount+'</b> student'+(okCount===1?'':'s')+' will be imported'+(problemCount?', <b>'+problemCount+'</b> skipped (missing name or centre)':'')+'.</p>'
+      + '<div class="controls-row"><button class="btn primary small" id="st-import-confirm"'+(okCount?'':' disabled')+'>Import '+okCount+' student'+(okCount===1?'':'s')+'</button><button class="btn ghost small" id="st-import-clear">Choose a different file</button></div>';
+    var confirmBtn = document.getElementById('st-import-confirm');
+    if(confirmBtn){
+      confirmBtn.addEventListener('click', async function(){
+        confirmBtn.disabled = true;
+        var toImport = items.filter(function(it){ return it.ok; });
+        var created = 0;
+        for(var i=0;i<toImport.length;i++){
+          var data = Object.assign({}, toImport[i].data);
+          data.needs_review = computeNeedsReview(data);
+          var id = genStudentId();
+          STATE.roster.push(Object.assign({id:id}, data));
+          await persistWrite({type:'set', col:'students', docId:id, data:data});
+          logAudit('create', id, data.name, 'Imported via CSV');
+          created++;
+        }
+        csvPreview = null;
+        stuFilters.importing = false;
+        showToast(created+' student'+(created===1?'':'s')+' imported.');
+        renderStudents();
+      });
+    }
+    var clearBtn = document.getElementById('st-import-clear');
+    if(clearBtn) clearBtn.addEventListener('click', function(){ csvPreview = null; renderCsvPreview(); var f = document.getElementById('st-import-file'); if(f) f.value = ''; });
+  }
 
   function pctClass(pct){
     if(pct===null) return '';
@@ -1717,6 +2020,7 @@
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-review-toggle">'+(stuFilters.reviewOnly ? 'Showing: needs review' : 'Show all')+'</button></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-risk-toggle">'+(stuFilters.atRiskOnly ? 'Showing: at risk' : 'Show at-risk')+'</button></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-archived-toggle">'+(stuFilters.archivedOnly ? 'Showing: archived' : 'Show archived')+'</button></div>';
+    html += '<div class="field"><label>&nbsp;</label><button class="btn small" id="st-import-toggle">'+(stuFilters.importing ? t('cancel') : icon('copy')+' Import CSV')+'</button></div>';
     html += '<div class="field"><label>&nbsp;</label><button class="btn primary small" id="st-add-toggle">'+(stuFilters.adding ? t('cancel') : t('add_student'))+'</button></div>';
     html += '</div>';
 
@@ -1731,6 +2035,19 @@
     if(stuFilters.archivedOnly){
       html += '<div class="banner"><span>Archived students are hidden from Mark attendance and everyday reports, but their attendance history is kept. Tap <strong>Details</strong> to restore one.</span>'
         + '<button class="btn ghost small" id="st-archived-dismiss">Show active instead</button></div>';
+    }
+
+    if(stuFilters.importing){
+      var importCentreNote = (IDENTITY && IDENTITY.role!=='coordinator')
+        ? '<p style="color:var(--ink-soft);font-size:.82rem;">Every imported student is added to your centre ('+esc(shortCentre(IDENTITY.centre))+') regardless of what a Centre column in the file says.</p>'
+        : '';
+      html += '<div class="card" id="st-import-card" style="background:var(--surface-2);margin-bottom:16px;">';
+      html += '<h2 class="section-title" style="margin-top:0;">Import students from CSV</h2>';
+      html += '<p style="color:var(--ink-soft);font-size:.85rem;">A spreadsheet with a header row — Name and Centre are required, everything else is optional and can be filled in later from Details. <button type="button" class="link-btn" id="st-import-template">Download a template</button></p>';
+      html += importCentreNote;
+      html += '<input type="file" accept=".csv,text/csv" id="st-import-file">';
+      html += '<div id="st-import-preview"></div>';
+      html += '</div>';
     }
 
     if(stuFilters.adding){
@@ -1836,6 +2153,10 @@
           + '<button type="button" class="btn ghost small" data-photo-pick="'+s.id+'">'+icon('camera')+' '+(s.photo?t('change_photo'):t('add_photo'))+'</button>'
           + (s.photo ? ' <button type="button" class="btn ghost small" data-photo-remove="'+s.id+'">'+t('remove_photo')+'</button>' : '')
           + '</span></div>';
+        html += '<div style="grid-column:1/-1;">'
+          + '<button type="button" class="btn ghost small" data-cal-toggle="'+s.id+'">'+icon('chart')+' '+(stuCalendarOpen[s.id] ? 'Hide attendance calendar' : 'View attendance calendar')+'</button>'
+          + (stuCalendarOpen[s.id] ? renderAttendanceCalendarHtml(s.id) : '')
+          + '</div>';
         EDIT_FIELDS.forEach(function(pair){
           var key=pair[0], label=t(pair[1]);
           var val = s[key];
@@ -1907,6 +2228,30 @@
     });
     var reviewDismissBtn = document.getElementById('st-review-dismiss');
     if(reviewDismissBtn) reviewDismissBtn.addEventListener('click', function(){ stuFilters.reviewOnly = false; renderStudents(); });
+    document.getElementById('st-import-toggle').addEventListener('click', function(){
+      stuFilters.importing = !stuFilters.importing;
+      csvPreview = null;
+      renderStudents();
+    });
+    var importTemplateBtn = document.getElementById('st-import-template');
+    if(importTemplateBtn) importTemplateBtn.addEventListener('click', downloadCsvTemplate);
+    var importFileEl = document.getElementById('st-import-file');
+    if(importFileEl){
+      importFileEl.addEventListener('change', function(){
+        var file = importFileEl.files && importFileEl.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(){
+          var rows = parseCSV(String(reader.result||''));
+          var forcedCentre = (IDENTITY && IDENTITY.role!=='coordinator') ? IDENTITY.centre : null;
+          csvPreview = buildCsvPreview(rows, forcedCentre);
+          renderCsvPreview();
+        };
+        reader.onerror = function(){ showToast('Could not read that file — try exporting the sheet as CSV again.'); };
+        reader.readAsText(file);
+      });
+    }
+    renderCsvPreview();
     document.getElementById('st-add-toggle').addEventListener('click', function(){ stuFilters.adding = !stuFilters.adding; renderStudents(); });
     var addCancelBtn = document.getElementById('st-add-cancel');
     if(addCancelBtn) addCancelBtn.addEventListener('click', function(){ stuFilters.adding = false; renderStudents(); });
@@ -2000,7 +2345,18 @@
           logAudit('archive', stu.id, stu.name, 'Bulk archive');
         }
         stuSelected = {};
-        showToast(toArchive.length+' student'+(toArchive.length===1?'':'s')+' archived.');
+        var archivedIds = toArchive.map(function(s){ return s.id; });
+        showUndoToast(toArchive.length+' student'+(toArchive.length===1?'':'s')+' archived.', async function(){
+          for(var j=0;j<archivedIds.length;j++){
+            var s2 = studentsById()[archivedIds[j]];
+            if(!s2) continue;
+            Object.assign(s2, {active:true});
+            await persistWrite({type:'update', col:'students', docId:archivedIds[j], data:{active:true}});
+            logAudit('restore', archivedIds[j], s2.name, 'Undid bulk archive');
+          }
+          showToast('Restored.');
+          renderStudents();
+        });
         renderStudents();
       });
       var bulkCentreBtn = document.getElementById('bulk-change-centre');
@@ -2010,16 +2366,28 @@
         var newCentre = await showChangeCentreModal(centres());
         if(!newCentre) return;
         bulkCentreBtn.disabled = true;
+        var moved = [];
         for(var i=0;i<chosen.length;i++){
           var stu = chosen[i];
           var oldCentre = stu.centre;
           if(oldCentre===newCentre) continue;
+          moved.push({id:stu.id, from:oldCentre});
           Object.assign(stu, {centre:newCentre});
           await persistWrite({type:'update', col:'students', docId:stu.id, data:{centre:newCentre}});
           logAudit('edit', stu.id, stu.name, 'Centre: '+(oldCentre||'—')+' → '+newCentre);
         }
         stuSelected = {};
-        showToast('Moved '+chosen.length+' student'+(chosen.length===1?'':'s')+' to '+shortCentre(newCentre)+'.');
+        showUndoToast('Moved '+moved.length+' student'+(moved.length===1?'':'s')+' to '+shortCentre(newCentre)+'.', async function(){
+          for(var j=0;j<moved.length;j++){
+            var s2 = studentsById()[moved[j].id];
+            if(!s2) continue;
+            Object.assign(s2, {centre:moved[j].from});
+            await persistWrite({type:'update', col:'students', docId:moved[j].id, data:{centre:moved[j].from}});
+            logAudit('edit', moved[j].id, s2.name, 'Undid bulk centre change → '+(moved[j].from||'—'));
+          }
+          showToast('Centre change undone.');
+          renderStudents();
+        });
         renderStudents();
       });
     }
@@ -2037,7 +2405,15 @@
         Object.assign(stu, {active:false});
         var ok = await persistWrite({type:'update', col:'students', docId:id, data:{active:false}});
         logAudit('archive', id, stu.name, 'Archived student');
-        showToast(ok ? 'Student archived.' : 'Archived on this device — will sync when back online.');
+        showUndoToast(ok ? 'Student archived.' : 'Archived on this device — will sync when back online.', async function(){
+          var s2 = studentsById()[id];
+          if(!s2) return;
+          Object.assign(s2, {active:true});
+          await persistWrite({type:'update', col:'students', docId:id, data:{active:true}});
+          logAudit('restore', id, s2.name, 'Undid archive');
+          showToast('Restored.');
+          renderStudents();
+        });
         renderStudents();
       });
     });
@@ -2070,6 +2446,13 @@
         var ok = await persistWrite({type:'delete', col:'students', docId:id});
         logAudit('delete', id, stu.name, 'Deleted student');
         showToast(ok ? 'Student deleted.' : 'Deleted on this device — will sync when back online.');
+        renderStudents();
+      });
+    });
+    el.querySelectorAll('[data-cal-toggle]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-cal-toggle');
+        stuCalendarOpen[id] = !stuCalendarOpen[id];
         renderStudents();
       });
     });
@@ -2306,12 +2689,14 @@
 
     html += '<div class="controls-row" style="justify-content:space-between;">';
     html += '<h2 class="section-title" style="margin:0;">'+t('centre_summary')+'</h2>';
+    html += '<span style="display:flex;gap:8px;flex-wrap:wrap;">';
     if(IDENTITY && IDENTITY.role==='coordinator'){
-      html += '<span style="display:flex;gap:8px;"><button class="btn ghost small" id="rp-activity">'+icon('activity')+' '+t('activity_log')+'</button><button class="btn ghost small" id="rp-print">'+icon('print')+' '+t('print_register')+'</button></span>';
-    } else {
-      html += '<button class="btn ghost small" id="rp-print">'+icon('print')+' '+t('print_register')+'</button>';
+      html += '<button class="btn ghost small" id="rp-activity">'+icon('activity')+' '+t('activity_log')+'</button>';
+      html += '<button class="btn ghost small" id="rp-backup">'+icon('archive')+' Backup data</button>';
     }
-    html += '</div>';
+    html += '<button class="btn ghost small" id="rp-annual">'+icon('chart')+' Annual report</button>';
+    html += '<button class="btn ghost small" id="rp-print">'+icon('print')+' '+t('print_register')+'</button>';
+    html += '</span></div>';
     // Sorted lowest-attendance-first so the centre that most needs a look sits
     // at the top of the comparison rather than wherever it falls alphabetically.
     var centreRows = cList.map(function(c){
@@ -2439,8 +2824,11 @@
     document.getElementById('rp-refresh').addEventListener('click', function(){ loadAttendanceHistory(true); });
     document.getElementById('rp-std').addEventListener('change', function(e){ rpFilters.std = e.target.value; renderReports(); });
     document.getElementById('rp-print').addEventListener('click', openPrintRegister);
+    document.getElementById('rp-annual').addEventListener('click', openAnnualReport);
     var activityBtn = document.getElementById('rp-activity');
     if(activityBtn) activityBtn.addEventListener('click', showActivityLog);
+    var backupBtn = document.getElementById('rp-backup');
+    if(backupBtn) backupBtn.addEventListener('click', downloadFullBackup);
     el.querySelectorAll('th.sortable').forEach(function(th){
       function toggleSort(){
         var key = th.getAttribute('data-sort');
@@ -2467,6 +2855,39 @@
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
     showToast('CSV downloaded.');
+  }
+  function downloadJSON(obj, filename){
+    var blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json;charset=utf-8;'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  }
+  // A full, coordinator-only export of everything in Firestore, as one JSON
+  // file — a plain-language "disaster recovery" copy kept somewhere outside
+  // Firebase. Needs no new rules: a coordinator can already read every
+  // collection in full, this just does it for all four at once and saves the
+  // result instead of rendering it.
+  async function downloadFullBackup(){
+    if(!(IDENTITY && IDENTITY.role==='coordinator')){ return; }
+    showToast('Preparing backup…');
+    try{
+      var collNames = ['teachers','students','attendance','audit_log'];
+      var out = { exportedAt: new Date().toISOString(), exportedBy: IDENTITY.email };
+      for(var i=0;i<collNames.length;i++){
+        var name = collNames[i];
+        var snap = await getDocs(collection(db, name));
+        var docs = {};
+        snap.forEach(function(d){ docs[d.id] = d.data(); });
+        out[name] = docs;
+      }
+      var stamp = todayIso();
+      downloadJSON(out, 'akshar-paaul-backup-'+stamp+'.json');
+      showToast('Backup downloaded — keep it somewhere safe outside Firebase.');
+    }catch(e){
+      showToast('Could not create a backup — check your connection and try again.');
+    }
   }
   // `rosterList` is optional — pass a subset (e.g. a Students-tab bulk
   // selection) to export just those students; omit it for the full active roster.
