@@ -1164,6 +1164,18 @@
     else if(s.indexOf(',') > -1) s = s.split(',')[0].trim();
     return s.length>26 ? s.slice(0,26).trim()+'…' : s;
   }
+  // Same "auto-transliterate for on-screen display" treatment as displayName()
+  // above, applied to a centre's short name — a centre is data (like a
+  // student's name), not UI chrome, so it doesn't have its own STRINGS entry.
+  // Sorting/CSV export/audit-log call sites deliberately keep using
+  // shortCentre() directly so ordering and exported records stay stable and
+  // language-independent.
+  function displayCentre(c){
+    if(!c) return c;
+    var s = shortCentre(c);
+    if(LANG==='en') return s;
+    return transliterateToDevanagari(s);
+  }
   function pad2(n){ return n<10 ? '0'+n : ''+n; }
   function isoDate(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
   function nearestSunday(){
@@ -1406,7 +1418,7 @@
       modalPreviousFocus = document.activeElement;
       var centreField = centreList
         ? '<div class="field" style="margin-bottom:12px;">'+fieldLabel('pin', t('field_centre'))+'<select id="pr-centre">'
-          + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; }).join('')
+          + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(displayCentre(c))+'</option>'; }).join('')
           + '</select></div>'
         : '';
       modalOverlay.innerHTML =
@@ -1439,7 +1451,7 @@
         + '<h3>'+icon('pin')+' '+esc(t('change_centre'))+'</h3>'
         + '<p>'+esc(t('change_centre_modal_desc'))+'</p>'
         + '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<select id="cc-centre">'
-        + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; }).join('')
+        + centreList.map(function(c){ return '<option value="'+esc(c)+'">'+esc(displayCentre(c))+'</option>'; }).join('')
         + '<option value="__new__">'+esc(t('new_centre_option'))+'</option></select></div>'
         + '<div class="modal-actions" style="margin-top:16px;"><button class="btn ghost" id="modal-cancel">'+esc(t('cancel'))+'</button><button class="btn primary" id="modal-confirm">'+esc(t('change_centre'))+'</button></div>'
         + '</div>';
@@ -1496,7 +1508,7 @@
     box.innerHTML = matches.map(function(s){
       return '<button type="button" class="qs-result" data-sid="'+s.id+'">'
         + avatarHtml(s.name, s.centre, 'sm', s.photo)
-        + '<span><span class="qs-name">'+esc(displayName(s))+(isActive(s)?'':' · '+esc(t('label_archived')))+'</span><span class="qs-sub">'+esc(shortCentre(s.centre))+(s.std?' · '+esc(s.std):'')+'</span></span>'
+        + '<span><span class="qs-name">'+esc(displayName(s))+(isActive(s)?'':' · '+esc(t('label_archived')))+'</span><span class="qs-sub">'+esc(displayCentre(s.centre))+(s.std?' · '+esc(s.std):'')+'</span></span>'
         + '</button>';
     }).join('');
     box.querySelectorAll('.qs-result').forEach(function(btn){
@@ -1586,7 +1598,7 @@
       return '<tr><td class="nm">'+esc(displayName(s))+'</td><td>'+esc(s.std||'—')+'</td>'+cells+'<td class="tot">'+pctTxt+'</td></tr>';
     }).join('');
     var headCells = dates.map(function(d){ return '<th>'+d.slice(8,10)+'</th>'; }).join('');
-    var doc = '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(shortCentre(centre))+' — '+esc(monthLabel)+'</title><style>'
+    var doc = '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(displayCentre(centre))+' — '+esc(monthLabel)+'</title><style>'
       + 'body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}'
       + 'h1{font-size:18px;margin:0 0 2px;} h2{font-size:13px;font-weight:normal;color:#555;margin:0 0 18px;}'
       + 'table{border-collapse:collapse;width:100%;font-size:11px;} th,td{border:1px solid #999;padding:4px 6px;text-align:center;}'
@@ -1594,7 +1606,7 @@
       + '.printbar{margin-bottom:16px;} @media print{ .printbar{display:none;} }'
       + '</style></head><body>'
       + '<div class="printbar"><button onclick="window.print()">'+esc(t('print_save_pdf_btn'))+'</button></div>'
-      + '<h1>'+esc(t('register_title'))+'</h1><h2>'+esc(shortCentre(centre))+' · '+esc(monthLabel)+'</h2>'
+      + '<h1>'+esc(t('register_title'))+'</h1><h2>'+esc(displayCentre(centre))+' · '+esc(monthLabel)+'</h2>'
       + (dates.length===0
         ? '<p>'+esc(tf('register_no_data', {month: monthLabel}))+'</p>'
         : '<table><thead><tr><th>'+esc(t('field_name'))+'</th><th>'+esc(t('print_col_std'))+'</th>'+headCells+'<th>%</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>')
@@ -1652,10 +1664,10 @@
     var trend = computeMonthlyTrend(roster).filter(function(m){ return m.month.indexOf(year)===0; });
     var atRisk = roster.filter(function(s){ return studentStats(s.id).streak >= STREAK_RISK_THRESHOLD; });
 
-    var centreRowsHtml = centreRows.map(function(r){ return '<tr><td>'+esc(shortCentre(r.c))+'</td><td>'+r.total+'</td><td>'+r.marked+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
+    var centreRowsHtml = centreRows.map(function(r){ return '<tr><td>'+esc(displayCentre(r.c))+'</td><td>'+r.total+'</td><td>'+r.marked+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
     var classRowsHtml = classRows.map(function(r){ return '<tr><td>'+esc(r.k)+'</td><td>'+r.total+'</td><td>'+(r.pct===null?'—':r.pct+'%')+'</td></tr>'; }).join('');
     var trendRowsHtml = trend.map(function(m){ return '<tr><td>'+esc(monthShortLabel(m.month))+'</td><td>'+m.total+'</td><td>'+(m.pct===null?'—':m.pct+'%')+'</td></tr>'; }).join('');
-    var atRiskRowsHtml = atRisk.map(function(s){ return '<tr><td>'+esc(displayName(s))+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+studentStats(s.id).streak+'</td></tr>'; }).join('');
+    var atRiskRowsHtml = atRisk.map(function(s){ return '<tr><td>'+esc(displayName(s))+'</td><td>'+esc(displayCentre(s.centre))+'</td><td>'+studentStats(s.id).streak+'</td></tr>'; }).join('');
 
     var doc = '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(tf('annual_doc_title', {year: year}))+'</title><style>'
       + 'body{font-family:Arial,Helvetica,sans-serif;color:#111;margin:24px;}'
@@ -1864,11 +1876,11 @@
     html += '<h2 class="section-title">'+t('nav_mark')+'</h2>';
     html += '<div class="controls-row">';
     if(locked){
-      html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<div class="locked-value">'+esc(shortCentre(markFilters.centre))+'</div></div>';
+      html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<div class="locked-value">'+esc(displayCentre(markFilters.centre))+'</div></div>';
     } else {
       html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<select id="mk-centre">';
       cList.forEach(function(c){
-        html += '<option value="'+esc(c)+'"'+(c===markFilters.centre?' selected':'')+'>'+esc(shortCentre(c))+'</option>';
+        html += '<option value="'+esc(c)+'"'+(c===markFilters.centre?' selected':'')+'>'+esc(displayCentre(c))+'</option>';
       });
       html += '</select></div>';
     }
@@ -2009,7 +2021,7 @@
       var label = fmtDateLabel(markFilters.date)+(markFilters.std ? ' · '+markFilters.std : '');
       var confirmed = await showConfirmModal({
         title: t('clear_date_title'),
-        message: tf('clear_date_msg', {centre:shortCentre(markFilters.centre), date:label, n:list.length, plural:pluralS(list.length)}),
+        message: tf('clear_date_msg', {centre:displayCentre(markFilters.centre), date:label, n:list.length, plural:pluralS(list.length)}),
         confirmText: t('clear_marks_btn'), danger: true
       });
       if(!confirmed) return;
@@ -2250,7 +2262,8 @@
       var status = it.ok
         ? '<span class="chip" style="background:var(--present-soft);color:var(--present);">'+esc(t('csv_status_ok'))+'</span>'
         : '<span class="chip" style="background:var(--absent-soft);color:var(--absent);" title="'+esc(it.problems.join(', '))+'">'+esc(t('csv_status_skip'))+'</span>';
-      return '<tr><td>'+it.rowNum+'</td><td>'+esc(it.data.name||'—')+'</td><td>'+esc(it.data.centre?shortCentre(it.data.centre):'—')+'</td><td>'+esc(it.data.std||'—')+'</td><td>'+status+'</td></tr>';
+      var previewName = it.data.name ? (LANG==='en' ? it.data.name : transliterateToDevanagari(it.data.name)) : '—';
+      return '<tr><td>'+it.rowNum+'</td><td>'+esc(previewName)+'</td><td>'+esc(it.data.centre?displayCentre(it.data.centre):'—')+'</td><td>'+esc(it.data.std||'—')+'</td><td>'+status+'</td></tr>';
     }).join('');
     var moreNote = items.length>50 ? '<p style="color:var(--ink-soft);font-size:.8rem;">'+esc(tf('csv_showing_first_50', {n:items.length}))+'</p>' : '';
     var summaryHtml = tf('csv_summary', {ok:okCount, okPlural:pluralS(okCount), skipped: problemCount ? tf('csv_summary_skipped_part', {n:problemCount}) : ''});
@@ -2378,7 +2391,7 @@
     html += '<div class="field">'+fieldLabel('search', t('field_search'))+'<input type="search" id="st-q" placeholder="'+esc(t('student_name_placeholder'))+'" value="'+esc(stuFilters.q)+'"></div>';
     if(IDENTITY && IDENTITY.role==='coordinator'){
       html += '<div class="field">'+fieldLabel('pin', t('field_centre'))+'<select id="st-centre"><option value="">'+esc(t('all_centres'))+'</option>';
-      cList.forEach(function(c){ html += '<option value="'+esc(c)+'"'+(c===stuFilters.centre?' selected':'')+'>'+esc(shortCentre(c))+'</option>'; });
+      cList.forEach(function(c){ html += '<option value="'+esc(c)+'"'+(c===stuFilters.centre?' selected':'')+'>'+esc(displayCentre(c))+'</option>'; });
       html += '</select></div>';
     }
     html += '<div class="field">'+fieldLabel('users', t('field_teacher'))+'<select id="st-teacher"><option value="">'+esc(t('all_teachers'))+'</option>';
@@ -2411,7 +2424,7 @@
 
     if(stuFilters.importing){
       var importCentreNote = (IDENTITY && IDENTITY.role!=='coordinator')
-        ? '<p style="color:var(--ink-soft);font-size:.82rem;">'+esc(tf('csv_teacher_centre_note', {centre:shortCentre(IDENTITY.centre)}))+'</p>'
+        ? '<p style="color:var(--ink-soft);font-size:.82rem;">'+esc(tf('csv_teacher_centre_note', {centre:displayCentre(IDENTITY.centre)}))+'</p>'
         : '';
       html += '<div class="card" id="st-import-card" style="background:var(--surface-2);margin-bottom:16px;">';
       html += '<h2 class="section-title" style="margin-top:0;">'+esc(t('csv_import_title'))+'</h2>';
@@ -2432,7 +2445,7 @@
             html += '<div class="detail-item"><label>'+t('field_centre')+'</label><span>'+esc(IDENTITY.centre)+'</span></div>';
           } else {
             html += '<div class="detail-item"><label for="add-f-centre">'+t('field_centre')+'</label><select id="add-f-centre">';
-            cList.forEach(function(c){ html += '<option value="'+esc(c)+'">'+esc(shortCentre(c))+'</option>'; });
+            cList.forEach(function(c){ html += '<option value="'+esc(c)+'">'+esc(displayCentre(c))+'</option>'; });
             html += '<option value="__new__">'+esc(t('new_centre_option'))+'</option></select></div>';
           }
           return;
@@ -2511,7 +2524,7 @@
         html += '<td class="select-cell"><input type="checkbox" class="stu-select" data-sid="'+s.id+'" aria-label="'+esc(tf('select_student_aria', {name:displayName(s)}))+'"'+(stuSelected[s.id]?' checked':'')+'></td>';
       }
       html += '<td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(displayName(s))+(s.needs_review?' <span class="chip review">'+icon('flag')+' '+esc(t('chip_review'))+'</span>':'')+(stats.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+esc(tf('streak_title', {n:stats.streak}))+'">'+icon('alert')+' '+stats.streak+'</span>':'')+(isActive(s)?'':' <span class="chip" style="background:var(--surface-2);color:var(--ink-soft);">'+icon('archive')+' '+esc(t('chip_archived'))+'</span>')+'</td>';
-      html += '<td>'+esc(shortCentre(s.centre))+'</td>';
+      html += '<td>'+esc(displayCentre(s.centre))+'</td>';
       html += '<td>'+(s.teacher?esc(s.teacher):'<em style="color:var(--accent-soft-ink);">'+esc(t('unassigned_label'))+'</em>')+'</td>';
       html += '<td>'+esc(s.std||'—')+'</td>';
       html += '<td class="pct '+pctClass(stats.pct)+'">'+pctTxt+'</td>';
@@ -2539,7 +2552,7 @@
             return;
           }
           if(isTeacherViewer && key==='centre'){
-            html += '<span>'+esc(shortCentre(val))+'</span></div>';
+            html += '<span>'+esc(displayCentre(val))+'</span></div>';
             return;
           }
           if(key==='name_dev'){
@@ -2757,7 +2770,7 @@
           logAudit('edit', stu.id, stu.name, 'Centre: '+(oldCentre||'—')+' → '+newCentre);
         }
         stuSelected = {};
-        showUndoToast(tf('moved_students_toast', {n:moved.length, plural:pluralS(moved.length), centre:shortCentre(newCentre)}), async function(){
+        showUndoToast(tf('moved_students_toast', {n:moved.length, plural:pluralS(moved.length), centre:displayCentre(newCentre)}), async function(){
           for(var j=0;j<moved.length;j++){
             var s2 = studentsById()[moved[j].id];
             if(!s2) continue;
@@ -2984,7 +2997,7 @@
     return { weekDate: weekDate, centres: centreList, reasonTally: reasonTally };
   }
   function reasonTallyLabel(key){
-    if(key==='unspecified') return 'No reason given';
+    if(key==='unspecified') return t('no_reason_given');
     return absenceReasonLabel(key);
   }
   // Plain-text version of the centre summary for the current month, meant to be
@@ -2993,7 +3006,7 @@
   function buildMonthlySummaryText(centreRows, monthLabel, atRiskCount){
     var lines = [tf('summary_header', {month:monthLabel})];
     centreRows.forEach(function(r){
-      lines.push(shortCentre(r.c)+': '+(r.pct===null?t('summary_no_records'):r.pct+'%')+' '+tf('summary_students_count', {n:r.total}));
+      lines.push(displayCentre(r.c)+': '+(r.pct===null?t('summary_no_records'):r.pct+'%')+' '+tf('summary_students_count', {n:r.total}));
     });
     if(atRiskCount>0){
       lines.push(tf('summary_atrisk_line', {n:atRiskCount, plural:pluralS(atRiskCount), threshold:STREAK_RISK_THRESHOLD}));
@@ -3033,7 +3046,7 @@
       html += '<div class="digest-item"><div class="digest-num" style="color:var(--present);">'+icon('check')+' '+esc(t('all_caught_up'))+'</div><div class="digest-lbl">'+esc(tf('everyone_marked_for', {date:fmtDateLabel(digest.weekDate)}))+'</div></div>';
     } else {
       unmarkedCentres.forEach(function(c){
-        html += '<div class="digest-item"><div class="digest-num">'+esc(tf('n_unmarked', {n:c.total-c.marked}))+'</div><div class="digest-lbl">'+esc(tf('digest_progress', {centre:shortCentre(c.centre), marked:c.marked, total:c.total, date:fmtDateLabel(digest.weekDate)}))+'</div></div>';
+        html += '<div class="digest-item"><div class="digest-num">'+esc(tf('n_unmarked', {n:c.total-c.marked}))+'</div><div class="digest-lbl">'+esc(tf('digest_progress', {centre:displayCentre(c.centre), marked:c.marked, total:c.total, date:fmtDateLabel(digest.weekDate)}))+'</div></div>';
       });
     }
     if(atRiskCount>0){
@@ -3094,7 +3107,7 @@
       centreRows.forEach(function(r){
         var frac = r.avg===null ? 0 : r.avg/100;
         html += '<div class="compare-row">'
-          + '<span class="compare-label">'+esc(shortCentre(r.c))+'</span>'
+          + '<span class="compare-label">'+esc(displayCentre(r.c))+'</span>'
           + '<span class="compare-bar"><span class="compare-fill '+pctClass(r.avg)+'" style="width:'+(frac*100).toFixed(0)+'%;"></span></span>'
           + '<span class="compare-val">'+(r.avg===null?'—':r.avg+'%')+'</span>'
           + '</div>';
@@ -3104,7 +3117,7 @@
     html += '<div class="grid-cards">';
     centreRows.forEach(function(r){
       html += '<div class="stat-card"><div class="num">'+(r.avg===null?'—':r.avg+'%')+'</div>';
-      html += '<div class="lbl">'+esc(shortCentre(r.c))+' · '+esc(tf('header_n_students', {n:r.stus.length}))+'</div></div>';
+      html += '<div class="lbl">'+esc(displayCentre(r.c))+' · '+esc(tf('header_n_students', {n:r.stus.length}))+'</div></div>';
     });
     if(atRiskCount>0){
       html += '<div class="stat-card" style="border-color:var(--absent);"><div class="num" style="color:var(--absent);">'+atRiskCount+'</div>';
@@ -3169,7 +3182,7 @@
     rows.slice(0,400).forEach(function(r){
       var s=r.s, st=r.st;
       var pctTxt = st.pct===null ? t('no_records_yet') : st.pct+'%';
-      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(displayName(s))+(st.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+esc(tf('streak_title', {n:st.streak}))+'">'+icon('alert')+' '+st.streak+'</span>':'')+'</td><td>'+esc(shortCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
+      html += '<tr><td class="name-cell">'+avatarHtml(s.name, s.centre, 'sm', s.photo)+esc(displayName(s))+(st.streak>=STREAK_RISK_THRESHOLD?' <span class="chip streak" title="'+esc(tf('streak_title', {n:st.streak}))+'">'+icon('alert')+' '+st.streak+'</span>':'')+'</td><td>'+esc(displayCentre(s.centre))+'</td><td>'+esc(s.std||'—')+'</td>';
       html += '<td>'+st.present+'</td><td>'+st.total+'</td>';
       html += '<td class="pct '+pctClass(st.pct)+'">'+pctTxt+'</td>';
       html += '<td>'+sparklineHtml(s.id, st.dates.slice(-10))+'</td></tr>';
@@ -3406,7 +3419,7 @@
   function renderSignedInBar(){
     var el = document.getElementById('signedin-bar');
     if(!IDENTITY){ el.innerHTML=''; positionThemeToggle(); return; }
-    var who = IDENTITY.role==='coordinator' ? t('coordinator_all_centres') : (IDENTITY.name+' · '+shortCentre(IDENTITY.centre));
+    var who = IDENTITY.role==='coordinator' ? t('coordinator_all_centres') : (IDENTITY.name+' · '+displayCentre(IDENTITY.centre));
     el.innerHTML = tf('logged_in_as', {who: '<b>'+esc(who)+'</b>'})+'<button class="link-btn" id="logout-btn" style="margin-left:auto;">'+t('log_out')+'</button>';
     document.getElementById('logout-btn').addEventListener('click', function(){ signOut(auth); });
     positionThemeToggle();
