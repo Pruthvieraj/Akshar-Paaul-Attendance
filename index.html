@@ -1157,11 +1157,23 @@
     list.forEach(function(s){ if(s.std) seen[s.std] = true; });
     return Object.keys(seen).sort(function(a,b){ return classSortKey(a)-classSortKey(b); });
   }
+  // Capitalizes each run of Latin letters ("centre a, MAIN road" -> "Centre
+  // A, Main Road") so a centre displays consistently no matter how it was
+  // originally typed into the roster. Purely cosmetic — operates only on the
+  // string handed back for display, never on the stored value itself, so it
+  // can't affect filtering, queries, or the security rules' centre matching
+  // (all of which keep comparing the raw, untouched value). Non-Latin text
+  // (e.g. a centre already named in Devanagari) passes through unchanged.
+  function titleCaseCentre(s){
+    if(!s) return s;
+    return s.replace(/[A-Za-z]+/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+  }
   function shortCentre(c){
     if(!c) return c;
     var s = c;
     if(s.indexOf(' - ') > -1) s = s.split(' - ')[0].trim();
     else if(s.indexOf(',') > -1) s = s.split(',')[0].trim();
+    s = titleCaseCentre(s);
     return s.length>26 ? s.slice(0,26).trim()+'…' : s;
   }
   // Same "auto-transliterate for on-screen display" treatment as displayName()
